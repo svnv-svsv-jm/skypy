@@ -23,6 +23,9 @@ def test_read() -> None:
     t = str(waza["type"].values[0]).lower()
     logger.info(t)
     assert t == "water"
+    logger.info(waza["accuracy"])
+    waza["accuracy"] = 25
+    logger.info(waza["accuracy"])
 
 
 if __name__ == "__main__":

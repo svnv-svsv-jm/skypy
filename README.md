@@ -1,5 +1,7 @@
 # SkyPy
 
+## Datamining Scarlet and Violet
+
 Inspired by [Project Sky](https://gamebanana.com/tools/11558). This is a (still ugly) Python implementation of that, so that it can run on any platform/OS.
 
 There is no UI, just [notebooks](./notebooks/Demo.ipynb). The idea is to be able to edit stuff programmatically. Edit the notebook as you prefer.

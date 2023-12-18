@@ -5,6 +5,8 @@ __all__ = [
     "set_ability",
     "add_move_raw",
     "add_move",
+    "set_waza",
+    "add_evo",
 ]
 
 from loguru import logger
@@ -14,15 +16,99 @@ import pandas as pd
 from skypy.const.abilities import ABILITIES
 from skypy.const.types import TYPES
 from skypy.const.schema import STATS_COLUMNS
-from skypy.const.waza import MOVES
+from skypy.const.waza import MOVES, INFLICT
 from .getters import (
     get_pokemon,
     get_pokemon_loc,
     get_stats_from_pkmn,
-    get_learnset,
     get_learnset_raw,
     LVLUP_MOVE_TYPE,
+    get_waza,
+    get_pkmn_id,
+    get_evo_data,
 )
+
+EVO_DATA = {
+    "level": 16,
+    "condition": 4,
+    "parameter": 0,
+    "reserved3": 0,
+    "reserved4": 0,
+    "reserved5": 0,
+    "species": 8,
+    "form": 0,
+}
+
+
+def add_evo(
+    df: pd.DataFrame,
+    pokemon: str,
+    level: int,
+    into: str,
+) -> pd.DataFrame:
+    """Adds evolution method."""
+    pkmn = get_pokemon(df, pokemon)
+    evo_data = get_evo_data(df, pokemon)
+    logger.trace(evo_data)
+    new_evo_data = EVO_DATA.copy()
+    new_evo_data["level"] = level
+    ID = get_pkmn_id(df, into)
+    new_evo_data["species"] = ID
+    evo_data.append(new_evo_data)
+    logger.trace(evo_data)
+    # Set
+    pkmn["evo_data"].values[0] = new_evo_data
+    logger.trace(pkmn["evo_data"])
+    pkmn_idx = get_pokemon_loc(df, pokemon)
+    df.loc[pkmn_idx, :] = pkmn
+    return df
+
+
+def set_waza(
+    df: pd.DataFrame,
+    waza: str,
+    waza_type: str = None,
+    accuracy: int = None,
+    power: int = None,
+    inflicts: str = None,
+    inflict_chance: int = None,
+    edits: Dict[str, Any] = None,
+) -> pd.DataFrame:
+    """Change waza's data."""
+    waza_df, waza_idx = get_waza(df, waza.lower(), return_idx=True)
+    assert isinstance(waza_df, pd.DataFrame)
+    logger.trace(waza_df)
+    # Type
+    if waza_type is not None:
+        for i, val in TYPES.items():
+            if waza_type.lower() == val.lower():
+                move_id = i
+                break
+        logger.trace(waza_df["type"])
+        waza_df["type"] = move_id
+        logger.trace(waza_df["type"])
+        if isinstance(waza_idx, int):
+            tmp = [False] * df.shape[0]
+            tmp[waza_idx] = True
+            waza_idx = tmp
+    # Accuracy
+    if accuracy is not None:
+        waza_df["accuracy"] = accuracy
+    # Power
+    if power is not None:
+        waza_df["power"] = power
+    # Status
+    if inflicts is not None:
+        waza_df["inflict.value"] = INFLICT[inflicts.lower()]
+        if inflict_chance is not None:
+            waza_df["inflict.chance"] = inflict_chance
+    # Free form: all the others
+    if edits is not None:
+        for key, val in edits.items():
+            waza_df[key] = val
+    # Set
+    df.loc[waza_idx, :] = waza_df  # type: ignore
+    return df
 
 
 def set_pokemon(

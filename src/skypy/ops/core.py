@@ -1,7 +1,7 @@
-__all__ = ["read_data", "read_waza", "write_df_to_json", "df_to_formatted_json"]
+__all__ = ["read_data", "read_waza", "write_df_to_json", "df_to_formatted_json", "write_waza_to_json"]
 
 from loguru import logger
-from typing import Union, Sequence, Any, List, Dict, Tuple
+from typing import Union, Sequence, Any, List, Dict, Tuple, Optional
 import pandas as pd
 import numpy as np
 import json
@@ -75,14 +75,27 @@ def _to_int(df: pd.DataFrame, col: str) -> pd.DataFrame:
     return df
 
 
+def write_waza_to_json(
+    df: pd.DataFrame,
+    filename: str = "waza_array.json",
+    loc: str = OUTPUT_FOLDER,
+    **kwargs: Any,
+) -> None:
+    """Write results to file."""
+    kwargs.setdefault("keys_to_suspect", None)
+    kwargs.setdefault("first_key", "table")
+    write_df_to_json(df, filename, loc=loc, **kwargs)
+
+
 def write_df_to_json(
     df: pd.DataFrame,
     filename: str = FILENAME,
     loc: str = OUTPUT_FOLDER,
+    **kwargs: Any,
 ) -> None:
     """Write results to file."""
     df = force_columns_to_int(df)
-    data = df_to_formatted_json(df)
+    data = df_to_formatted_json(df, **kwargs)
     Path(loc).mkdir(parents=True, exist_ok=True)
     outfile = os.path.join(loc, filename)
     with open(outfile, mode="w") as f:
@@ -94,7 +107,7 @@ def df_to_formatted_json(
     df: pd.DataFrame,
     sep: str = ".",
     first_key: str = "entry",
-    keys_to_suspect: List[str] = ["dex"],
+    keys_to_suspect: Optional[List[str]] = ["dex"],
 ) -> Dict[str, Any]:
     """The opposite of `json_normalize`."""
     result = []
@@ -114,10 +127,11 @@ def df_to_formatted_json(
                     if k not in current:
                         current[k] = {}
                     current = current[k]
-        for sk in keys_to_suspect:
-            t = parsed_row[sk]
-            if isinstance(t, dict) and not t:
-                parsed_row.pop(sk, None)
+        if keys_to_suspect is not None:
+            for sk in keys_to_suspect:
+                t = parsed_row[sk]
+                if isinstance(t, dict) and not t:
+                    parsed_row.pop(sk, None)
         # save
         result.append(parsed_row)
     out = {first_key: result}

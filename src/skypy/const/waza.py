@@ -1,3 +1,24 @@
+INFLICT = {
+    "paralysis": 1,
+    "slee": 2,
+    "freeze": 3,
+    "burn": 4,
+    "poison": 5,
+    "confusion": 6,
+    "bind": 8,
+    "disable": 13,
+    "yawn": 14,
+    "perish song": 20,
+    "poison-paralysis-sleep": 47,
+}
+
+TARGET = {
+    "one": 0,  # bite, tackle, etc.
+    "all": 4,  # earthquake
+    "all-foes": 5,  # rock slide
+    "self": 7,  # recover
+}
+
 MOVES = (
     "———",
     "Pound",
@@ -587,7 +608,7 @@ MOVES = (
     "Moonblast",
     "Boomburst",
     "Fairy Lock",
-    "King’s Shield",
+    "King's Shield",
     "Play Nice",
     "Confide",
     "Diamond Storm",
@@ -615,7 +636,7 @@ MOVES = (
     "Oblivion Wing",
     "Thousand Arrows",
     "Thousand Waves",
-    "Land’s Wrath",
+    "Land's Wrath",
     "Light of Ruin",
     "Origin Pulse",
     "Precipice Blades",

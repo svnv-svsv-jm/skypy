@@ -9,6 +9,9 @@ __all__ = [
     "get_ability",
     "get_learnset_raw",
     "get_learnset",
+    "get_waza",
+    "get_pkmn_id",
+    "get_evo_data",
 ]
 
 from loguru import logger
@@ -24,6 +27,13 @@ from skypy.const.waza import MOVES
 
 
 LVLUP_MOVE_TYPE = Dict[str, Union[int, str]]
+
+
+def get_evo_data(df: pd.DataFrame, pokemon: str) -> List[Dict[str, int]]:
+    """Get evo data."""
+    pkmn = get_pokemon(df, pokemon)
+    evo_data: List[Dict[str, int]] = pkmn["evo_data"].values[0]
+    return evo_data
 
 
 def get_pokemon_loc(df: pd.DataFrame, name: str) -> List[bool]:
@@ -44,18 +54,41 @@ def get_pokemon(
     return pkmn
 
 
+def get_waza(
+    df: pd.DataFrame,
+    name: str,
+    return_idx: bool = False,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, List[bool]]]:
+    """Get Waza."""
+    tmp = df.copy()
+    tmp["name"] = [n.lower() for n in MOVES]
+    idx = (tmp["name"] == name.lower()).to_list()
+    waza = df.loc[idx, :]
+    if return_idx:
+        return waza, idx
+    return waza
+
+
 def resume_waza(
     df: pd.DataFrame,
     name: str,
 ) -> pd.DataFrame:
     """Resume Waza."""
-    tmp = df.copy()
-    tmp["name"] = [n.lower() for n in MOVES]
-    idx = (tmp["name"] == name.lower()).to_list()
-    waza = df.loc[idx, :]
+    waza = get_waza(df, name)
+    assert isinstance(waza, pd.DataFrame)
     waza["name"] = name.lower()
     waza["type"] = waza["type"].apply(lambda x: TYPES[x]).astype("string")
     return waza
+
+
+def get_pkmn_id(
+    df: pd.DataFrame,
+    name: str,
+) -> int:
+    """Get Pokemon's ID."""
+    loc = get_pokemon_loc(df, name)
+    ID = list(compress(range(len(loc)), loc))[0]
+    return ID
 
 
 def resume_pokemon(
@@ -63,8 +96,7 @@ def resume_pokemon(
     name: str,
 ) -> Dict[str, Any]:
     """Resume Pokemon."""
-    loc = get_pokemon_loc(df, name)
-    ID = list(compress(range(len(loc)), loc))[0]
+    ID = get_pkmn_id(df, name)
     types = get_type(df, name)
     stats = get_stats(df, name)
     abilities = get_ability(df, name)
