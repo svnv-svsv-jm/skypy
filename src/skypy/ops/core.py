@@ -1,4 +1,14 @@
-__all__ = ["read_data", "read_waza", "write_df_to_json", "df_to_formatted_json", "write_waza_to_json"]
+__all__ = [
+    "read_data",
+    "read_trainer",
+    "read_trainer_map",
+    "read_waza",
+    "write_df_to_json",
+    "df_to_formatted_json",
+    "write_waza_to_json",
+    "write_trainer_to_json",
+    "write_personal_to_json",
+]
 
 from loguru import logger
 from typing import Union, Sequence, Any, List, Dict, Tuple, Optional
@@ -8,14 +18,35 @@ import json
 import os
 from pathlib import Path
 
-from skypy.const.loc import FILENAME, FILENAME_WAZA, OUTPUT_FOLDER, INPUT_FOLDER
+from skypy.const.loc import FILENAME, FILENAME_WAZA, OUTPUT_FOLDER, INPUT_FOLDER, FILENAME_TR, FILENAME_TR_MAP
 from skypy.const.schema import INT_COLUMNS
 
 
 def read_waza(**kwargs: Any) -> pd.DataFrame:
-    """."""
+    """Read waza data."""
     kwargs.setdefault("filename", FILENAME_WAZA)
     kwargs.setdefault("record_path", "table")
+    return read_data(**kwargs)
+
+
+def read_personal(**kwargs: Any) -> pd.DataFrame:
+    """Read personal data."""
+    kwargs.setdefault("filename", FILENAME)
+    kwargs.setdefault("record_path", "entry")
+    return read_data(**kwargs)
+
+
+def read_trainer_map(**kwargs: Any) -> pd.DataFrame:
+    """Read mapping from Trainer ID's to readable names."""
+    kwargs.setdefault("filename", FILENAME_TR_MAP)
+    kwargs.setdefault("record_path", "trainers")
+    return read_data(**kwargs)
+
+
+def read_trainer(**kwargs: Any) -> pd.DataFrame:
+    """Read personal data."""
+    kwargs.setdefault("filename", FILENAME_TR)
+    kwargs.setdefault("record_path", "values")
     return read_data(**kwargs)
 
 
@@ -77,13 +108,40 @@ def _to_int(df: pd.DataFrame, col: str) -> pd.DataFrame:
 
 def write_waza_to_json(
     df: pd.DataFrame,
-    filename: str = "waza_array.json",
+    filename: str = FILENAME_WAZA,
     loc: str = OUTPUT_FOLDER,
     **kwargs: Any,
 ) -> None:
     """Write results to file."""
     kwargs.setdefault("keys_to_suspect", None)
     kwargs.setdefault("first_key", "table")
+    write_df_to_json(df, filename, loc=loc, **kwargs)
+
+
+def write_trainer_to_json(
+    df: pd.DataFrame,
+    filename: str = FILENAME_TR,
+    loc: str = OUTPUT_FOLDER,
+    **kwargs: Any,
+) -> None:
+    """Write results to file."""
+    kwargs.setdefault("keys_to_suspect", None)
+    kwargs.setdefault("first_key", "values")
+    for c, t in zip(df.columns, df.dtypes):
+        if t == "float64":
+            df = _to_int(df, c)
+    write_df_to_json(df, filename, loc=loc, **kwargs)
+
+
+def write_personal_to_json(
+    df: pd.DataFrame,
+    filename: str = FILENAME,
+    loc: str = OUTPUT_FOLDER,
+    **kwargs: Any,
+) -> None:
+    """Write results to file."""
+    kwargs.setdefault("keys_to_suspect", ["dex"])
+    kwargs.setdefault("first_key", "entry")
     write_df_to_json(df, filename, loc=loc, **kwargs)
 
 

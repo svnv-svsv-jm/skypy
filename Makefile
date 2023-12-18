@@ -16,18 +16,53 @@ SCHEMADIR=src/skypy/assets/schema
 BINDIR=bin
 
 
+
+# --------------------------------
+# Run main script
+# --------------------------------
+run:
+	python src/skypy/fav/main.py
+
+
+# --------------------------------
+# Create binary files (the MODS)
+# --------------------------------
 bin:
-	flatc -b $(SCHEMADIR)/personal_array.fbs $(OUTPUT)/personal_array.json
-	flatc -b $(SCHEMADIR)/waza_array.fbs $(OUTPUT)/waza_array.json
-	mv *.bin bin/.
+	rm $(BINDIR)/*.bin || echo "no bins"
+	flatc -b $(SCHEMADIR)/personal_array.fbs $(OUTPUT)/personal_array.json || echo "ERROR for personal_array"
+	flatc -b $(SCHEMADIR)/waza_array.fbs $(OUTPUT)/waza_array.json || echo "ERROR for waza_array"
+	flatc -b $(SCHEMADIR)/trdata_array.bfbs $(OUTPUT)/trdata_array.json || echo "ERROR for trdata_array"
+	mv *.bin $(BINDIR)/.
 
-json:
-	rm personal_array.json || echo ""
-	rm waza_array.json || echo ""
-	flatc --json --strict-json --raw-binary $(SCHEMADIR)/personal_array.fbs $(OUTPUT)/personal_array.json -- $(BINDIR)/personal_array.bin
-	flatc --json --strict-json --raw-binary $(SCHEMADIR)/personal_array.fbs $(OUTPUT)/personal_array.json -- $(BINDIR)/personal_array.bin
-	mv personal_array.json $(BINDIR)/.
-	mv waza_array.json $(BINDIR)/.
+mod: MODDIR=$(BINDIR)/__mod__
+mod: bin
+	mkdir -p $(MODDIR)/romfs/avalon/data
+	mv $(BINDIR)/personal_array.bin $(MODDIR)/romfs/avalon/data/.
+	mv $(BINDIR)/waza_array.bin $(MODDIR)/romfs/avalon/data/.
+	mkdir -p $(MODDIR)/romfs/world/data/trainer/trdata
+	mv $(BINDIR)/trdata_array.bin $(MODDIR)/romfs/world/data/trainer/trdata/.
+	cp info.toml $(MODDIR)/.
+	cp -r sandbox/arc $(MODDIR)/romfs/.
 
-decode-bin:
-	flatc --json --strict-json --raw-binary -- bin/data.trpfd
+
+# --------------------------------
+# Decode binary files to JSON
+# --------------------------------
+json-decode: EXT=bfbs
+json-decode:
+	rm $(FILENAME).json || echo ""
+	flatc --json --strict-json --raw-binary $(SCHEMADIR)/$(FILENAME).$(EXT) -- $(BINDIR)/$(FILENAME).bin
+	mv $(FILENAME).json $(OUTPUT)/. || echo ""
+
+json-personal: FILENAME=personal_array
+json-personal: EXT=fbs
+json-personal: json-decode
+
+json-trainer: FILENAME=trdata_array
+json-trainer: json-decode
+
+json-waza: FILENAME=waza_array
+json-waza: EXT=fbs
+json-waza: json-decode
+
+json: json-personal json-trainer json-waza

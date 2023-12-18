@@ -279,7 +279,7 @@ def add_move(
     move: Union[LVLUP_MOVE_TYPE, Sequence[LVLUP_MOVE_TYPE]],
 ) -> pd.DataFrame:
     """Add move to Pokemon's learnset (raw)."""
-    logger.debug(f"Adding {move} to {pokemon.upper()}'s")
+    logger.debug(f"Adding {move} to {pokemon.upper()}'s learnset...")
     loc = get_pokemon_loc(df, pokemon)
     pkmn = get_pokemon(df, pokemon).copy()
     learnset_raw = add_move_raw(df, pokemon, move, readable=False)

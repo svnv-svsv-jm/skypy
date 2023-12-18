@@ -434,27 +434,47 @@ def mons(df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
     )
     df = add_move(df, pokemon, {"level": 40, "move": "freeze-dry"})
     df = add_move(df, pokemon, {"level": 38, "move": "air slash"})
-    # Darkrai
-    pokemon = "Darkrai"
+    # Luxray
+    pokemon = "Luxray"
     df = set_pokemon(
         df,
         pokemon,
+        types=("electric", "dark"),
+        ability="Intimidate",
+        stats={
+            "base_stats.HP": 80,
+            "base_stats.ATK": 120,
+            "base_stats.DEF": 79,
+            "base_stats.SPA": 70,
+            "base_stats.SPD": 79,
+            "base_stats.SPE": 95,
+        },
+    )
+    df = add_move(df, pokemon, {"level": 38, "move": "crunch"})
+    df = add_move(df, pokemon, {"level": 38, "move": "thunder fang"})
+    df = add_move(df, pokemon, {"level": 38, "move": "ice fang"})
+    df = add_move(df, pokemon, {"level": 38, "move": "fire fang"})
+    df = add_move(df, pokemon, {"level": 38, "move": "iron tail"})
+    # Darkrai
+    df = set_pokemon(
+        df,
+        "Darkrai",
         types=("dark", "ghost"),
         stats={
-            "base_stats.HP": 72,
+            "base_stats.HP": 92,
             "base_stats.ATK": 50,
             "base_stats.DEF": 78,
-            "base_stats.SPA": 123,
-            "base_stats.SPD": 85,
-            "base_stats.SPE": 132,
+            "base_stats.SPA": 143,
+            "base_stats.SPD": 95,
+            "base_stats.SPE": 142,
         },
     )
     df = add_move(df, "Darkrai", {"level": 22, "move": "shadow ball"})
     df = add_move(df, "Darkrai", {"level": 40, "move": "psyshock"})
     df = add_move(df, "Darkrai", {"level": 44, "move": "mystical fire"})
     # Dialga
-    for pkmn in POKEMON:
-        if "Dialga" in pkmn.lower():
+    for pokemon in POKEMON:
+        if "dialga" in pokemon.lower():
             df = set_pokemon(
                 df,
                 pokemon,
@@ -469,8 +489,8 @@ def mons(df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
                 },
             )
     # Palkia
-    for pkmn in POKEMON:
-        if "Palkia" in pkmn.lower():
+    for pokemon in POKEMON:
+        if "palkia" in pokemon.lower():
             df = set_pokemon(
                 df,
                 pokemon,
@@ -511,8 +531,8 @@ def mons(df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
         },
     )
     # Arceus
-    for pkmn in POKEMON:
-        if "arceus" in pkmn.lower():
+    for pokemon in POKEMON:
+        if "arceus" in pokemon.lower():
             df = set_pokemon(
                 df,
                 pokemon,
@@ -689,6 +709,21 @@ def mons(df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
             {"level": 37, "move": "bulk up"},
             {"level": 42, "move": "drain punch"},
         ],
+    )
+    # Garganacl
+    df = set_pokemon(
+        df,
+        "Garganacl",
+        types=("Rock", "Rock"),
+        ability="Purifying Salt",
+        stats={
+            "base_stats.HP": 100,
+            "base_stats.ATK": 100,
+            "base_stats.DEF": 130,
+            "base_stats.SPA": 45,
+            "base_stats.SPD": 90,
+            "base_stats.SPE": 35,
+        },
     )
     # Glimmora
     df = set_pokemon(

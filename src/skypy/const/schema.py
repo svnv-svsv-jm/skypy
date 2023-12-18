@@ -24,4 +24,5 @@ INT_COLUMNS = [
     "dex.group",
     "kitakami_dex",
     "exp_addend",
+    "moneyRate",
 ]

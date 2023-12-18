@@ -1,0 +1,10 @@
+display_name = "Pokemon SvSV"
+description = """
+Fanmade Pokemon Scarlet and Violet Overhaul by Svnv Svsv.
+[Feature Documentation]
+
+SvSV is meant to be played in a new game save.
+
+SvSV is designed to be a relatively new end-to-end experience for Scarlet and Violet that focuses on a smoother progression through the main stories, with generally increased difficulty in trainer battles and post-game battles.
+"""
+version = "1.0.0"
