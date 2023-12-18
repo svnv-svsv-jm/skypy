@@ -52,12 +52,18 @@ def add_evo(
     logger.trace(evo_data)
     new_evo_data = EVO_DATA.copy()
     new_evo_data["level"] = level
-    ID = get_pkmn_id(df, into)
+    into = into.strip().lower()
+    if "hisuian" in into:
+        t = into.replace("hisuian", "")
+        ID = get_pkmn_id(df, t.strip().lower())
+        new_evo_data["form"] = 1
+    else:
+        ID = get_pkmn_id(df, into)
     new_evo_data["species"] = ID
     evo_data.append(new_evo_data)
     logger.trace(evo_data)
     # Set
-    pkmn["evo_data"].values[0] = new_evo_data
+    pkmn["evo_data"].values[0] = evo_data
     logger.trace(pkmn["evo_data"])
     pkmn_idx = get_pokemon_loc(df, pokemon)
     df.loc[pkmn_idx, :] = pkmn
@@ -121,6 +127,7 @@ def set_pokemon(
     add_to_stats: Union[Sequence[int], Dict[str, int]] = None,
 ) -> pd.DataFrame:
     """Set attributes for a Pokemon."""
+    logger.debug(f"Setting attributes for {name.upper()}")
     # Get data
     pkmn = get_pokemon(df, name)
     # Change stats
@@ -161,6 +168,7 @@ def set_stats(
     add_to_stats: Union[Sequence[int], Dict[str, int]] = None,
 ) -> pd.DataFrame:
     """Set Pokemon's stats."""
+    logger.debug("Setting stats...")
     if add_to_stats is not None:
         stats = get_stats_from_pkmn(pkmn)
         stats = list(stats.values())[0:6]
@@ -238,7 +246,7 @@ def add_move_raw(
             move_name = move_db[move_id]
         to_add: LVLUP_MOVE_TYPE = {"level": lvl, "move": move_name if readable else move_id}
         learnset_raw.append(to_add)
-    _check_moves_are_there(move, learnset_raw)
+        _check_moves_are_there(m, learnset_raw)
     return learnset_raw
 
 
@@ -271,10 +279,10 @@ def add_move(
     move: Union[LVLUP_MOVE_TYPE, Sequence[LVLUP_MOVE_TYPE]],
 ) -> pd.DataFrame:
     """Add move to Pokemon's learnset (raw)."""
+    logger.debug(f"Adding {move} to {pokemon.upper()}'s")
     loc = get_pokemon_loc(df, pokemon)
     pkmn = get_pokemon(df, pokemon).copy()
     learnset_raw = add_move_raw(df, pokemon, move, readable=False)
-    _check_moves_are_there(move, learnset_raw)
     levelup_moves = pkmn["levelup_moves"]
     logger.trace(f"pkmn ({levelup_moves.shape}): {levelup_moves.values}")
     levelup_moves.at[int(levelup_moves.index.item())] = learnset_raw  # type: ignore

@@ -100,9 +100,20 @@ def resume_pokemon(
     types = get_type(df, name)
     stats = get_stats(df, name)
     abilities = get_ability(df, name)
-    resume = {"ID": ID, "name": POKEMON[ID], "type": types, "abilities": abilities}
+    p = is_present(df, name)
+    resume = {"is_present": p, "ID": ID, "name": POKEMON[ID], "type": types, "abilities": abilities}
     resume.update(stats)  # type: ignore
     return resume
+
+
+def is_present(
+    df: pd.DataFrame,
+    name: str,
+) -> bool:
+    """Is it present?"""
+    pkmn = get_pokemon(df, name)
+    is_p: pd.Series = pkmn["is_present"]
+    return bool(is_p.values[0])
 
 
 def get_stats_from_pkmn(pkmn: pd.DataFrame) -> Dict[str, int]:

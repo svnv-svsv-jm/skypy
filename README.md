@@ -31,7 +31,9 @@ Once you're done, run:
 make bin
 ```
 
-to create your `bin/personal_array.bin` file.
+to create your `bin/personal_array.bin` and `bin/waza_array.bin` file.
+
+In your dumped ROM's folder, copy `personal_array.bin` to `romfs/avalon/data/personal_array.bin` and copy `waza_array.bin` to `romfs/avalon/data/waza_array.bin`.
 
 ---
 
