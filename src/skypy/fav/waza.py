@@ -13,7 +13,9 @@ def waza(waza_df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
     waza_df = set_waza(waza_df, waza="rock slide", accuracy=100)
     waza_df = set_waza(waza_df, waza="stone axe", accuracy=100)
     waza_df = set_waza(waza_df, waza="Ceaseless Edge", power=75, accuracy=100)
+    waza_df = set_waza(waza_df, waza="Razor Shell", power=75, accuracy=100)
     waza_df = set_waza(waza_df, waza="infernal parade", power=80)
+    waza_df = set_waza(waza_df, waza="Swift", power=80)
     waza_df = set_waza(
         waza_df,
         waza="Judgment",

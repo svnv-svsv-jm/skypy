@@ -51,7 +51,7 @@ This will create your mod here `bin/__mod__`. Copy this folder to your emulator.
 
 #### Acquire data.trpfd File
 
-To get this file, download any up-to-date mod that includes it.
+To get this file, download any up-to-date mod that includes it. See [here](https://github.com/pkZukan/gftool).
 
 Download the mod, extract the zip, then copy the `data.trpfd` file from the `arc/` folder to any location you choose.
 
