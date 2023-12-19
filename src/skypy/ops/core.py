@@ -3,6 +3,8 @@ __all__ = [
     "read_trainer",
     "read_trainer_map",
     "read_waza",
+    "read_devid",
+    "display_trainer",
     "write_df_to_json",
     "df_to_formatted_json",
     "write_waza_to_json",
@@ -18,8 +20,35 @@ import json
 import os
 from pathlib import Path
 
-from skypy.const.loc import FILENAME, FILENAME_WAZA, OUTPUT_FOLDER, INPUT_FOLDER, FILENAME_TR, FILENAME_TR_MAP
+from skypy.const.loc import (
+    FILENAME,
+    FILENAME_WAZA,
+    FILENAME_DEVID,
+    OUTPUT_FOLDER,
+    INPUT_FOLDER,
+    FILENAME_TR,
+    FILENAME_TR_MAP,
+)
 from skypy.const.schema import INT_COLUMNS
+from skypy.const.devid import DEVID
+
+
+def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
+    """Trainer data."""
+    devid = read_devid()
+    tmp = df.copy()
+    for i in range(6):
+        c = f"poke{i+1}.devId"
+        tmp[c] = tmp[c].apply(lambda x: devid.loc[devid["devName"] == x, "name"].values[0])
+    return tmp
+
+
+def read_devid(**kwargs: Any) -> pd.DataFrame:
+    """Read waza data."""
+    df = pd.json_normalize(DEVID, record_path="values")
+    df = force_columns_to_int(df)
+    df = df.fillna(np.nan)
+    return df
 
 
 def read_waza(**kwargs: Any) -> pd.DataFrame:

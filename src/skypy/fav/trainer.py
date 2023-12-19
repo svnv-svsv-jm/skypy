@@ -1,6 +1,7 @@
 from loguru import logger
 from typing import Any
 import pandas as pd
+from tqdm import tqdm
 
 from skypy.ops import read_trainer
 from skypy.const.pkmn import POKEMON
@@ -17,23 +18,28 @@ def trainer(
         df = read_trainer(**kwargs)
     logger.debug(f"Got: {df.shape}")
     # Copy from Compass 2.0.0
-    if compass:
-        df_compass = read_trainer(filename="trdata_array_compass.json", anew=True)
-        for i in range(df_compass.shape[0]):
-            idx = [i] if isinstance(i, int) else i
-            trainer_data = df_compass.loc[idx, :]
-            logger.trace(f"Reading: {trainer_data.shape}")
-            trid = trainer_data["trid"].to_numpy()
-            trid_ref = df["trid"].to_numpy()
-            logger.trace(f"trid:\n{trid.shape}")
-            logger.trace(f"trid_ref:\n{trid_ref.shape}")
-            loc = trid_ref == trid
-            if loc.sum() > 0:
-                for c in df.columns:
-                    if c in trainer_data.columns:
-                        data = trainer_data[c]
-                        logger.debug(f"Copying {data}")
-                        df.loc[loc, [c]] = data
+    # if compass:
+    #     df_compass = read_trainer(filename="trdata_array_compass.json", anew=True)
+    #     for i in tqdm(range(df_compass.shape[0])):
+    #         idx = [i] if isinstance(i, int) else i
+    #         trainer_data = df_compass.loc[idx, :]
+    #         logger.trace(f"Reading: {trainer_data.shape}")
+    #         trid = trainer_data["trid"].to_numpy()
+    #         trid_ref = df["trid"].to_numpy()
+    #         logger.trace(f"trid:\n{trid.shape}")
+    #         logger.trace(f"trid_ref:\n{trid_ref.shape}")
+    #         loc = trid_ref == trid
+    #         if loc.sum() > 0:
+    #             # Older game versions have less columns...
+    #             for c in df.columns:
+    #                 if c in trainer_data.columns:
+    #                     data = trainer_data[c]
+    #                     try:
+    #                         if data.values[0] == data.values[0]:  # avoid nans
+    #                             logger.trace(f"Copying {data}")
+    #                             df.loc[loc, [c]] = data
+    #                     except TypeError:
+    #                         pass
     # Level multiplier
     if lvl_multiplier is not None:
         for i in range(df.shape[0]):

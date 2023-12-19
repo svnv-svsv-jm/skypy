@@ -620,6 +620,41 @@ def mons(df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
             "base_stats.SPE": 118,
         },
     )
+    # Hisuian Electrode
+    pokemon = "Hisuian Electrode"
+    df = set_pokemon(
+        df,
+        pokemon,
+        ability=["Soundproof", "Static", "Aftermath"],
+        stats={
+            "base_stats.HP": 60,
+            "base_stats.ATK": 30,
+            "base_stats.DEF": 70,
+            "base_stats.SPA": 100,
+            "base_stats.SPD": 80,
+            "base_stats.SPE": 150,
+        },
+    )
+    # Hisuian Avalugg
+    df = add_evo(df, "Bergmite", level=33, into="Hisuian Avalugg")
+    pokemon = "Hisuian Avalugg"
+    df = set_pokemon(
+        df,
+        pokemon,
+        ability=["Strong Jaw", "Ice Body", "Sturdy"],
+        stats={
+            "base_stats.HP": 95,
+            "base_stats.ATK": 127,
+            "base_stats.DEF": 184,
+            "base_stats.SPA": 5,
+            "base_stats.SPD": 95,
+            "base_stats.SPE": 28,
+        },
+    )
+    df = add_move(df, pokemon, {"level": 36, "move": "stone axe"})
+    df = add_move(df, pokemon, {"level": 37, "move": "ice fang"})
+    df = add_move(df, pokemon, {"level": 38, "move": "bulk up"})
+    df = add_move(df, pokemon, {"level": 39, "move": "recover"})
     # Goodra
     df = add_evo(df, "Goomy", level=25, into="Hisuian Sliggoo")
     pokemon = "Goodra"
