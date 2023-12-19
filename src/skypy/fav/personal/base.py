@@ -1,7 +1,8 @@
-from typing import Any, List
+from typing import Any, List, Type
 from loguru import logger
 
 import pandas as pd
+import inspect
 
 from skypy.utils import get_all_subclasses
 from skypy.ops import read_data
@@ -30,9 +31,11 @@ class PersonalEditor:
         df: pd.DataFrame = self.df
         # Get all subclasses
         all_classes = get_all_subclasses(self.__class__)
+        logger.debug(f"Found {[str(a) for a in all_classes]}")
         # For each subclass, call the `edit_personal` method
         for klass in all_classes:
-            obj: PersonalEditor = klass(self.df)
+            logger.debug(f"Running {klass} with {inspect.getfullargspec(klass.__init__)}")
+            obj: PersonalEditor = klass()
             df = obj(df)
         # Return
         return df

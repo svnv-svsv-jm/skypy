@@ -3,8 +3,7 @@ from loguru import logger
 
 import pandas as pd
 
-from skypy.ops import add_move, read_data, set_pokemon, add_evo
-from skypy.const.pkmn import POKEMON
+from skypy.ops import read_data
 from skypy.fav.personal import PersonalEditor
 
 

@@ -66,3 +66,10 @@ json-waza: EXT=fbs
 json-waza: json-decode
 
 json: json-personal json-trainer json-waza
+
+
+# --------------------------------
+# Deserialize data.trpfd
+# --------------------------------
+trpfd:
+	flatc --json --strict-json --raw-binary -- $(BINDIR)/data.trpfd
