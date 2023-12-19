@@ -52,12 +52,11 @@ class WazaEditor:
         """Buff some cool moves.."""
         logger.debug("Running...")
         waza_df = set_waza(waza_df, waza="swift", power=80)
-        waza_df = set_waza(waza_df, waza="psystrike", power=120)
         waza_df = set_waza(waza_df, waza="shadow punch", power=75)
         waza_df = set_waza(waza_df, waza="water pulse", power=75)
         waza_df = set_waza(waza_df, waza="gigaton hammer", edits={"flag_cant_use_twice": False})
         waza_df = set_waza(waza_df, waza="aurora beam", power=95)
-        waza_df = set_waza(waza_df, waza="water shuriken", power=30)
+        waza_df = set_waza(waza_df, waza="water shuriken", power=45)
         waza_df = set_waza(
             waza_df,
             waza="dragon dance",
@@ -67,6 +66,7 @@ class WazaEditor:
                 "stat_amps.fstat3_percent": 0,
             },
         )
+        waza_df = set_waza(waza_df, waza="dragon pulse", power=95)
         return waza_df
 
     def edit_moves_accuracy_buffs(self, waza_df: pd.DataFrame) -> pd.DataFrame:
@@ -89,6 +89,9 @@ class WazaEditor:
         waza_df = set_waza(waza_df, waza="stone axe", accuracy=100)
         waza_df = set_waza(waza_df, waza="rock tomb", accuracy=100)
         # Starters
+        waza_df = set_waza(waza_df, waza="blast burn", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="frenzy plant", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="hydro cannon", accuracy=100, edits={"flag_rechargeg": False})
         waza_df = set_waza(waza_df, waza="hydro pump", accuracy=90)
         waza_df = set_waza(waza_df, waza="fire blast", accuracy=90)
         waza_df = set_waza(waza_df, waza="thunder", accuracy=85)
@@ -153,6 +156,23 @@ class WazaEditor:
     def edit_moves_gods(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Make Gods real Gods."""
         logger.debug("Running...")
+        waza_df = set_waza(waza_df, waza="psystrike", power=120)
+        waza_df = set_waza(waza_df, waza="Origin Pulse", accuracy=100, power=150)
+        waza_df = set_waza(waza_df, waza="Precipice Blades", accuracy=100, power=150)
+        waza_df = set_waza(
+            waza_df,
+            waza="Dragon Ascent",
+            accuracy=100,
+            power=150,
+            edits={
+                "stat_amps.fstat1": 0,
+                "stat_amps.fstat2": 0,
+                "stat_amps.fstat3": 0,
+                "stat_amps.fstat1_stage": 0,
+                "stat_amps.fstat2_state": 0,
+                "stat_amps.fstat3_stage": 0,
+            },
+        )
         waza_df = set_waza(waza_df, waza="Spacial Rend", accuracy=100, power=150)
         waza_df = set_waza(waza_df, waza="Roar of Time", accuracy=100, edits={"flag_rechargeg": False})
         waza_df = set_waza(

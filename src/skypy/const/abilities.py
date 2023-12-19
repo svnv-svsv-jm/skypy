@@ -299,7 +299,7 @@ ABILITIES = (
     "Earth Eater",
     "Mycelium Might",
     "Hospitality",
-    "Mind’s Eye",
+    "Mind's Eye",
     "Embody Aspect",
     "Embody Aspect",
     "Embody Aspect",

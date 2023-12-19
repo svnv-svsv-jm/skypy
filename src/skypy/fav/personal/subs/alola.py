@@ -19,10 +19,29 @@ class AlolaEditor(PersonalEditor):
 
     def edit_personal(self, df: pd.DataFrame) -> pd.DataFrame:
         """Implement this."""
-        # Lycanroc-1
+        # Decidueye
+        pokemon = "Decidueye"
         df = set_pokemon(
             df,
-            "Lycanroc-1",
+            pokemon,
+            ability="Long Reach",
+            stats={
+                "base_stats.HP": 78,
+                "base_stats.ATK": 117,
+                "base_stats.DEF": 80,
+                "base_stats.SPA": 55,
+                "base_stats.SPD": 80,
+                "base_stats.SPE": 120,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "bulk up"})
+        df = add_move(df, pokemon, {"level": 1, "move": "jungle healing"})
+        df = add_move(df, pokemon, {"level": 1, "move": "triple arrows"})
+        # Lycanroc-1
+        pokemon = "Lycanroc-1"
+        df = set_pokemon(
+            df,
+            pokemon,
             types=("rock", "ghost"),
             ability=("No Guard", "No Guard", "No Guard"),
             stats={
@@ -34,4 +53,8 @@ class AlolaEditor(PersonalEditor):
                 "base_stats.SPE": 82,
             },
         )
+        df = add_move(df, pokemon, {"level": 1, "move": "accelerock"})
+        df = add_move(df, pokemon, {"level": 1, "move": "shadow claw"})
+        df = add_move(df, pokemon, {"level": 1, "move": "drain punch"})
+        df = add_move(df, pokemon, {"level": 1, "move": "bulk up"})
         return df

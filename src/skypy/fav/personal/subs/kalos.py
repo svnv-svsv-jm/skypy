@@ -19,6 +19,23 @@ class KalosEditor(PersonalEditor):
 
     def edit_personal(self, df: pd.DataFrame) -> pd.DataFrame:
         """Implement this."""
+        # Greninja
+        for pokemon in ["Greninja", "Greninja-1"]:
+            df = set_pokemon(
+                df,
+                pokemon,
+                ability="Battle Bond",
+                stats={
+                    "base_stats.HP": 72,
+                    "base_stats.ATK": 65,
+                    "base_stats.DEF": 67,
+                    "base_stats.SPA": 123,
+                    "base_stats.SPD": 71,
+                    "base_stats.SPE": 132,
+                },
+            )
+            df = add_move(df, pokemon, {"level": 33, "move": "ice beam"})
+            df = add_move(df, pokemon, {"level": 33, "move": "sludge bomb"})
         # Goodra
         df = add_evo(df, "Goomy", level=25, into="Hisuian Sliggoo")
         pokemon = "Goodra"

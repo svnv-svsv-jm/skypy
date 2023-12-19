@@ -5,7 +5,7 @@ from loguru import logger
 
 import pandas as pd
 
-from skypy.ops import add_move, read_data, set_pokemon, add_evo
+from skypy.ops import add_move, set_pokemon, add_evo
 from skypy.const.pkmn import POKEMON
 from skypy.fav.personal.base import PersonalEditor
 
@@ -27,13 +27,34 @@ class KantoStarterEditor(PersonalEditor):
             ability=["thick fat", "thick fat", "thick fat"],
             stats={
                 "base_stats.HP": 90,
-                "base_stats.ATK": 72,
+                "base_stats.ATK": 62,
                 "base_stats.DEF": 93,
-                "base_stats.SPA": 100,
+                "base_stats.SPA": 110,
                 "base_stats.SPD": 100,
                 "base_stats.SPE": 80,
             },
         )
+        df = add_move(df, pokemon, move=[{"level": 36, "move": "earth power"}])
+        df = add_move(df, pokemon, move=[{"level": 38, "move": "giga drain"}])
+        df = add_move(df, pokemon, move=[{"level": 38, "move": "jungle healing"}])
+        # Charizard
+        pokemon = "Charizard"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Drought",
+            stats={
+                "base_stats.HP": 78,
+                "base_stats.ATK": 84,
+                "base_stats.DEF": 78,
+                "base_stats.SPA": 109,
+                "base_stats.SPD": 85,
+                "base_stats.SPE": 100,
+            },
+        )
+        df = add_move(df, pokemon, move=[{"level": 36, "move": "dragon pulse"}])
+        df = add_move(df, pokemon, move=[{"level": 38, "move": "dragon dance"}])
+        df = add_move(df, pokemon, move=[{"level": 39, "move": "scorching sands"}])
         # Blastoise
         pokemon = "Blastoise"
         df = set_pokemon(
@@ -41,12 +62,12 @@ class KantoStarterEditor(PersonalEditor):
             pokemon,
             ability=["mega launcher", "mega launcher", "mega launcher"],
             stats={
-                "base_stats.HP": 79,
-                "base_stats.ATK": 70,
+                "base_stats.HP": 99,
+                "base_stats.ATK": 60,
                 "base_stats.DEF": 103,
                 "base_stats.SPA": 100,
                 "base_stats.SPD": 105,
-                "base_stats.SPE": 78,
+                "base_stats.SPE": 68,
             },
         )
         df = add_move(df, pokemon, move=[{"level": 36, "move": "ice beam"}])

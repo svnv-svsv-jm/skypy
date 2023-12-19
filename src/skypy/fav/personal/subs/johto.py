@@ -75,6 +75,23 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, "Feraligatr", {"level": 25, "move": "waterfall"})
         df = add_move(df, "Feraligatr", {"level": 28, "move": "liquidation"})
         df = add_move(df, "Feraligatr", {"level": 33, "move": "dragon dance"})
+        # Donphan
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability=["Sturdy", "Sturdy", "Sand Stream"],
+            stats={
+                "base_stats.HP": 115,
+                "base_stats.ATK": 131,
+                "base_stats.DEF": 111,
+                "base_stats.SPA": 48,
+                "base_stats.SPD": 78,
+                "base_stats.SPE": 87,
+            },
+        )
+        df = add_move(df, "Feraligatr", {"level": 33, "move": "iron head"})
+        df = add_move(df, "Feraligatr", {"level": 33, "move": "rock slide"})
+        df = add_move(df, "Feraligatr", {"level": 33, "move": "crunch"})
         # Umbreon
         df = set_pokemon(
             df,
@@ -117,14 +134,32 @@ class JohtoEditor(PersonalEditor):
             ability="Flash Fire",
             stats={
                 "base_stats.HP": 90,
-                "base_stats.ATK": 80,
+                "base_stats.ATK": 70,
                 "base_stats.DEF": 80,
                 "base_stats.SPA": 130,
-                "base_stats.SPD": 80,
+                "base_stats.SPD": 90,
                 "base_stats.SPE": 95,
             },
         )
         df = add_move(df, "Houndoom", {"level": 38, "move": "sludge bomb"})
+        # Slowking
+        pokemon = "Slowking"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Regenerator",
+            stats={
+                "base_stats.HP": 135,
+                "base_stats.ATK": 20,
+                "base_stats.DEF": 105,
+                "base_stats.SPA": 100,
+                "base_stats.SPD": 110,
+                "base_stats.SPE": 20,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "scald"})
+        df = add_move(df, pokemon, {"level": 1, "move": "freeze-dry"})
+        df = add_move(df, pokemon, {"level": 1, "move": "eerie spell"})
         # Ursaring
         df = add_evo(df, "Ursaring", level=42, into="Ursaluna")
         # Steelix
@@ -162,6 +197,7 @@ class JohtoEditor(PersonalEditor):
             },
         )
         df = add_move(df, pokemon, {"level": 38, "move": "stone axe"})
+        df = add_move(df, pokemon, {"level": 38, "move": "fire punch"})
         df = add_move(df, pokemon, {"level": 40, "move": "dragon dance"})
         # Raikou
         pokemon = "Raikou"

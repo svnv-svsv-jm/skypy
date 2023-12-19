@@ -19,6 +19,24 @@ class HisuiEditor(PersonalEditor):
 
     def edit_personal(self, df: pd.DataFrame) -> pd.DataFrame:
         """Implement this."""
+        # Hisuian Decidueye
+        pokemon = "Hisuian Decidueye"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Scrappy",
+            stats={
+                "base_stats.HP": 78,
+                "base_stats.ATK": 127,
+                "base_stats.DEF": 80,
+                "base_stats.SPA": 55,
+                "base_stats.SPD": 80,
+                "base_stats.SPE": 110,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "bulk up"})
+        df = add_move(df, pokemon, {"level": 1, "move": "jungle healing"})
+        df = add_move(df, pokemon, {"level": 1, "move": "Spirit Shackle"})
         # Hisuian Typhlosion
         df = add_evo(df, "Quilava", level=32, into="Hisuian Typhlosion")
         pokemon = "Hisuian Typhlosion"

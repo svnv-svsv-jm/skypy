@@ -52,4 +52,22 @@ class UnovaEditor(PersonalEditor):
                 "base_stats.SPE": 118,
             },
         )
+        # Volcarona
+        pokemon = "Volcarona"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Flash Fire",
+            stats={
+                "base_stats.HP": 85,
+                "base_stats.ATK": 40,
+                "base_stats.DEF": 85,
+                "base_stats.SPA": 135,
+                "base_stats.SPD": 105,
+                "base_stats.SPE": 100,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "giga drain"})
+        df = add_move(df, pokemon, {"level": 1, "move": "quiver dance"})
+        df = add_move(df, pokemon, {"level": 1, "move": "psychic"})
         return df

@@ -25,13 +25,18 @@ class PersonalEditor:
             df = read_data(**kwargs)
         self.df = df
 
+    def get_children(self) -> List[Type]:
+        """Get all subclasses."""
+        all_classes = get_all_subclasses(self.__class__)
+        logger.debug(f"Found {[str(a) for a in all_classes]}")
+        return all_classes
+
     def run(self) -> pd.DataFrame:
         """Run all."""
         # Table
         df: pd.DataFrame = self.df
         # Get all subclasses
-        all_classes = get_all_subclasses(self.__class__)
-        logger.debug(f"Found {[str(a) for a in all_classes]}")
+        all_classes = self.get_children()
         # For each subclass, call the `edit_personal` method
         for klass in all_classes:
             logger.debug(f"Running {klass} with {inspect.getfullargspec(klass.__init__)}")
