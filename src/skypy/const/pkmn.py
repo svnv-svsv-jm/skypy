@@ -187,7 +187,7 @@ POKEMON = (
     "Lapras",
     "Ditto",
     "Eevee",
-    "Eevee",
+    "Eevee-1",
     "Vaporeon",
     "Jolteon",
     "Flareon",

@@ -28,6 +28,21 @@ class WazaEditor:
         self.waza_df = waza_df
         self.runnable_prefix = runnable_prefix
 
+    def run(self) -> pd.DataFrame:
+        """Run all."""
+        df: pd.DataFrame = self.waza_df
+        # Get all attributes of the object
+        all_attributes = dir(self)
+        # Filter attributes starting with "foo"
+        foo_attributes = [attr for attr in all_attributes if attr.startswith(self.runnable_prefix)]
+        # Execute each method starting with "foo"
+        for foo_attr in foo_attributes:
+            foo_method = getattr(self, foo_attr)
+            if callable(foo_method):
+                df = foo_method(df)
+        # Return
+        return df
+
     def edit_moves_example(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Example."""
         logger.debug("Running...")
@@ -150,21 +165,6 @@ class WazaEditor:
             edits={"flinch": 30},
         )
         return waza_df
-
-    def run(self) -> pd.DataFrame:
-        """Run all."""
-        df: pd.DataFrame = self.waza_df
-        # Get all attributes of the object
-        all_attributes = dir(self)
-        # Filter attributes starting with "foo"
-        foo_attributes = [attr for attr in all_attributes if attr.startswith(self.runnable_prefix)]
-        # Execute each method starting with "foo"
-        for foo_attr in foo_attributes:
-            foo_method = getattr(self, foo_attr)
-            if callable(foo_method):
-                df = foo_method(df)
-        # Return
-        return df
 
 
 def waza(waza_df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
