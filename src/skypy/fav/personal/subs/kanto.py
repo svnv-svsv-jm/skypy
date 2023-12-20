@@ -38,6 +38,41 @@ class KantoEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 36, "move": "energy ball"})
         df = add_move(df, pokemon, {"level": 42, "move": "psychic"})
         df = add_move(df, pokemon, {"level": 52, "move": "thunderbolt"})
+        # Snorlax
+        pokemon = "Snorlax"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability=["Immunity", "Thick Fat", "Gluttony"],
+            stats={
+                "base_stats.HP": 170,
+                "base_stats.ATK": 110,
+                "base_stats.DEF": 95,
+                "base_stats.SPA": 35,
+                "base_stats.SPD": 110,
+                "base_stats.SPE": 20,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 33, "move": "drain punch"})
+        df = add_move(df, pokemon, {"level": 33, "move": "bulk up"})
+        # Dragonite
+        pokemon = "Dragonite"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="multiscale",
+            stats={
+                "base_stats.HP": 95,
+                "base_stats.ATK": 100,
+                "base_stats.DEF": 105,
+                "base_stats.SPA": 100,
+                "base_stats.SPD": 105,
+                "base_stats.SPE": 95,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 36, "move": "water pulse"})
+        df = add_move(df, pokemon, {"level": 36, "move": "extreme speed"})
+        df = add_move(df, pokemon, {"level": 36, "move": "dragon dance"})
         # Articuno
         pokemon = "Articuno"
         df = set_pokemon(

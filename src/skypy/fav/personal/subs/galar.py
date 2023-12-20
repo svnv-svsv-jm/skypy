@@ -88,6 +88,9 @@ class GalarEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 1, "move": "scald"})
         df = add_move(df, pokemon, {"level": 1, "move": "flamethrower"})
         df = add_move(df, pokemon, {"level": 1, "move": "eerie spell"})
+        # Dreepy
+        df = add_evo(df, "Dreepy", level=25, into="Drakloak")
+        df = add_evo(df, "Drakloak", level=45, into="Dragapult")
         # Urshifu
         df = add_evo(df, "Kubfu", level=42, into="Urshifu")
         for pokemon in ["Urshifu", "Urshifu-1"]:

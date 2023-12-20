@@ -26,17 +26,18 @@ class KantoStarterEditor(PersonalEditor):
             pokemon,
             ability=["thick fat", "thick fat", "thick fat"],
             stats={
-                "base_stats.HP": 90,
-                "base_stats.ATK": 62,
+                "base_stats.HP": 95,
+                "base_stats.ATK": 52,
                 "base_stats.DEF": 93,
                 "base_stats.SPA": 110,
-                "base_stats.SPD": 100,
+                "base_stats.SPD": 110,
                 "base_stats.SPE": 80,
             },
         )
         df = add_move(df, pokemon, move=[{"level": 36, "move": "earth power"}])
         df = add_move(df, pokemon, move=[{"level": 38, "move": "giga drain"}])
         df = add_move(df, pokemon, move=[{"level": 38, "move": "jungle healing"}])
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "frenzy plant"}])
         # Charizard
         pokemon = "Charizard"
         df = set_pokemon(
@@ -55,6 +56,7 @@ class KantoStarterEditor(PersonalEditor):
         df = add_move(df, pokemon, move=[{"level": 36, "move": "dragon pulse"}])
         df = add_move(df, pokemon, move=[{"level": 38, "move": "dragon dance"}])
         df = add_move(df, pokemon, move=[{"level": 39, "move": "scorching sands"}])
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "blast burn"}])
         # Blastoise
         pokemon = "Blastoise"
         df = set_pokemon(
@@ -72,6 +74,7 @@ class KantoStarterEditor(PersonalEditor):
         )
         df = add_move(df, pokemon, move=[{"level": 36, "move": "ice beam"}])
         df = add_move(df, pokemon, move=[{"level": 38, "move": "freeze-dry"}])
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "hydro cannon"}])
         # Pikachu
         for pokemon in POKEMON:
             if "pikachu-" in pokemon.lower():

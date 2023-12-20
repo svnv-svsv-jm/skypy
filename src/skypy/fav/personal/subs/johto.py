@@ -20,9 +20,10 @@ class JohtoEditor(PersonalEditor):
     def edit_personal(self, df: pd.DataFrame) -> pd.DataFrame:
         """Implement this."""
         # Meganium
+        pokemon = "Meganium"
         df = set_pokemon(
             df,
-            "Meganium",
+            pokemon,
             types=("grass", "fairy"),
             ability=["Grassy Surge", "Grassy Surge", "Magic Bounce"],
             stats={
@@ -34,12 +35,13 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.SPE": 95,
             },
         )
-        df = add_move(df, "Meganium", {"level": 44, "move": "jungle healing"})
-        df = add_move(df, "Meganium", {"level": 44, "move": "calm mind"})
-        df = add_move(df, "Meganium", {"level": 36, "move": "energy ball"})
-        df = add_move(df, "Meganium", {"level": 36, "move": "giga drain"})
-        df = add_move(df, "Meganium", {"level": 36, "move": "moonblast"})
-        df = add_move(df, "Meganium", {"level": 38, "move": "draining kiss"})
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "frenzy plant"}])
+        df = add_move(df, pokemon, {"level": 44, "move": "jungle healing"})
+        df = add_move(df, pokemon, {"level": 44, "move": "calm mind"})
+        df = add_move(df, pokemon, {"level": 36, "move": "energy ball"})
+        df = add_move(df, pokemon, {"level": 36, "move": "giga drain"})
+        df = add_move(df, pokemon, {"level": 36, "move": "moonblast"})
+        df = add_move(df, pokemon, {"level": 38, "move": "draining kiss"})
         # Typhlosion
         pokemon = "Typhlosion"
         df = set_pokemon(
@@ -55,6 +57,7 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.SPE": 95,
             },
         )
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "blast burn"}])
         df = add_move(df, "Typhlosion", {"level": 25, "move": "scorching sands"})
         # Feraligatr
         pokemon = "Feraligatr"
@@ -71,27 +74,191 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.SPE": 85,
             },
         )
-        df = add_move(df, "Feraligatr", {"level": 36, "move": "ice punch"})
-        df = add_move(df, "Feraligatr", {"level": 25, "move": "waterfall"})
-        df = add_move(df, "Feraligatr", {"level": 28, "move": "liquidation"})
-        df = add_move(df, "Feraligatr", {"level": 33, "move": "dragon dance"})
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "hydro cannon"}])
+        df = add_move(df, pokemon, {"level": 36, "move": "ice punch"})
+        df = add_move(df, pokemon, {"level": 25, "move": "waterfall"})
+        df = add_move(df, pokemon, {"level": 28, "move": "liquidation"})
+        df = add_move(df, pokemon, {"level": 33, "move": "dragon dance"})
+        # Noctowl
+        p = "Noctowl"
+        df = set_pokemon(
+            df,
+            p,
+            ability=["Insomnia", "Insomnia", "Tinted Lens"],
+            stats={
+                "base_stats.HP": 100,
+                "base_stats.ATK": 50,
+                "base_stats.DEF": 70,
+                "base_stats.SPA": 86,
+                "base_stats.SPD": 96,
+                "base_stats.SPE": 80,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "tri attack"})
+        df = add_move(df, p, {"level": 1, "move": "shadow ball"})
+        df = add_move(df, p, {"level": 1, "move": "psyshock"})
+        df = add_move(df, p, {"level": 1, "move": "calm mind"})
+        # Ampharos
+        p = "Ampharos"
+        df = set_pokemon(
+            df,
+            p,
+            types=("Electric", "Dragon"),
+            ability=["Static", "Static", "Mold Breaker"],
+            stats={
+                "base_stats.HP": 95,
+                "base_stats.ATK": 65,
+                "base_stats.DEF": 90,
+                "base_stats.SPA": 115,
+                "base_stats.SPD": 95,
+                "base_stats.SPE": 75,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "dragon pulse"})
+        df = add_move(df, p, {"level": 1, "move": "nasty plot"})
+        df = add_move(df, p, {"level": 1, "move": "earth power"})
+        # Bellossom
+        p = "Bellossom"
+        df = set_pokemon(
+            df,
+            p,
+            types=("Grass", "Grass"),
+            ability="Shed Skin",
+            stats={
+                "base_stats.HP": 85,
+                "base_stats.ATK": 30,
+                "base_stats.DEF": 95,
+                "base_stats.SPA": 100,
+                "base_stats.SPD": 120,
+                "base_stats.SPE": 60,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "calm mind"})
+        df = add_move(df, p, {"level": 1, "move": "giga drain"})
+        df = add_move(df, p, {"level": 1, "move": "power gem"})
+        df = add_move(df, p, {"level": 1, "move": "shadow ball"})
+        df = add_move(df, p, {"level": 1, "move": "moonblast"})
+        # Politoed
+        p = "Politoed"
+        df = set_pokemon(
+            df,
+            p,
+            ability="Drizzle",
+            stats={
+                "base_stats.HP": 90,
+                "base_stats.ATK": 50,
+                "base_stats.DEF": 95,
+                "base_stats.SPA": 95,
+                "base_stats.SPD": 100,
+                "base_stats.SPE": 70,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "calm mind"})
+        df = add_move(df, p, {"level": 1, "move": "water pulse"})
+        df = add_move(df, p, {"level": 1, "move": "ice beam"})
+        df = add_move(df, p, {"level": 1, "move": "psyshock"})
+        # Jumpluff
+        p = "Jumpluff"
+        df = set_pokemon(
+            df,
+            p,
+            ability=["Chlorophyll", "Leaf Guard", "Infiltrator"],
+            stats={
+                "base_stats.HP": 75,
+                "base_stats.ATK": 50,
+                "base_stats.DEF": 70,
+                "base_stats.SPA": 75,
+                "base_stats.SPD": 95,
+                "base_stats.SPE": 110,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "calm mind"})
+        df = add_move(df, p, {"level": 1, "move": "giga drain"})
+        df = add_move(df, p, {"level": 1, "move": "air slash"})
+        df = add_move(df, p, {"level": 1, "move": "Vacuum Wave"})
+        df = add_move(df, p, {"level": 1, "move": "bug buzz"})
+        # Yanma
+        p = "Yanma"
+        df = add_evo(df, p, level=33, into="Yanmega")
+        # Granbull
+        p = "Granbull"
+        df = set_pokemon(
+            df,
+            p,
+            types=("Fairy", "Ground"),
+            ability=["Intimidate", "Intimidate", "Strong Jaw"],
+            stats={
+                "base_stats.HP": 90,
+                "base_stats.ATK": 120,
+                "base_stats.DEF": 75,
+                "base_stats.SPA": 40,
+                "base_stats.SPD": 65,
+                "base_stats.SPE": 65,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "bulk up"})
+        df = add_move(df, p, {"level": 1, "move": "drain punch"})
+        df = add_move(df, p, {"level": 1, "move": "earthquake"})
+        df = add_move(df, p, {"level": 1, "move": "psychic fangs"})
+        df = add_move(df, p, {"level": 1, "move": "fire fang"})
+        df = add_move(df, p, {"level": 1, "move": "ice fang"})
+        df = add_move(df, p, {"level": 1, "move": "crunch"})
+        df = add_move(df, p, {"level": 1, "move": "play rough"})
+        # Magcargo
+        p = "Magcargo"
+        df = set_pokemon(
+            df,
+            p,
+            ability=["Magma Armor", "Flame Body", "Solid Rock"],
+            stats={
+                "base_stats.HP": 70,
+                "base_stats.ATK": 30,
+                "base_stats.DEF": 120,
+                "base_stats.SPA": 90,
+                "base_stats.SPD": 90,
+                "base_stats.SPE": 30,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "power gem"})
+        # Skarmory
+        p = "Skarmory"
+        df = set_pokemon(
+            df,
+            p,
+            ability=["Sturdy", "Sturdy", "Sturdy"],
+            stats={
+                "base_stats.HP": 75,
+                "base_stats.ATK": 80,
+                "base_stats.DEF": 140,
+                "base_stats.SPA": 30,
+                "base_stats.SPD": 80,
+                "base_stats.SPE": 90,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "iron head"})
+        df = add_move(df, p, {"level": 1, "move": "dual wingbeat"})
+        df = add_move(df, p, {"level": 1, "move": "bulk up"})
+        df = add_move(df, p, {"level": 1, "move": "night slash"})
+        df = add_move(df, p, {"level": 1, "move": "drill peck"})
+        df = add_move(df, p, {"level": 1, "move": "drill run"})
         # Donphan
+        pokemon = "Donphan"
         df = set_pokemon(
             df,
             pokemon,
             ability=["Sturdy", "Sturdy", "Sand Stream"],
             stats={
                 "base_stats.HP": 115,
-                "base_stats.ATK": 131,
+                "base_stats.ATK": 111,
                 "base_stats.DEF": 111,
                 "base_stats.SPA": 48,
                 "base_stats.SPD": 78,
-                "base_stats.SPE": 87,
+                "base_stats.SPE": 67,
             },
         )
-        df = add_move(df, "Feraligatr", {"level": 33, "move": "iron head"})
-        df = add_move(df, "Feraligatr", {"level": 33, "move": "rock slide"})
-        df = add_move(df, "Feraligatr", {"level": 33, "move": "crunch"})
+        df = add_move(df, pokemon, {"level": 33, "move": "iron head"})
+        df = add_move(df, pokemon, {"level": 33, "move": "rock slide"})
+        df = add_move(df, pokemon, {"level": 33, "move": "crunch"})
         # Umbreon
         df = set_pokemon(
             df,
@@ -128,9 +295,10 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 38, "move": "shadow ball"})
         df = add_move(df, pokemon, {"level": 42, "move": "calm mind"})
         # Houndoom
+        pokemon = "Houndoom"
         df = set_pokemon(
             df,
-            "Houndoom",
+            pokemon,
             ability="Flash Fire",
             stats={
                 "base_stats.HP": 90,
@@ -141,7 +309,8 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.SPE": 95,
             },
         )
-        df = add_move(df, "Houndoom", {"level": 38, "move": "sludge bomb"})
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "blast burn"}])
+        df = add_move(df, pokemon, {"level": 38, "move": "sludge bomb"})
         # Slowking
         pokemon = "Slowking"
         df = set_pokemon(

@@ -72,7 +72,7 @@ class ParadoxEditor(PersonalEditor):
         df = set_pokemon(df, p, ability="Earth Eater")
         # Walking Wake
         p = "Walking Wake"
-        df = set_pokemon(df, p, ability="Water Absord")
+        df = set_pokemon(df, p, ability="Water Absorb")
         # Brute Bonnet
         p = "Brute Bonnet"
         df = set_pokemon(df, p, ability="Effect Spore")

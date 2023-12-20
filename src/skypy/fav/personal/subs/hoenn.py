@@ -35,10 +35,37 @@ class HoennEditor(PersonalEditor):
                 "base_stats.SPE": 125,
             },
         )
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "frenzy plant"}])
         df = add_move(df, pokemon, {"level": 1, "move": "jungle healing"})
         df = add_move(df, pokemon, {"level": 1, "move": "dragon pulse"})
         df = add_move(df, pokemon, {"level": 1, "move": "dragon dance"})
+        # Cacturne
+        pokemon = "Cacturne"
+        df = set_pokemon(
+            df,
+            pokemon,
+            stats={
+                "base_stats.HP": 70,
+                "base_stats.ATK": 115,
+                "base_stats.DEF": 110,
+                "base_stats.SPA": 50,
+                "base_stats.SPD": 70,
+                "base_stats.SPE": 70,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "sucker punch"})
+        # Altaria
+        pokemon = "Altaria"
+        df = set_pokemon(
+            df,
+            pokemon,
+            types=("Dragon", "Fairy"),
+            ability="Levitate",
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "moonblast"})
+        df = add_move(df, pokemon, {"level": 1, "move": "play rough"})
         # Glalie
+        pokemon = "Glalie"
         df = set_pokemon(
             df,
             pokemon,
@@ -80,6 +107,9 @@ class HoennEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 1, "move": "poison tail"})
         df = add_move(df, pokemon, {"level": 1, "move": "fire fang"})
         df = add_move(df, pokemon, {"level": 1, "move": "iron tail"})
+        # Dusclops
+        p = "Dusclops"
+        df = add_evo(df, p, level=48, into="Dusknoir")
         # Metagross
         df = set_pokemon(df, "Beldum", ability="Levitate")
         df = add_move(df, "Beldum", {"level": 1, "move": "iron head"})
@@ -95,9 +125,9 @@ class HoennEditor(PersonalEditor):
             stats={
                 "base_stats.HP": 100,
                 "base_stats.ATK": 135,
-                "base_stats.DEF": 130,
-                "base_stats.SPA": 80,
-                "base_stats.SPD": 110,
+                "base_stats.DEF": 120,
+                "base_stats.SPA": 70,
+                "base_stats.SPD": 100,
                 "base_stats.SPE": 110,
             },
         )

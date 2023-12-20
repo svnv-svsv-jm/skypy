@@ -9,4 +9,5 @@ from .kalos import *
 from .alola import *
 from .galar import *
 from .paldea import *
+from .paradox import *
 from .gods import *

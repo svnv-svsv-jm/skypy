@@ -48,6 +48,26 @@ class WazaEditor:
         logger.debug("Running...")
         return waza_df
 
+    def edit_moves_starters(self, waza_df: pd.DataFrame) -> pd.DataFrame:
+        """Example."""
+        logger.debug("Running...")
+        waza_df = set_waza(waza_df, waza="Rock Wrecker", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="blast burn", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="hydro cannon", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="frenzy plant", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="hydro pump", power=110, accuracy=90)
+        waza_df = set_waza(waza_df, waza="fire blast", power=110, accuracy=90)
+        waza_df = set_waza(waza_df, waza="thunder", accuracy=85)
+        waza_df = set_waza(waza_df, waza="pyro ball", power=90, accuracy=100)  # fuck cinderace
+        waza_df = set_waza(waza_df, waza="snipe shot", power=95, accuracy=100)
+        waza_df = set_waza(waza_df, waza="Drum Beating", power=90, accuracy=100)
+        return waza_df
+
+    def edit_moves_nerfs(self, waza_df: pd.DataFrame) -> pd.DataFrame:
+        """Nerf some moves.."""
+        logger.debug("Running...")
+        return waza_df
+
     def edit_moves_buffs(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Buff some cool moves.."""
         logger.debug("Running...")
@@ -72,6 +92,14 @@ class WazaEditor:
     def edit_moves_accuracy_buffs(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Buff accuracy of annoying moves."""
         logger.debug("Running...")
+        waza_df = set_waza(waza_df, waza="Aqua Tail", accuracy=100)
+        waza_df = set_waza(waza_df, waza="Steel Wing", accuracy=100)
+        waza_df = set_waza(waza_df, waza="snarl", accuracy=100)
+        waza_df = set_waza(waza_df, waza="icy wind", accuracy=100)
+        waza_df = set_waza(waza_df, waza="Chloroblast", accuracy=100, edits={"raw_healing": -10})
+        waza_df = set_waza(waza_df, waza="Mountain Gale", accuracy=100)
+        waza_df = set_waza(waza_df, waza="Supercell Slam", accuracy=100)
+        waza_df = set_waza(waza_df, waza="drill run", accuracy=100)
         waza_df = set_waza(waza_df, waza="zen headbutt", accuracy=100)
         waza_df = set_waza(waza_df, waza="play rough", accuracy=100)
         waza_df = set_waza(waza_df, waza="air slash", accuracy=100)
@@ -88,13 +116,6 @@ class WazaEditor:
         waza_df = set_waza(waza_df, waza="rock slide", accuracy=100)
         waza_df = set_waza(waza_df, waza="stone axe", accuracy=100)
         waza_df = set_waza(waza_df, waza="rock tomb", accuracy=100)
-        # Starters
-        waza_df = set_waza(waza_df, waza="blast burn", accuracy=100, edits={"flag_rechargeg": False})
-        waza_df = set_waza(waza_df, waza="frenzy plant", accuracy=100, edits={"flag_rechargeg": False})
-        waza_df = set_waza(waza_df, waza="hydro cannon", accuracy=100, edits={"flag_rechargeg": False})
-        waza_df = set_waza(waza_df, waza="hydro pump", accuracy=90)
-        waza_df = set_waza(waza_df, waza="fire blast", accuracy=90)
-        waza_df = set_waza(waza_df, waza="thunder", accuracy=85)
         return waza_df
 
     def edit_moves_johto(self, waza_df: pd.DataFrame) -> pd.DataFrame:
@@ -156,6 +177,8 @@ class WazaEditor:
     def edit_moves_gods(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Make Gods real Gods."""
         logger.debug("Running...")
+        waza_df = set_waza(waza_df, waza="Prismatic Laser", accuracy=100, edits={"flag_rechargeg": False})
+        waza_df = set_waza(waza_df, waza="glaciate", accuracy=100, power=100)
         waza_df = set_waza(waza_df, waza="psystrike", power=120)
         waza_df = set_waza(waza_df, waza="Origin Pulse", accuracy=100, power=150)
         waza_df = set_waza(waza_df, waza="Precipice Blades", accuracy=100, power=150)

@@ -19,6 +19,20 @@ class PaldeaEditor(PersonalEditor):
 
     def edit_personal(self, df: pd.DataFrame) -> pd.DataFrame:
         """Implement this."""
+        # Farigiraf
+        p = "Farigiraf"
+        df = set_pokemon(
+            df,
+            p,
+            stats={
+                "base_stats.HP": 120,
+                "base_stats.ATK": 50,
+                "base_stats.DEF": 90,
+                "base_stats.SPA": 110,
+                "base_stats.SPD": 70,
+                "base_stats.SPE": 70,
+            },
+        )
         # Garganacl
         pokemon = "Garganacl"
         df = set_pokemon(

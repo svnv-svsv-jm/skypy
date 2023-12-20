@@ -21,7 +21,7 @@ BINDIR=bin
 # Run main script
 # --------------------------------
 run:
-	python src/skypy/fav/main.py
+	python main.py
 
 
 # --------------------------------

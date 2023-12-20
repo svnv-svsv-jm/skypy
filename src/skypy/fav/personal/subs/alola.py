@@ -43,7 +43,7 @@ class AlolaEditor(PersonalEditor):
             df,
             pokemon,
             types=("rock", "ghost"),
-            ability=("No Guard", "No Guard", "No Guard"),
+            ability=["no guard", "no guard", "defiant"],
             stats={
                 "base_stats.HP": 85,
                 "base_stats.ATK": 115,

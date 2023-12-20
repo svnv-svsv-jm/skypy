@@ -34,6 +34,7 @@ class SinnohEditor(PersonalEditor):
                 "base_stats.SPE": 60,
             },
         )
+        df = add_move(df, pokemon, {"level": 1, "move": "hydro cannon"})
         df = add_move(df, pokemon, {"level": 40, "move": "freeze-dry"})
         df = add_move(df, pokemon, {"level": 38, "move": "air slash"})
         # Luxray
@@ -46,8 +47,8 @@ class SinnohEditor(PersonalEditor):
             stats={
                 "base_stats.HP": 80,
                 "base_stats.ATK": 120,
-                "base_stats.DEF": 79,
-                "base_stats.SPA": 70,
+                "base_stats.DEF": 89,
+                "base_stats.SPA": 60,
                 "base_stats.SPD": 79,
                 "base_stats.SPE": 95,
             },
@@ -57,6 +58,60 @@ class SinnohEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 38, "move": "ice fang"})
         df = add_move(df, pokemon, {"level": 38, "move": "fire fang"})
         df = add_move(df, pokemon, {"level": 38, "move": "iron tail"})
+        # Spiritomb
+        pokemon = "Spiritomb"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability=["Pressure", "Pressure", "Infiltrator"],
+            stats={
+                "base_stats.HP": 90,
+                "base_stats.ATK": 52,
+                "base_stats.DEF": 108,
+                "base_stats.SPA": 92,
+                "base_stats.SPD": 108,
+                "base_stats.SPE": 35,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 38, "move": "calm mind"})
+        # Magnezone
+        pokemon = "Magnezone"
+        df = set_pokemon(df, pokemon, ability="Levitate")
+        # Yanmega
+        pokemon = "Yanmega"
+        df = set_pokemon(
+            df,
+            pokemon,
+            types=("Bug", "Dragon"),
+            ability="Levitate",
+            stats={
+                "base_stats.HP": 86,
+                "base_stats.ATK": 56,
+                "base_stats.DEF": 86,
+                "base_stats.SPA": 116,
+                "base_stats.SPD": 76,
+                "base_stats.SPE": 95,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 38, "move": "quiver dance"})
+        df = add_move(df, pokemon, {"level": 38, "move": "dragon pulse"})
+        # Dusknoir
+        pokemon = "Dusknoir"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Levitate",
+            stats={
+                "base_stats.HP": 70,
+                "base_stats.ATK": 100,
+                "base_stats.DEF": 165,
+                "base_stats.SPA": 45,
+                "base_stats.SPD": 165,
+                "base_stats.SPE": 45,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 38, "move": "bulk up"})
+        df = add_move(df, pokemon, {"level": 38, "move": "drain punch"})
         # Darkrai
         df = set_pokemon(
             df,
