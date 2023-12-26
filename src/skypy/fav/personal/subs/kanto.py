@@ -27,7 +27,7 @@ class KantoEditor(PersonalEditor):
             ability=["levitate", "levitate", "levitate"],
             stats={
                 "base_stats.HP": 72,
-                "base_stats.ATK": 67,
+                "base_stats.ATK": 47,
                 "base_stats.DEF": 71,
                 "base_stats.SPA": 123,
                 "base_stats.SPD": 75,

@@ -36,9 +36,11 @@ def nb_init(logger_level: str = "INFO", add_std: bool = False) -> None:
 
 def pretty_waza(waza: pd.DataFrame) -> pd.DataFrame:
     """Create a pretty version of the waza table, to show in Data Viewer."""
-    waza_pretty = waza
+    waza_pretty = waza.copy()
     waza_pretty["move_id"] = pd.Series(MOVES)
     waza_pretty["type"] = waza["type"].apply(lambda x: TYPES[x]).astype("string")
+    waza_pretty = waza_pretty.loc[waza["can_use_move"], :]
+    waza_pretty = waza_pretty.drop(columns=["can_use_move"])
     return waza_pretty
 
 

@@ -16,6 +16,11 @@ SCHEMADIR=src/skypy/assets/schema
 BINDIR=bin
 
 
+install:
+	pip install --upgrade pip
+	pip install --upgrade poetry
+	poetry install
+
 
 # --------------------------------
 # Run main script

@@ -29,9 +29,9 @@ class GodsEditor(PersonalEditor):
                     stats={
                         "base_stats.HP": 200,
                         "base_stats.ATK": 90,
-                        "base_stats.DEF": 130,
+                        "base_stats.DEF": 230,
                         "base_stats.SPA": 150,
-                        "base_stats.SPD": 120,
+                        "base_stats.SPD": 220,
                         "base_stats.SPE": 90,
                     },
                 )
@@ -45,9 +45,9 @@ class GodsEditor(PersonalEditor):
                     stats={
                         "base_stats.HP": 190,
                         "base_stats.ATK": 90,
-                        "base_stats.DEF": 100,
+                        "base_stats.DEF": 200,
                         "base_stats.SPA": 150,
-                        "base_stats.SPD": 130,
+                        "base_stats.SPD": 230,
                         "base_stats.SPE": 120,
                     },
                 )
@@ -58,10 +58,10 @@ class GodsEditor(PersonalEditor):
             ability="Filter",
             stats={
                 "base_stats.HP": 250,
-                "base_stats.ATK": 100,
-                "base_stats.DEF": 120,
-                "base_stats.SPA": 100,
-                "base_stats.SPD": 120,
+                "base_stats.ATK": 150,
+                "base_stats.DEF": 170,
+                "base_stats.SPA": 150,
+                "base_stats.SPD": 170,
                 "base_stats.SPE": 90,
             },
         )
@@ -70,10 +70,10 @@ class GodsEditor(PersonalEditor):
             "Origin Giratina",
             stats={
                 "base_stats.HP": 250,
-                "base_stats.ATK": 120,
-                "base_stats.DEF": 100,
-                "base_stats.SPA": 120,
-                "base_stats.SPD": 100,
+                "base_stats.ATK": 170,
+                "base_stats.DEF": 150,
+                "base_stats.SPA": 170,
+                "base_stats.SPD": 150,
                 "base_stats.SPE": 90,
             },
         )

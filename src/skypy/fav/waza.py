@@ -71,10 +71,14 @@ class WazaEditor:
     def edit_moves_buffs(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Buff some cool moves.."""
         logger.debug("Running...")
+        waza_df = set_waza(waza_df, waza="mega punch", power=90, accuracy=100)
+        waza_df = set_waza(waza_df, waza="mega kick", power=110, accuracy=100)
+        waza_df = set_waza(waza_df, waza="blaze kick", power=85, accuracy=100)
+        waza_df = set_waza(waza_df, waza="double kick", power=35, accuracy=100)
+        waza_df = set_waza(waza_df, waza="triple kick", power=35, accuracy=100)
         waza_df = set_waza(waza_df, waza="swift", power=80)
         waza_df = set_waza(waza_df, waza="shadow punch", power=75)
         waza_df = set_waza(waza_df, waza="water pulse", power=75)
-        waza_df = set_waza(waza_df, waza="gigaton hammer", edits={"flag_cant_use_twice": False})
         waza_df = set_waza(waza_df, waza="aurora beam", power=95)
         waza_df = set_waza(waza_df, waza="water shuriken", power=45)
         waza_df = set_waza(
@@ -106,16 +110,21 @@ class WazaEditor:
         waza_df = set_waza(waza_df, waza="dual wingbeat", accuracy=100)
         waza_df = set_waza(waza_df, waza="strange steam", accuracy=100)
         waza_df = set_waza(waza_df, waza="iron tail", accuracy=100)
-        # Legends/signature moves
+        # Rock
+        waza_df = set_waza(waza_df, waza="rock slide", accuracy=100)
+        waza_df = set_waza(waza_df, waza="stone axe", accuracy=100)
+        waza_df = set_waza(waza_df, waza="rock tomb", accuracy=100)
+        return waza_df
+
+    def edit_moves_signature(self, waza_df: pd.DataFrame) -> pd.DataFrame:
+        """Legends/signature moves."""
+        waza_df = set_waza(waza_df, waza="blood moon", power=110, edits={"flag_cant_use_twice": False})
+        waza_df = set_waza(waza_df, waza="gigaton hammer", power=130, edits={"flag_cant_use_twice": False})
         waza_df = set_waza(waza_df, waza="meteor mash", accuracy=100)
         waza_df = set_waza(waza_df, waza="night daze", accuracy=100)
         waza_df = set_waza(waza_df, waza="steam eruption", accuracy=100)
         waza_df = set_waza(waza_df, waza="dark void", accuracy=100)
         waza_df = set_waza(waza_df, waza="diamond storm", accuracy=100)
-        # Rock
-        waza_df = set_waza(waza_df, waza="rock slide", accuracy=100)
-        waza_df = set_waza(waza_df, waza="stone axe", accuracy=100)
-        waza_df = set_waza(waza_df, waza="rock tomb", accuracy=100)
         return waza_df
 
     def edit_moves_johto(self, waza_df: pd.DataFrame) -> pd.DataFrame:
@@ -167,9 +176,9 @@ class WazaEditor:
             waza_df,
             waza="shelter",
             edits={
-                "stat_amps.fstat1_percent": 4,  # Also increase Sp.Def
-                "stat_amps.fstat2_percent": 2,  # by +2 stages
-                "stat_amps.fstat3_percent": 0,
+                "stat_amps.fstat1_stage": 4,  # Also increase Sp.Def
+                "stat_amps.fstat2_stage": 2,  # by +2 stages
+                "stat_amps.fstat3_stage": 0,
             },
         )
         return waza_df
@@ -177,6 +186,7 @@ class WazaEditor:
     def edit_moves_gods(self, waza_df: pd.DataFrame) -> pd.DataFrame:
         """Make Gods real Gods."""
         logger.debug("Running...")
+        waza_df = set_waza(waza_df, waza="lunar blessing", edits={"raw_healing": 50})
         waza_df = set_waza(waza_df, waza="Prismatic Laser", accuracy=100, edits={"flag_rechargeg": False})
         waza_df = set_waza(waza_df, waza="glaciate", accuracy=100, power=100)
         waza_df = set_waza(waza_df, waza="psystrike", power=120)

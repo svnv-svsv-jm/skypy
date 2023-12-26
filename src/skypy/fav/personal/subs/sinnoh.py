@@ -129,4 +129,38 @@ class SinnohEditor(PersonalEditor):
         df = add_move(df, "Darkrai", {"level": 22, "move": "shadow ball"})
         df = add_move(df, "Darkrai", {"level": 40, "move": "psyshock"})
         df = add_move(df, "Darkrai", {"level": 44, "move": "mystical fire"})
+        # Cresselia
+        p = "Cresselia"
+        df = set_pokemon(
+            df,
+            p,
+            stats={
+                "base_stats.HP": 140,
+                "base_stats.ATK": 40,
+                "base_stats.DEF": 110,
+                "base_stats.SPA": 85,
+                "base_stats.SPD": 120,
+                "base_stats.SPE": 85,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "psyshock"})
+        df = add_move(df, p, {"level": 1, "move": "moonblast"})
+        # Regigigas
+        p = "Regigigas"
+        df = set_pokemon(
+            df,
+            p,
+            ability=["Slow Start", "Slow Start", "Mind's Eye"],
+            stats={
+                "base_stats.HP": 150,
+                "base_stats.ATK": 160,
+                "base_stats.DEF": 110,
+                "base_stats.SPA": 30,
+                "base_stats.SPD": 110,
+                "base_stats.SPE": 110,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "mega punch"})
+        df = add_move(df, p, {"level": 1, "move": "mega kick"})
+        df = add_move(df, p, {"level": 1, "move": "bulk up"})
         return df

@@ -18,11 +18,11 @@ def main() -> None:
     # Waza
     waza_df = waza(anew=True)
     write_waza_to_json(waza_df)
-    pretty_waza(waza_df).to_excel(WAZA_DOCS)
+    pretty_waza(waza_df).to_excel(WAZA_DOCS, header=True)
     # Mons
     personal_df = mons(anew=True)
     write_df_to_json(personal_df)
-    pretty_df(personal_df).to_excel(PERSONAL_DOCS)
+    pretty_df(personal_df).to_excel(PERSONAL_DOCS, header=True)
     # Trainers
     trainer_df = trainer(anew=True)
     write_trainer_to_json(trainer_df)

@@ -137,6 +137,39 @@ class HoennEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 40, "move": "recover"})
         df = add_move(df, pokemon, {"level": 42, "move": "bulk up"})
         df = add_move(df, pokemon, {"level": 41, "move": "drain punch"})
+        # Deoxys-2
+        pokemon = "Deoxys-2"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Filter",
+            stats={
+                "base_stats.HP": 110,
+                "base_stats.ATK": 40,
+                "base_stats.DEF": 160,
+                "base_stats.SPA": 70,
+                "base_stats.SPD": 160,
+                "base_stats.SPE": 60,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "shelter"})
+        df = add_move(df, pokemon, {"level": 1, "move": "calm mind"})
+        # Deoxys-3
+        pokemon = "Deoxys-3"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Filter",
+            stats={
+                "base_stats.HP": 65,
+                "base_stats.ATK": 40,
+                "base_stats.DEF": 95,
+                "base_stats.SPA": 100,
+                "base_stats.SPD": 95,
+                "base_stats.SPE": 205,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 1, "move": "calm mind"})
         # Kyogre
         pokemon = "Kyogre"
         df = set_pokemon(

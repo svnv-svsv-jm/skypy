@@ -46,11 +46,11 @@ class KantoStarterEditor(PersonalEditor):
             ability="Drought",
             stats={
                 "base_stats.HP": 78,
-                "base_stats.ATK": 84,
+                "base_stats.ATK": 74,
                 "base_stats.DEF": 78,
                 "base_stats.SPA": 109,
                 "base_stats.SPD": 85,
-                "base_stats.SPE": 100,
+                "base_stats.SPE": 110,
             },
         )
         df = add_move(df, pokemon, move=[{"level": 36, "move": "dragon pulse"}])
@@ -65,11 +65,11 @@ class KantoStarterEditor(PersonalEditor):
             ability=["mega launcher", "mega launcher", "mega launcher"],
             stats={
                 "base_stats.HP": 99,
-                "base_stats.ATK": 60,
-                "base_stats.DEF": 103,
-                "base_stats.SPA": 100,
-                "base_stats.SPD": 105,
-                "base_stats.SPE": 68,
+                "base_stats.ATK": 55,
+                "base_stats.DEF": 108,
+                "base_stats.SPA": 106,
+                "base_stats.SPD": 108,
+                "base_stats.SPE": 64,
             },
         )
         df = add_move(df, pokemon, move=[{"level": 36, "move": "ice beam"}])

@@ -294,6 +294,22 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 36, "move": "psyshock"})
         df = add_move(df, pokemon, {"level": 38, "move": "shadow ball"})
         df = add_move(df, pokemon, {"level": 42, "move": "calm mind"})
+        # Mismagius
+        pokemon = "Mismagius"
+        df = set_pokemon(
+            df,
+            pokemon,
+            types=("Ghost", "Fairy"),
+            stats={
+                "base_stats.HP": 65,
+                "base_stats.ATK": 55,
+                "base_stats.DEF": 75,
+                "base_stats.SPA": 105,
+                "base_stats.SPD": 105,
+                "base_stats.SPE": 105,
+            },
+        )
+        df = add_move(df, pokemon, move=[{"level": 1, "move": "moonblast"}])
         # Houndoom
         pokemon = "Houndoom"
         df = set_pokemon(
@@ -359,10 +375,10 @@ class JohtoEditor(PersonalEditor):
             stats={
                 "base_stats.HP": 130,
                 "base_stats.ATK": 134,
-                "base_stats.DEF": 150,
-                "base_stats.SPA": 71,
-                "base_stats.SPD": 120,
-                "base_stats.SPE": 95,
+                "base_stats.DEF": 140,
+                "base_stats.SPA": 61,
+                "base_stats.SPD": 110,
+                "base_stats.SPE": 75,
             },
         )
         df = add_move(df, pokemon, {"level": 38, "move": "stone axe"})
