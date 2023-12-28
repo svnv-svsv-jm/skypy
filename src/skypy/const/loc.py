@@ -1,6 +1,6 @@
 import os
 
-ASSETS = os.path.join(os.path.dirname(__file__), "..", "assets")
+ASSETS = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 FILENAME_TR = "trdata_array.json"
 FILENAME_WAZA = "waza_array.json"
 FILENAME = "personal_array.json"

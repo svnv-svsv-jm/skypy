@@ -14,6 +14,7 @@ export $(shell sed 's/=.*//' .env)
 OUTPUT=output
 SCHEMADIR=src/skypy/assets/schema
 BINDIR=bin
+APPNAME=MoveEditor
 
 
 install:
@@ -78,3 +79,21 @@ json: json-personal json-trainer json-waza
 # --------------------------------
 trpfd:
 	flatc --json --strict-json --raw-binary -- $(BINDIR)/data.trpfd
+
+
+# --------------------------------
+# App
+# --------------------------------
+# Use --add-data="$(LOC):customtkinter/" or not
+app: LOC=$(shell pip show customtkinter | grep Location | awk '{print $$NF}')
+app:
+	pyinstaller --noconfirm --onedir --windowed \
+	--icon "icon.ico" \
+	--name $(APPNAME) \
+	--add-data="$(LOC):customtkinter/" \
+	--add-data "pyproject.toml:." \
+	--add-data "src/skypy/assets:skypy/assets" \
+	app.py
+
+test-app:
+	./dist/$(APPNAME)/$(APPNAME)
