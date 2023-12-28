@@ -17,10 +17,20 @@ BINDIR=bin
 APPNAME=MoveEditor
 
 
+# --------------------------------
+# Installation
+# --------------------------------
 install:
 	pip install --upgrade pip
 	pip install --upgrade poetry
 	poetry install
+
+
+# --------------------------------
+# Testing
+# --------------------------------
+pytest:
+	pytest -x --testmon --mypy --pylint --cov-fail-under 85
 
 
 # --------------------------------

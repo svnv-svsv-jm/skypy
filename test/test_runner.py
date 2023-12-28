@@ -2,14 +2,11 @@ import pytest, sys, os, typing as ty
 from loguru import logger
 
 from skypy.fav.main import main
-from skypy.fav.personal import PersonalEditor
 
 
 def test_runner_main() -> None:
     """Test main script."""
-    editor = PersonalEditor()
-    klasses = editor.get_children()
-    logger.info(klasses)
+    main()
 
 
 if __name__ == "__main__":

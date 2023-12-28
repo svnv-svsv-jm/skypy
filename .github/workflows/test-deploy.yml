@@ -1,0 +1,45 @@
+name: Test and deploy
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies and test
+        run: |
+          sudo apt-get install -y --no-install-recommends apt-utils ca-certificates gosu sudo git curl
+          pip install --upgrade pip
+          pip install virtualenv
+          virtualenv venv
+          source venv/bin/activate
+          export PYTHON=venv/bin/python
+          make install
+          make pytest
+
+      - name: Create Dummy Artifact
+        run: |
+          make app APPNAME="SVMoveEditor"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: dist/SVMoveEditor.app

@@ -374,9 +374,12 @@ def add_move(
     pkmn = get_pokemon(df, pokemon).copy()
     learnset_raw = add_move_raw(df, pokemon, move, readable=False)
     levelup_moves = pkmn["levelup_moves"]
-    logger.trace(f"pkmn ({levelup_moves.shape}): {levelup_moves.values}")
-    levelup_moves.at[int(levelup_moves.index.item())] = learnset_raw  # type: ignore
-    logger.trace(f"pkmn ({levelup_moves.shape}): {levelup_moves.values}")
+    logger.trace(f"pkmn ({levelup_moves.shape}): {levelup_moves.head()}")
+    item = levelup_moves.index.item()
+    logger.trace(f"Item: {item}")
+    at = int(item)
+    levelup_moves.at[at] = learnset_raw  # type: ignore
+    logger.trace(f"pkmn ({levelup_moves.shape})")
     pkmn["levelup_moves"] = levelup_moves
     df.loc[loc] = pkmn
     return df
