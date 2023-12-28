@@ -30,12 +30,12 @@ jobs:
           pip install virtualenv
           virtualenv venv
           source venv/bin/activate
-          export PYTHON=venv/bin/python
           make install
           make pytest
 
       - name: Build app
         run: |
+          source venv/bin/activate
           make app APPNAME="SVMoveEditor"
 
       - name: Upload app as artifact
