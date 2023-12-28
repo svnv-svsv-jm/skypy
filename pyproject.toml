@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "skypy"
 version = "0.1.0"
-description = ""
+description = "Hack Pokemon Scarlet and Violet!"
 authors = ["svnv-svsv-jm <janmail1990@gmail.com>"]
 readme = "README.md"
 packages = [{ include = "skypy", from = "src" }]
