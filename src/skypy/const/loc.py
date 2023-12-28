@@ -9,3 +9,6 @@ FILENAME_DEVID = "devid_list.json"
 INPUT_FOLDER = os.path.join(ASSETS, "json")
 INPUT_FOLDER_OVERRIDE = "input"
 OUTPUT_FOLDER = "output"
+BIN_FOLDER = "bin"
+SCHEMA_FOLDER = os.path.normpath(os.path.join(ASSETS, "schema"))
+WAZA_SCHEMA = os.path.join(SCHEMA_FOLDER, "waza_array.fbs")

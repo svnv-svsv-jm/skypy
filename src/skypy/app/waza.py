@@ -11,6 +11,7 @@ from pandastable import Table, TableModel
 from skypy.utils.nb import nb_init, pretty_waza
 from skypy.const import ABILITIES, POKEMON, TYPES, MOVES
 from skypy.ops import resume_waza, read_waza, write_waza_to_json, set_waza
+from .utils import to_bin
 
 
 class MoveEditor(ctk.CTkScrollableFrame):
@@ -140,8 +141,9 @@ class MoveEditor(ctk.CTkScrollableFrame):
 
     def __save(self) -> None:
         """Save Dataframe."""
-        logger.debug(f"Saving...")
+        logger.debug("Saving...")
         write_waza_to_json(self.df)
+        to_bin()
 
     def show_move_info(self) -> None:
         """Show move info."""
