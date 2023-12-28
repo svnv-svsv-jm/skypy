@@ -7,8 +7,8 @@ on:
     branches: ["main"]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: macos-latest
 
     strategy:
       fail-fast: false
@@ -25,7 +25,6 @@ jobs:
 
       - name: Install dependencies and test
         run: |
-          sudo apt-get install -y --no-install-recommends apt-utils ca-certificates gosu sudo git curl
           pip install --upgrade pip
           pip install virtualenv
           virtualenv venv
