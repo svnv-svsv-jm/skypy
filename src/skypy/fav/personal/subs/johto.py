@@ -260,9 +260,10 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 33, "move": "rock slide"})
         df = add_move(df, pokemon, {"level": 33, "move": "crunch"})
         # Umbreon
+        pokemon = "Umbreon"
         df = set_pokemon(
             df,
-            "Umbreon",
+            pokemon,
             ability="Shed Skin",
             stats={
                 "base_stats.HP": 95,
@@ -273,9 +274,10 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.SPE": 60,
             },
         )
-        df = add_move(df, "Umbreon", {"level": 36, "move": "psyshock"})
-        df = add_move(df, "Umbreon", {"level": 38, "move": "sludge bomb"})
-        df = add_move(df, "Umbreon", {"level": 42, "move": "calm mind"})
+        df = add_move(df, pokemon, {"level": 36, "move": "recover"})
+        df = add_move(df, pokemon, {"level": 36, "move": "psyshock"})
+        df = add_move(df, pokemon, {"level": 38, "move": "sludge bomb"})
+        df = add_move(df, pokemon, {"level": 42, "move": "calm mind"})
         # Espeon
         pokemon = "Espeon"
         df = set_pokemon(
@@ -291,6 +293,7 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.SPE": 110,
             },
         )
+        df = add_move(df, pokemon, {"level": 36, "move": "recover"})
         df = add_move(df, pokemon, {"level": 36, "move": "psyshock"})
         df = add_move(df, pokemon, {"level": 38, "move": "shadow ball"})
         df = add_move(df, pokemon, {"level": 42, "move": "calm mind"})

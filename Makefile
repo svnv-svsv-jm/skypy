@@ -15,7 +15,7 @@ OUTPUT=output
 SCHEMADIR=src/skypy/assets/schema
 BINDIR=bin
 APPNAME=MoveEditor
-
+EXT=bfbs
 
 # --------------------------------
 # Installation
@@ -64,7 +64,6 @@ mod: bin
 # --------------------------------
 # Decode binary files to JSON
 # --------------------------------
-json-decode: EXT=bfbs
 json-decode:
 	rm $(FILENAME).json || echo ""
 	flatc --json --strict-json --raw-binary $(SCHEMADIR)/$(FILENAME).$(EXT) -- $(BINDIR)/$(FILENAME).bin

@@ -75863,8 +75863,8 @@
         "fstat2": 2,
         "fstat3": 100,
         "fstat1_stage": 4,
-        "fstat2_state": 0,
-        "fstat3_stage": 0,
+        "fstat2_state": 2,
+        "fstat3_stage": 100,
         "fstat1_percent": 0,
         "fstat2_percent": 0,
         "fstat3_percent": 0

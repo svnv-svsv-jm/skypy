@@ -1,9 +1,9 @@
-import pytest, sys
-from typing import Union, Sequence, Dict
+import pytest
+import sys
+import typing as ty
 from loguru import logger
 
-from skypy.const.pkmn import POKEMON
-from skypy.const.waza import MOVES
+from skypy.const import POKEMON, MOVES
 from skypy.ops import resume_pokemon, read_data, read_waza, resume_waza
 
 

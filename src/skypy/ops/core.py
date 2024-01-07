@@ -30,7 +30,7 @@ from skypy.const.loc import (
     FILENAME_TR_MAP,
 )
 from skypy.const.schema import INT_COLUMNS
-from skypy.const.devid import DEVID
+from skypy.const.devid import DEV_ID
 
 
 def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,7 +45,7 @@ def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
 
 def read_devid(**kwargs: Any) -> pd.DataFrame:
     """Read waza data."""
-    df = pd.json_normalize(DEVID, record_path="values")
+    df = pd.json_normalize(DEV_ID, record_path="values")
     df = force_columns_to_int(df)
     df = df.fillna(np.nan)
     return df

@@ -12,28 +12,46 @@ __all__ = [
     "get_waza",
     "get_pkmn_id",
     "get_evo_data",
+    "get_species_id",
 ]
 
 from loguru import logger
 from typing import Union, Sequence, Any, List, Dict, Tuple
 import pandas as pd
 from itertools import compress
+import copy
 
 from skypy.const.pkmn import POKEMON
 from skypy.const.abilities import ABILITIES
 from skypy.const.types import TYPES
 from skypy.const.schema import STATS_COLUMNS
 from skypy.const.waza import MOVES
-
+from skypy.const.devid import DEV_ID
 
 LVLUP_MOVE_TYPE = Dict[str, Union[int, str]]
 
 
-def get_evo_data(df: pd.DataFrame, pokemon: str) -> List[Dict[str, int]]:
+def get_evo_data(
+    df: pd.DataFrame,
+    pokemon: str,
+    readable: bool = False,
+) -> List[Dict[str, int]]:
     """Get evo data."""
-    pkmn = get_pokemon(df, pokemon)
+    logger.trace(f"Getting evolution data for {pokemon}")
+    pkmn = get_pokemon(df.copy(), pokemon)
     evo_data: List[Dict[str, int]] = pkmn["evo_data"].values[0]
-    return evo_data
+    if not readable:
+        return evo_data
+    logger.trace("Making it readable...")
+    evodata = copy.deepcopy(evo_data)
+    for i, evo in enumerate(evodata):
+        logger.trace(f"evo_data: {evodata}")
+        species_id = evo["species"]
+        logger.trace(f"species_id={species_id}")
+        species_name = str(DEV_ID["values"][species_id]["name"])
+        evo["species"] = species_name  # type: ignore
+        evodata[i] = evo
+    return evodata
 
 
 def get_pokemon_loc(df: pd.DataFrame, name: str) -> List[bool]:
@@ -89,6 +107,14 @@ def get_pkmn_id(
     loc = get_pokemon_loc(df, name)
     ID = list(compress(range(len(loc)), loc))[0]
     return ID
+
+
+def get_species_id(name: str) -> int:
+    """Get a Pokemon species ID (Dex number)."""
+    devids = DEV_ID["values"]
+    for i, data in enumerate(devids):
+        if name.lower() == data["name"].lower():
+            return i
 
 
 def resume_pokemon(

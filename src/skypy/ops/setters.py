@@ -13,6 +13,7 @@ from loguru import logger
 from typing import Union, Sequence, Any, List, Dict, Tuple
 import pandas as pd
 
+from skypy.types import EvoData
 from skypy.const.abilities import ABILITIES
 from skypy.const.types import TYPES
 from skypy.const.schema import STATS_COLUMNS
@@ -26,18 +27,8 @@ from .getters import (
     get_waza,
     get_pkmn_id,
     get_evo_data,
+    get_species_id,
 )
-
-EVO_DATA = {
-    "level": 16,
-    "condition": 4,
-    "parameter": 0,
-    "reserved3": 0,
-    "reserved4": 0,
-    "reserved5": 0,
-    "species": 8,
-    "form": 0,
-}
 
 
 def add_evo(
@@ -49,22 +40,25 @@ def add_evo(
     """Adds evolution method."""
     pkmn = get_pokemon(df, pokemon)
     evo_data = get_evo_data(df, pokemon)
-    logger.trace(evo_data)
-    new_evo_data = EVO_DATA.copy()
-    new_evo_data["level"] = level
+    logger.trace(f"evo_data:\n{evo_data}")
+    # Get Pokemon species ID
     into = into.strip().lower()
+    logger.trace(f"into: {into}")
     if "hisuian" in into:
         t = into.replace("hisuian", "")
-        ID = get_pkmn_id(df, t.strip().lower())
-        new_evo_data["form"] = 1
+        ID = get_species_id(t.strip().lower())
+        form = 1
     else:
-        ID = get_pkmn_id(df, into)
-    new_evo_data["species"] = ID
-    evo_data.append(new_evo_data)
-    logger.trace(evo_data)
+        ID = get_species_id(into)
+        form = 0
+    # Create evo data and append it
+    new_evo = EvoData(level=level, species=ID, form=form).__dict__
+    logger.trace(f"new_evo:\n{new_evo}")
+    evo_data.append(new_evo)
+    logger.trace(f"new evo_data:\n{evo_data}")
     # Set
     pkmn["evo_data"].values[0] = evo_data
-    logger.trace(pkmn["evo_data"])
+    logger.trace(f"new evo_data:\n{pkmn['evo_data']}")
     pkmn_idx = get_pokemon_loc(df, pokemon)
     df.loc[pkmn_idx, :] = pkmn
     return df
@@ -201,7 +195,8 @@ def set_waza(
     # Free form: all the others
     if edits is not None:
         for key, val in edits.items():
-            waza_df[key] = val
+            if key in waza_df.columns:
+                waza_df[key] = val
     # Set
     df.loc[waza_idx, :] = waza_df  # type: ignore
     return df

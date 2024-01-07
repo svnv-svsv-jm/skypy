@@ -66,7 +66,27 @@ class ParadoxEditor(PersonalEditor):
         df = set_pokemon(df, p, ability="Levitate")
         # Scream Tail
         p = "Scream Tail"
-        df = set_pokemon(df, p, ability="Levitate")
+        df = set_pokemon(
+            df,
+            p,
+            ability="Levitate",
+            stats={
+                "base_stats.HP": 120,
+                "base_stats.ATK": 30,
+                "base_stats.DEF": 109,
+                "base_stats.SPA": 80,
+                "base_stats.SPD": 120,
+                "base_stats.SPE": 111,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "dark pulse"})
+        df = add_move(df, p, {"level": 1, "move": "power gem"})
+        df = add_move(df, p, {"level": 1, "move": "swift"})
+        df = add_move(df, p, {"level": 1, "move": "calm mind"})
+        df = add_move(df, p, {"level": 1, "move": "recover"})
+        df = add_move(df, p, {"level": 1, "move": "psyshock"})
+        df = add_move(df, p, {"level": 1, "move": "moonblast"})
+        df = add_move(df, p, {"level": 1, "move": "tri attack"})
         # Sandy Shocks
         p = "Sandy Shocks"
         df = set_pokemon(df, p, ability="Earth Eater")
