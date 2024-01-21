@@ -3,16 +3,9 @@ from loguru import logger
 
 import pandas as pd
 
-from skypy.ops import (
-    read_data,
-    get_learnset,
-    get_learnset_raw,
-    add_move,
-    add_move_raw,
-    resume_pokemon,
-)
-from skypy.ops.setters import _check_moves_are_there
-from skypy.ops.getters import LVLUP_MOVE_TYPE
+from skypy.ops import read_data
+from skypy.ops.setters import _check_moves_are_there, get_learnset_raw, add_move, add_move_raw
+from skypy.ops.getters import LVLUP_MOVE_TYPE, resume_pokemon, get_learnset
 
 
 @pytest.mark.parametrize(

@@ -7,13 +7,14 @@ __all__ = [
     "add_move",
     "set_waza",
     "add_evo",
+    "set_trainer",
 ]
 
 from loguru import logger
 from typing import Union, Sequence, Any, List, Dict, Tuple
 import pandas as pd
 
-from skypy.types import EvoData
+from skypy.schemas import EvoData
 from skypy.const.abilities import ABILITIES
 from skypy.const.types import TYPES
 from skypy.const.schema import STATS_COLUMNS
@@ -28,7 +29,36 @@ from .getters import (
     get_pkmn_id,
     get_evo_data,
     get_species_id,
+    get_trainer,
 )
+
+
+def set_trainer(
+    df: pd.DataFrame,
+    trdevid: str,
+    edits: Dict[str, Any] = None,
+) -> pd.DataFrame:
+    """Change a trainer's data.
+
+    Args:
+        df (pd.DataFrame):
+            Trainer table. See `read_trainer()`.
+
+    Returns:
+        pd.DataFrame:
+            Updated table.
+    """
+    trainer_data, idx = get_trainer(df, trdevid=trdevid, return_idx=True)
+    assert isinstance(trainer_data, pd.DataFrame)
+    # Free form: all the others
+    if edits is not None:
+        for key, val in edits.items():
+            logger.trace(f"Setting {key} to {val}")
+            if key in trainer_data.columns:
+                trainer_data[key] = val
+    # Return
+    df.loc[idx, :] = trainer_data  # type: ignore
+    return df
 
 
 def add_evo(
@@ -36,8 +66,25 @@ def add_evo(
     pokemon: str,
     level: int,
     into: str,
+    form: int = 0,
 ) -> pd.DataFrame:
-    """Adds evolution method."""
+    """Adds evolution method.
+
+    Args:
+        df (pd.DataFrame):
+            Data table.
+        pokemon (str):
+            Name of the species.
+        level (int):
+            Level at which it's gonna evolve.
+        into (str):
+            Species into which it's gonna evolve.
+            You can use "Hisuian" + name of species and this function will handle the choice of correct form.
+
+    Returns:
+        pd.DataFrame: _description_
+    """
+    # Get Pokemon data and evolution data
     pkmn = get_pokemon(df, pokemon)
     evo_data = get_evo_data(df, pokemon)
     logger.trace(f"evo_data:\n{evo_data}")
@@ -50,7 +97,6 @@ def add_evo(
         form = 1
     else:
         ID = get_species_id(into)
-        form = 0
     # Create evo data and append it
     new_evo = EvoData(level=level, species=ID, form=form).__dict__
     logger.trace(f"new_evo:\n{new_evo}")

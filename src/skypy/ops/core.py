@@ -10,6 +10,8 @@ __all__ = [
     "write_waza_to_json",
     "write_trainer_to_json",
     "write_personal_to_json",
+    "read_itemid",
+    "read_trdevid",
 ]
 
 from loguru import logger
@@ -29,8 +31,7 @@ from skypy.const.loc import (
     FILENAME_TR,
     FILENAME_TR_MAP,
 )
-from skypy.const.schema import INT_COLUMNS
-from skypy.const.devid import DEV_ID
+from skypy.const import INT_COLUMNS, DEV_ID, ITEMID, TRDEV_ID
 
 
 def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
@@ -43,9 +44,25 @@ def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
     return tmp
 
 
+def read_itemid(**kwargs: Any) -> pd.DataFrame:
+    """Read item id."""
+    df = pd.json_normalize(ITEMID, record_path="items")
+    df = force_columns_to_int(df)
+    df = df.fillna(np.nan)
+    return df
+
+
 def read_devid(**kwargs: Any) -> pd.DataFrame:
-    """Read waza data."""
+    """Read devid."""
     df = pd.json_normalize(DEV_ID, record_path="values")
+    df = force_columns_to_int(df)
+    df = df.fillna(np.nan)
+    return df
+
+
+def read_trdevid(**kwargs: Any) -> pd.DataFrame:
+    """Read devid."""
+    df = pd.json_normalize(TRDEV_ID, record_path="trainers")
     df = force_columns_to_int(df)
     df = df.fillna(np.nan)
     return df

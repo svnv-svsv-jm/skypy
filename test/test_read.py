@@ -4,7 +4,8 @@ import typing as ty
 from loguru import logger
 
 from skypy.const import POKEMON, MOVES
-from skypy.ops import resume_pokemon, read_data, read_waza, resume_waza
+from skypy.ops import read_data, read_waza
+from skypy.ops.getters import resume_waza, resume_pokemon
 
 
 def test_read() -> None:

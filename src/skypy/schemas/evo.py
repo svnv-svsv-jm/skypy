@@ -1,10 +1,11 @@
-__all__ = ["EvoData"]
+__all__ = ["BaseSchema", "EvoData"]
 
-from pydantic.dataclasses import dataclass
+import typing as ty
+
+from ._base import BaseSchema
 
 
-@dataclass
-class EvoData:
+class EvoData(BaseSchema):
     """Evolution data.
 
     Attributes:

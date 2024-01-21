@@ -13,6 +13,7 @@ __all__ = [
     "get_pkmn_id",
     "get_evo_data",
     "get_species_id",
+    "get_trainer",
 ]
 
 from loguru import logger
@@ -29,6 +30,19 @@ from skypy.const.waza import MOVES
 from skypy.const.devid import DEV_ID
 
 LVLUP_MOVE_TYPE = Dict[str, Union[int, str]]
+
+
+def get_trainer(
+    df: pd.DataFrame,
+    trdevid: str,
+    return_idx: bool = False,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, List[bool]]]:
+    """Get a trainer's data."""
+    idx = df["trid"].apply(lambda x: x.lower()) == trdevid.lower()
+    trainer_row = df.loc[idx, :]
+    if return_idx:
+        return trainer_row, idx
+    return trainer_row  # type: ignore
 
 
 def get_evo_data(
@@ -115,6 +129,7 @@ def get_species_id(name: str) -> int:
     for i, data in enumerate(devids):
         if name.lower() == data["name"].lower():
             return i
+    raise Exception("Could not find species.")
 
 
 def resume_pokemon(

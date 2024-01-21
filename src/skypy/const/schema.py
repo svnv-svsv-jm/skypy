@@ -1,3 +1,39 @@
+GEMTYPE = [
+    "DEFAULT",
+    "DRAGON",
+    "HAGANE",
+    "HIKOU",
+    "JIMEN",
+    "DENKI",
+    "ESPER",
+    "KOORI",
+    "KUSA",
+    "MIZU",
+    "MUSHI",
+    "NORMAL",
+    "KAKUTOU",
+    "HONOO",
+    "GHOST",
+    "AKU",
+    "FAIRY",
+    "IWA",
+    "DOKU",
+]
+
+BALLIDS = [
+    "MASUTAABOORU",
+    "MONSUTAABOORU",
+    "HAIPAABOORU",
+    "TAIMAABOORU",
+    "RIPIITOBOORU",
+    "GOOZYASUBOORU",
+    "KUIKKUBOORU",
+    "HIIRUBOORU",
+    "NESUTOBOORU",
+    "HEBIIBOORU",
+    "PUREMIABOORU",
+]
+
 STATS_COLUMNS = [
     "base_stats.HP",
     "base_stats.ATK",

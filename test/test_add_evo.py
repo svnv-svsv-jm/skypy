@@ -5,7 +5,9 @@ from loguru import logger
 
 from skypy.const.pkmn import POKEMON
 from skypy.const.waza import MOVES
-from skypy.ops import get_pokemon, read_data, add_evo, get_evo_data
+from skypy.ops import read_data
+from skypy.ops.getters import get_pokemon, get_evo_data
+from skypy.ops.setters import add_evo
 
 
 @pytest.mark.parametrize("pokemon", ["Pikachu", "Squirtle", "Mewtwo"])

@@ -1,7 +1,9 @@
 import pytest, sys, os, typing as ty
 from loguru import logger
 
-from skypy.ops import get_type, set_pokemon, read_data
+from skypy.ops import read_data
+from skypy.ops.getters import get_type
+from skypy.ops.setters import set_pokemon
 
 
 @pytest.mark.parametrize(

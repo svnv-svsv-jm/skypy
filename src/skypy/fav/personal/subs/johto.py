@@ -5,7 +5,7 @@ from loguru import logger
 
 import pandas as pd
 
-from skypy.ops import add_move, set_pokemon, add_evo
+from skypy.ops.setters import add_move, set_pokemon, add_evo
 from skypy.const.pkmn import POKEMON
 from skypy.fav.personal.base import PersonalEditor
 
@@ -251,8 +251,8 @@ class JohtoEditor(PersonalEditor):
                 "base_stats.HP": 115,
                 "base_stats.ATK": 111,
                 "base_stats.DEF": 111,
-                "base_stats.SPA": 48,
-                "base_stats.SPD": 78,
+                "base_stats.SPA": 38,
+                "base_stats.SPD": 88,
                 "base_stats.SPE": 67,
             },
         )
@@ -304,9 +304,9 @@ class JohtoEditor(PersonalEditor):
             pokemon,
             types=("Ghost", "Fairy"),
             stats={
-                "base_stats.HP": 65,
-                "base_stats.ATK": 55,
-                "base_stats.DEF": 75,
+                "base_stats.HP": 80,
+                "base_stats.ATK": 35,
+                "base_stats.DEF": 80,
                 "base_stats.SPA": 105,
                 "base_stats.SPD": 105,
                 "base_stats.SPE": 105,

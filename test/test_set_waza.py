@@ -1,9 +1,12 @@
-import pytest, sys, os, typing as ty
+import pytest
+import sys
+import os
+import typing as ty
 from loguru import logger
 
-import pandas as pd
-
-from skypy.ops import read_waza, set_waza, resume_waza, get_waza
+from skypy.ops import read_waza
+from skypy.ops.getters import resume_waza
+from skypy.ops.setters import set_waza
 
 
 @pytest.mark.parametrize(

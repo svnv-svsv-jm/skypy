@@ -5,7 +5,7 @@ from loguru import logger
 
 import pandas as pd
 
-from skypy.ops import add_move, set_pokemon, add_evo
+from skypy.ops.setters import add_move, set_pokemon, add_evo
 from skypy.const.pkmn import POKEMON
 from skypy.fav.personal.base import PersonalEditor
 

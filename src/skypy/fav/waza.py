@@ -3,7 +3,8 @@ from loguru import logger
 
 import pandas as pd
 
-from skypy.ops import read_waza, set_waza
+from skypy.ops import read_waza
+from skypy.ops.setters import set_waza
 
 
 class WazaEditor:

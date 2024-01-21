@@ -2,7 +2,9 @@ import pytest, sys
 from typing import Union, Sequence, Dict
 from loguru import logger
 
-from skypy.ops import get_stats, set_pokemon, read_data
+from skypy.ops import read_data
+from skypy.ops.getters import get_stats
+from skypy.ops.setters import set_pokemon
 
 
 @pytest.mark.parametrize(
