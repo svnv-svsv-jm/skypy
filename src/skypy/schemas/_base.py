@@ -16,6 +16,6 @@ class BaseSchema(BaseModel):
                     k = f"{key}.{key_}"
                     out[k] = val_
             else:
-                k = key.replace("_", ".")
+                k = key.replace("___", ".")
                 out[k] = val
         return out

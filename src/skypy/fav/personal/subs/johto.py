@@ -79,6 +79,24 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, pokemon, {"level": 25, "move": "waterfall"})
         df = add_move(df, pokemon, {"level": 28, "move": "liquidation"})
         df = add_move(df, pokemon, {"level": 33, "move": "dragon dance"})
+        # Ariados
+        p = "Ariados"
+        df = set_pokemon(
+            df,
+            p,
+            ability=["Swarm", "Insomnia", "Sniper"],
+            stats={
+                "base_stats.HP": 70,
+                "base_stats.ATK": 95,
+                "base_stats.DEF": 70,
+                "base_stats.SPA": 35,
+                "base_stats.SPD": 70,
+                "base_stats.SPE": 60,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "cross poison"})
+        df = add_move(df, p, {"level": 1, "move": "x-scissor"})
+        df = add_move(df, p, {"level": 1, "move": "swords dance"})
         # Noctowl
         p = "Noctowl"
         df = set_pokemon(
@@ -177,6 +195,9 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, p, {"level": 1, "move": "air slash"})
         df = add_move(df, p, {"level": 1, "move": "Vacuum Wave"})
         df = add_move(df, p, {"level": 1, "move": "bug buzz"})
+        # Gligar
+        p = "Gligar"
+        df = add_evo(df, p, level=42, into="Gliscor")
         # Yanma
         p = "Yanma"
         df = add_evo(df, p, level=33, into="Yanmega")
@@ -204,6 +225,26 @@ class JohtoEditor(PersonalEditor):
         df = add_move(df, p, {"level": 1, "move": "ice fang"})
         df = add_move(df, p, {"level": 1, "move": "crunch"})
         df = add_move(df, p, {"level": 1, "move": "play rough"})
+        # Quagsire
+        p = "Quagsire"
+        df = set_pokemon(
+            df,
+            p,
+            ability="Water Absorb",
+            stats={
+                "base_stats.HP": 95,
+                "base_stats.ATK": 95,
+                "base_stats.DEF": 95,
+                "base_stats.SPA": 35,
+                "base_stats.SPD": 85,
+                "base_stats.SPE": 30,
+            },
+        )
+        df = add_move(df, p, {"level": 1, "move": "liquidation"})
+        df = add_move(df, p, {"level": 1, "move": "earthquake"})
+        df = add_move(df, p, {"level": 1, "move": "recover"})
+        df = add_move(df, p, {"level": 1, "move": "bulk up"})
+        df = add_move(df, p, {"level": 1, "move": "ice punch"})
         # Magcargo
         p = "Magcargo"
         df = set_pokemon(
@@ -211,14 +252,15 @@ class JohtoEditor(PersonalEditor):
             p,
             ability=["Magma Armor", "Flame Body", "Solid Rock"],
             stats={
-                "base_stats.HP": 70,
-                "base_stats.ATK": 30,
+                "base_stats.HP": 80,
+                "base_stats.ATK": 20,
                 "base_stats.DEF": 120,
                 "base_stats.SPA": 90,
-                "base_stats.SPD": 90,
-                "base_stats.SPE": 30,
+                "base_stats.SPD": 100,
+                "base_stats.SPE": 20,
             },
         )
+        df = add_move(df, p, {"level": 1, "move": "magma storm"})
         df = add_move(df, p, {"level": 1, "move": "power gem"})
         # Skarmory
         p = "Skarmory"

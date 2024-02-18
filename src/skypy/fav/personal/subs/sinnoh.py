@@ -77,6 +77,26 @@ class SinnohEditor(PersonalEditor):
         # Magnezone
         pokemon = "Magnezone"
         df = set_pokemon(df, pokemon, ability="Levitate")
+        # Gliscor
+        pokemon = "Gliscor"
+        df = set_pokemon(
+            df,
+            pokemon,
+            ability="Poison Heal",
+            stats={
+                "base_stats.HP": 75,
+                "base_stats.ATK": 95,
+                "base_stats.DEF": 125,
+                "base_stats.SPA": 40,
+                "base_stats.SPD": 80,
+                "base_stats.SPE": 95,
+            },
+        )
+        df = add_move(df, pokemon, {"level": 38, "move": "swords dance"})
+        df = add_move(df, pokemon, {"level": 43, "move": "rock slide"})
+        df = add_move(df, pokemon, {"level": 45, "move": "cross poison"})
+        df = add_move(df, pokemon, {"level": 48, "move": "iron tail"})
+        df = add_move(df, pokemon, {"level": 48, "move": "poison tail"})
         # Yanmega
         pokemon = "Yanmega"
         df = set_pokemon(

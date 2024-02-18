@@ -8,9 +8,10 @@ import copy
 import pandas as pd
 from pandastable import Table, TableModel
 
-from skypy.utils.nb import nb_init, pretty_waza
 from skypy.const import ABILITIES, POKEMON, TYPES, MOVES
-from skypy.ops import resume_waza, read_waza, write_waza_to_json, set_waza
+from skypy.ops import read_waza, write_waza_to_json
+from skypy.ops.setters import set_waza
+from skypy.ops.getters import resume_waza
 from .utils import to_bin
 
 
@@ -61,7 +62,8 @@ class MoveEditor(ctk.CTkScrollableFrame):
             self.move_info_labels[c] = ctk.CTkLabel(self.move_info_frame, text=c)
             self.move_info_labels[c].pack()
             self.move_info_entries[c] = ctk.CTkEntry(
-                self.move_info_frame, textvariable=ctk.Variable(name=c, value="")
+                self.move_info_frame,
+                textvariable=ctk.Variable(name=c, value=""),
             )
             self.move_info_entries[c].bind("<Return>", command=self.__update_df)
             self.move_info_entries[c].pack()

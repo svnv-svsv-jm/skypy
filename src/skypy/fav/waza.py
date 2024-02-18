@@ -203,6 +203,7 @@ class WazaEditor:
         waza_df = set_waza(
             waza_df, waza="Prismatic Laser", accuracy=100, edits={"flag_rechargeg": False}
         )
+        waza_df = set_waza(waza_df, waza="magma storm", accuracy=100, power=100)
         waza_df = set_waza(waza_df, waza="glaciate", accuracy=100, power=100)
         waza_df = set_waza(waza_df, waza="psystrike", power=120)
         waza_df = set_waza(waza_df, waza="Origin Pulse", accuracy=100, power=150)

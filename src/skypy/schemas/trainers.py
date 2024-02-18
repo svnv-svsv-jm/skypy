@@ -52,12 +52,12 @@ class TrainerPokemonSchema(BaseSchema):
 
     ballId: str = BALLIDS[0]
     devId: str
-    effortValue_agi: int = 0
-    effortValue_atk: int = 0
-    effortValue_def: int = 0
-    effortValue_hp: int = 0
-    effortValue_spAtk: int = 0
-    effortValue_spDef: int = 0
+    effortValue___agi: int = 0
+    effortValue___atk: int = 0
+    effortValue___def: int = 0
+    effortValue___hp: int = 0
+    effortValue___spAtk: int = 0
+    effortValue___spDef: int = 0
     formId: int = 0
     gemType: str = GEMTYPE[0]
     item: str = ITEMID[0]
@@ -68,22 +68,22 @@ class TrainerPokemonSchema(BaseSchema):
     seikaku: str = SEIKAIKU[0]
     sex: str = SEX[0]
     talentType: str = TALENT_TYPE[0]
-    talentValue_agi: int = 0
-    talentValue_atk: int = 0
-    talentValue_def: int = 0
-    talentValue_hp: int = 0
-    talentValue_spAtk: int = 0
-    talentValue_spDef: int = 0
+    talentValue___agi: int = 0
+    talentValue___atk: int = 0
+    talentValue___def: int = 0
+    talentValue___hp: int = 0
+    talentValue___spAtk: int = 0
+    talentValue___spDef: int = 0
     talentVnum: int = 20
     tokusei: str = ABILITY[0]
-    waza1_pointUp: int = 0
-    waza1_wazaId: str = WAZAID[0]
-    waza2_pointUp: int = 0
-    waza2_wazaId: str = WAZAID[0]
-    waza3_pointUp: int = 0
-    waza3_wazaId: str = WAZAID[0]
-    waza4_pointUp: int = 0
-    waza4_wazaId: str = WAZAID[0]
+    waza1___pointUp: int = 0
+    waza1___wazaId: str = WAZAID[0]
+    waza2___pointUp: int = 0
+    waza2___wazaId: str = WAZAID[0]
+    waza3___pointUp: int = 0
+    waza3___wazaId: str = WAZAID[0]
+    waza4___pointUp: int = 0
+    waza4___wazaId: str = WAZAID[0]
     wazaType: str = WAZATYPE[0]
 
     @validator("level")
@@ -99,26 +99,26 @@ class TrainerPokemonSchema(BaseSchema):
         value = validate_item_in_list(value, WAZATYPE, WAZATYPE[0])
         return value
 
-    @validator("waza1_wazaId")
-    def _waza1_wazaId(cls, value: str) -> str:
+    @validator("waza1___wazaId")
+    def _waza1___wazaId(cls, value: str) -> str:
         """Make sure it is one of these items."""
         value = validate_item_in_list(value, WAZAID, WAZAID[0])
         return value
 
-    @validator("waza2_wazaId")
-    def _waza2_wazaId(cls, value: str) -> str:
+    @validator("waza2___wazaId")
+    def _waza2___wazaId(cls, value: str) -> str:
         """Make sure it is one of these items."""
         value = validate_item_in_list(value, WAZAID, WAZAID[0])
         return value
 
-    @validator("waza3_wazaId")
-    def _waza3_wazaId(cls, value: str) -> str:
+    @validator("waza3___wazaId")
+    def _waza3___wazaId(cls, value: str) -> str:
         """Make sure it is one of these items."""
         value = validate_item_in_list(value, WAZAID, WAZAID[0])
         return value
 
-    @validator("waza4_wazaId")
-    def _waza4_wazaId(cls, value: str) -> str:
+    @validator("waza4___wazaId")
+    def _waza4___wazaId(cls, value: str) -> str:
         """Make sure it is one of these items."""
         value = validate_item_in_list(value, WAZAID, WAZAID[0])
         return value
@@ -136,13 +136,13 @@ class TrainerPokemonSchema(BaseSchema):
         return value
 
     @validator("ballId")
-    def validate_ballId(cls, value: str) -> str:
+    def _ballId(cls, value: str) -> str:
         """Make sure it is one of these items."""
         value = validate_item_in_list(value, BALLIDS, BALLIDS[0])
         return value
 
     @validator("devId")
-    def validate_devId(cls, value: str) -> str:
+    def _devId(cls, value: str) -> str:
         """Make sure it is one of these items."""
         devid = read_devid()["devName"].to_list()
         value = validate_item_in_list(value, devid)

@@ -98,6 +98,7 @@ class HisuiEditor(PersonalEditor):
                 {"level": 36, "move": "mystical fire"},
                 {"level": 37, "move": "calm mind"},
                 {"level": 42, "move": "sludge bomb"},
+                {"level": 43, "move": "tri attack"},
             ],
         )
         # Sneasler
@@ -106,7 +107,7 @@ class HisuiEditor(PersonalEditor):
         df = set_pokemon(
             df,
             pokemon,
-            ability="Poison Touch",
+            ability="Tough Claws",
         )
         df = add_move(
             df,

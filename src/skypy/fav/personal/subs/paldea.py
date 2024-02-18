@@ -27,14 +27,14 @@ class PaldeaEditor(PersonalEditor):
             stats={
                 "base_stats.HP": 85,
                 "base_stats.ATK": 85,
-                "base_stats.DEF": 87,
+                "base_stats.DEF": 94,
                 "base_stats.SPA": 50,
                 "base_stats.SPD": 105,
-                "base_stats.SPE": 94,
+                "base_stats.SPE": 87,
             },
         )
         df = add_move(df, p, {"level": 40, "move": "iron defense"})
-        df = add_move(df, p, {"level": 40, "move": "sword dance"})
+        df = add_move(df, p, {"level": 40, "move": "swords dance"})
         # Farigiraf
         p = "Farigiraf"
         df = set_pokemon(
@@ -42,13 +42,39 @@ class PaldeaEditor(PersonalEditor):
             p,
             stats={
                 "base_stats.HP": 120,
-                "base_stats.ATK": 50,
+                "base_stats.ATK": 40,
                 "base_stats.DEF": 90,
                 "base_stats.SPA": 110,
-                "base_stats.SPD": 70,
+                "base_stats.SPD": 80,
                 "base_stats.SPE": 70,
             },
         )
+        df = add_move(df, p, {"level": 40, "move": "psyshock"})
+        df = add_move(df, p, {"level": 40, "move": "shadow ball"})
+        df = add_move(df, p, {"level": 40, "move": "tri attack"})
+        df = add_move(df, p, {"level": 40, "move": "calm mind"})
+        # Dudunsparce
+        for p in POKEMON:
+            if "dudunsparce" in p.lower():
+                df = set_pokemon(
+                    df,
+                    p,
+                    ability=["Serene Grace", "Serene Grace", "Serene Grace"],
+                    stats={
+                        "base_stats.HP": 125,
+                        "base_stats.ATK": 100,
+                        "base_stats.DEF": 80,
+                        "base_stats.SPA": 55,
+                        "base_stats.SPD": 85,
+                        "base_stats.SPE": 75,
+                    },
+                )
+                df = add_move(df, p, {"level": 40, "move": "dragon dance"})
+                df = add_move(df, p, {"level": 42, "move": "play rough"})
+                df = add_move(df, p, {"level": 43, "move": "iron tail"})
+                df = add_move(df, p, {"level": 46, "move": "poison tail"})
+                df = add_move(df, p, {"level": 48, "move": "earthquake"})
+                df = add_move(df, p, {"level": 1, "move": "roost"})
         # Garganacl
         pokemon = "Garganacl"
         df = set_pokemon(
@@ -71,8 +97,8 @@ class PaldeaEditor(PersonalEditor):
             "Glimmora",
             ability=("Toxic Debris", "Toxic Debris", "Corrosion"),
             stats={
-                "base_stats.HP": 113,
-                "base_stats.ATK": 55,
+                "base_stats.HP": 123,
+                "base_stats.ATK": 45,
                 "base_stats.DEF": 80,
                 "base_stats.SPA": 130,
                 "base_stats.SPD": 81,
