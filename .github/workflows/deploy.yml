@@ -8,11 +8,12 @@ on:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ["3.11"]
 
     steps:
@@ -36,6 +37,11 @@ jobs:
           source venv/bin/activate
           make app APPNAME="SVMoveEditor"
 
+      - name: Zip dist folder
+        run: |
+          cd dist/
+          zip -r kivy-app-${{ matrix.os }}.zip .
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -52,8 +58,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/SVMoveEditor.app
-          asset_name: SVMoveEditor.app.zip
+          asset_path: ./dist/kivy-app-${{ matrix.os }}.zip
+          asset_name: kivy-app-${{ matrix.os }}.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
