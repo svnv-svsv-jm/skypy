@@ -1,37 +1,89 @@
-__all__ = ["INFLICT", "TARGET", "MOVES", "WAZAID"]
+# pylint: disable=too-many-lines
+__all__ = ["Inflict", "Target", "Moves", "MOVES"]
 
 import typing as ty
 import os
 import json
+from pydantic import BaseModel, Field
 
-from .loc import INPUT_FOLDER, FILENAME_WAZA
 
-json_file = os.path.join(INPUT_FOLDER, FILENAME_WAZA)
-with open(json_file, "r", encoding="utf-8-sig") as f:
-    WAZAID: ty.Dict[str, ty.List[ty.Dict[str, ty.Any]]] = json.load(f)
+class Inflict(BaseModel):
+    """Status conditions that can be inflicted."""
 
-INFLICT = {
-    "paralysis": 1,
-    "slee": 2,
-    "freeze": 3,
-    "burn": 4,
-    "poison": 5,
-    "confusion": 6,
-    "bind": 8,
-    "disable": 13,
-    "yawn": 14,
-    "perish song": 20,
-    "poison-paralysis-sleep": 47,
-}
+    paralysis: int = Field(
+        1,
+        description="Paralysis status condition.",
+    )
+    sleep: int = Field(
+        2,
+        description="Sleep status condition.",
+    )
+    freeze: int = Field(
+        3,
+        description="Freeze status condition.",
+    )
+    burn: int = Field(
+        4,
+        description="Burn status condition.",
+    )
+    poison: int = Field(
+        5,
+        description="Poison status condition.",
+    )
+    confusion: int = Field(
+        6,
+        description="Confusion status condition.",
+    )
+    bind: int = Field(
+        8,
+        description="Bind status condition.",
+    )
+    disable: int = Field(
+        13,
+        description="Disable status condition.",
+    )
+    yawn: int = Field(
+        14,
+        description="Disable status condition.",
+    )
+    perish_song: int = Field(
+        20,
+        serialization_alias="perish song",
+        description="Disable status condition.",
+    )
+    poison_paralysis_sleep: int = Field(
+        47,
+        serialization_alias="poison-paralysis-sleep",
+        description="Disable status condition.",
+    )
 
-TARGET = {
-    "one": 0,  # bite, tackle, etc.
-    "all": 4,  # earthquake
-    "all-foes": 5,  # rock slide
-    "self": 7,  # recover
-}
 
-MOVES = (
+class Target(BaseModel):
+    """Target type for a move."""
+
+    one_target: int = Field(
+        0,
+        serialization_alias="one",
+        description="Hits one target. E.g. Bite, Tackle.",
+    )
+    all_on_field: int = Field(
+        4,
+        serialization_alias="all",
+        description="Hits all targets. E.g. Earthquake.",
+    )
+    all_foes: int = Field(
+        5,
+        serialization_alias="all-foes",
+        description="Hits all foes. E.g. Rock Slide.",
+    )
+    self_target: int = Field(
+        7,
+        serialization_alias="self",
+        description="Hits self. E.g. Recover.",
+    )
+
+
+Moves = ty.Literal[
     "———",
     "Pound",
     "Karate Chop",
@@ -952,4 +1004,5 @@ MOVES = (
     "Psychic Noise",
     "Upper Hand",
     "Malignant Chain",
-)
+]
+MOVES = ty.get_args(Moves)

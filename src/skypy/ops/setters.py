@@ -16,7 +16,7 @@ import pandas as pd
 
 from skypy.schemas import EvoData
 from skypy.const.abilities import ABILITIES
-from skypy.const.types import TYPES
+from skypy.const.pkmn_types import TYPES
 from skypy.const.schema import STATS_COLUMNS
 from skypy.const.waza import MOVES, INFLICT
 from .getters import (

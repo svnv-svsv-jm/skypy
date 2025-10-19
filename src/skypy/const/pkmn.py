@@ -1,4 +1,10 @@
-POKEMON = (
+# pylint: disable=too-many-lines
+
+__all__ = ["POKEMON"]
+
+import typing as ty
+
+POKEMON: ty.Final[list[str]] = [
     "Egg",
     "Bulbasaur",
     "Ivysaur",
@@ -1423,4 +1429,4 @@ POKEMON = (
     "Poltchageist-1",
     "Sinistcha",
     "Sinistcha-1",
-)
+]

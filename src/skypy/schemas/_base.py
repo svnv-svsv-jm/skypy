@@ -7,15 +7,12 @@ from pydantic import BaseModel
 class BaseSchema(BaseModel):
     """Base class to have cool methods."""
 
-    def to_dict(self) -> ty.Dict[str, ty.Any]:
-        """Return a dict representation. We need to replace `"_"` with `"."`, and to flatten the dictionary, too."""
-        out = {}
-        for key, val in self.__dict__.items():
-            if isinstance(val, BaseSchema):
-                for key_, val_ in val.to_dict().items():
-                    k = f"{key}.{key_}"
-                    out[k] = val_
-            else:
-                k = key.replace("___", ".")
-                out[k] = val
-        return out
+    def model_dump(self, **kwargs: ty.Any) -> dict[str, ty.Any]:
+        """Override original `model_dump()` to replace all `"__"` characters with `"."`."""
+        original_dict = super().model_dump(**kwargs)  # Get the default serialization
+        transformed_dict = {key.replace("__", "."): value for key, value in original_dict.items()}
+        return transformed_dict
+
+    def to_dict(self) -> dict[str, ty.Any]:
+        """Alias for `model_dump()`."""
+        return self.model_dump()

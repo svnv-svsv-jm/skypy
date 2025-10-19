@@ -22,16 +22,8 @@ import json
 import os
 from pathlib import Path
 
-from skypy.const.loc import (
-    FILENAME,
-    FILENAME_WAZA,
-    FILENAME_DEVID,
-    OUTPUT_FOLDER,
-    INPUT_FOLDER,
-    FILENAME_TR,
-    FILENAME_TR_MAP,
-)
-from skypy.const import INT_COLUMNS, DEV_ID, ITEMID, TRDEV_ID
+from skypy.settings import settings
+from skypy.const import INT_COLUMNS
 
 
 def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
@@ -46,7 +38,7 @@ def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
 
 def read_itemid(**kwargs: Any) -> pd.DataFrame:
     """Read item id."""
-    df = pd.json_normalize(ITEMID, record_path="items")
+    df = pd.json_normalize(settings.files.data_itemid.model_dump(), record_path="items")
     df = force_columns_to_int(df)
     df = df.fillna(np.nan)
     return df
@@ -54,7 +46,7 @@ def read_itemid(**kwargs: Any) -> pd.DataFrame:
 
 def read_devid(**kwargs: Any) -> pd.DataFrame:
     """Read devid."""
-    df = pd.json_normalize(DEV_ID, record_path="values")
+    df = pd.json_normalize(settings.files.data_devid.model_dump(), record_path="values")
     df = force_columns_to_int(df)
     df = df.fillna(np.nan)
     return df
@@ -62,7 +54,7 @@ def read_devid(**kwargs: Any) -> pd.DataFrame:
 
 def read_trdevid(**kwargs: Any) -> pd.DataFrame:
     """Read devid."""
-    df = pd.json_normalize(TRDEV_ID, record_path="trainers")
+    df = pd.json_normalize(settings.files.data_trdevid.model_dump(), record_path="trainers")
     df = force_columns_to_int(df)
     df = df.fillna(np.nan)
     return df
@@ -70,34 +62,34 @@ def read_trdevid(**kwargs: Any) -> pd.DataFrame:
 
 def read_waza(**kwargs: Any) -> pd.DataFrame:
     """Read waza data."""
-    kwargs.setdefault("filename", FILENAME_WAZA)
+    kwargs.setdefault("filename", settings.files.file_waza)
     kwargs.setdefault("record_path", "table")
     return read_data(**kwargs)
 
 
 def read_personal(**kwargs: Any) -> pd.DataFrame:
     """Read personal data."""
-    kwargs.setdefault("filename", FILENAME)
+    kwargs.setdefault("filename", settings.files.file_personal)
     kwargs.setdefault("record_path", "entry")
     return read_data(**kwargs)
 
 
 def read_trainer_map(**kwargs: Any) -> pd.DataFrame:
     """Read mapping from Trainer ID's to readable names."""
-    kwargs.setdefault("filename", FILENAME_TR_MAP)
+    kwargs.setdefault("filename", settings.files.trdevid)
     kwargs.setdefault("record_path", "trainers")
     return read_data(**kwargs)
 
 
 def read_trainer(**kwargs: Any) -> pd.DataFrame:
-    """Read personal data."""
-    kwargs.setdefault("filename", FILENAME_TR)
+    """Read trainer data."""
+    kwargs.setdefault("filename", settings.files.file_trainer_data)
     kwargs.setdefault("record_path", "values")
     return read_data(**kwargs)
 
 
 def read_data(
-    filename: str = FILENAME,
+    filename: str = None,
     *,
     record_path: str = "entry",
     loc: str = None,
@@ -109,24 +101,28 @@ def read_data(
     Args:
         filename (str, optional):
             Name of the .json file. Defaults to 'personal_array.json'.
+
         record_path (str, optional): _description_. Defaults to "entry".
+
         loc (str, optional):
             Location of the `filename`. Defaults to None.
 
     Returns:
         pd.DataFrame: _description_
     """
+    if filename is None:
+        filename = settings.files.file_personal
     if f is None:
         if anew:
-            loc = INPUT_FOLDER
+            loc = settings.files.input_folder
         if loc is None:
-            loc = OUTPUT_FOLDER
+            loc = settings.files.output_folder
         if Path(loc).exists():
             f = os.path.join(loc, filename)
             if not Path(f).exists():
-                loc = INPUT_FOLDER
+                loc = settings.files.input_folder
         else:
-            loc = INPUT_FOLDER
+            loc = settings.files.input_folder
         logger.trace(f"loc={loc}")
         f = os.path.join(loc, filename)
     logger.trace(f"f={f}")
@@ -154,25 +150,33 @@ def _to_int(df: pd.DataFrame, col: str) -> pd.DataFrame:
 
 def write_waza_to_json(
     df: pd.DataFrame,
-    filename: str = FILENAME_WAZA,
-    loc: str = OUTPUT_FOLDER,
+    filename: str = None,
+    loc: str = None,
     **kwargs: Any,
 ) -> None:
     """Write results to file."""
     kwargs.setdefault("keys_to_suspect", None)
     kwargs.setdefault("first_key", "table")
+    if filename is None:
+        filename = settings.files.file_waza
+    if loc is None:
+        loc = settings.files.output_folder
     write_df_to_json(df, filename, loc=loc, **kwargs)
 
 
 def write_trainer_to_json(
     df: pd.DataFrame,
-    filename: str = FILENAME_TR,
-    loc: str = OUTPUT_FOLDER,
+    filename: str = None,
+    loc: str = None,
     **kwargs: Any,
 ) -> None:
     """Write results to file."""
     kwargs.setdefault("keys_to_suspect", None)
     kwargs.setdefault("first_key", "values")
+    if filename is None:
+        filename = settings.files.file_trainer_data
+    if loc is None:
+        loc = settings.files.output_folder
     for c, t in zip(df.columns, df.dtypes):
         if t == "float64":
             df = _to_int(df, c)
@@ -181,11 +185,15 @@ def write_trainer_to_json(
 
 def write_personal_to_json(
     df: pd.DataFrame,
-    filename: str = FILENAME,
-    loc: str = OUTPUT_FOLDER,
+    filename: str = None,
+    loc: str = None,
     **kwargs: Any,
 ) -> None:
     """Write results to file."""
+    if filename is None:
+        filename = settings.files.file_personal
+    if loc is None:
+        loc = settings.files.output_folder
     kwargs.setdefault("keys_to_suspect", ["dex"])
     kwargs.setdefault("first_key", "entry")
     write_df_to_json(df, filename, loc=loc, **kwargs)
@@ -193,11 +201,15 @@ def write_personal_to_json(
 
 def write_df_to_json(
     df: pd.DataFrame,
-    filename: str = FILENAME,
-    loc: str = OUTPUT_FOLDER,
+    filename: str = None,
+    loc: str = None,
     **kwargs: Any,
 ) -> None:
     """Write results to file."""
+    if filename is None:
+        filename = settings.files.file_personal
+    if loc is None:
+        loc = settings.files.output_folder
     df = force_columns_to_int(df)
     data = df_to_formatted_json(df, **kwargs)
     Path(loc).mkdir(parents=True, exist_ok=True)

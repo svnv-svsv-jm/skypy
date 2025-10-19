@@ -7,24 +7,21 @@ from skypy.ops import write_df_to_json, write_waza_to_json, write_trainer_to_jso
 from skypy.fav.waza import waza
 from skypy.fav.mons import mons
 from skypy.fav.trainer import trainer
-from skypy.utils.nb import nb_init, pretty_waza, pretty_df
-
-DOCS_LOC = "docs"
-WAZA_DOCS = os.path.join(DOCS_LOC, "waza.xlsx")
-PERSONAL_DOCS = os.path.join(DOCS_LOC, "personal.xlsx")
+from skypy.utils.nb import pretty_waza, pretty_df
+from skypy.settings import settings
 
 
 def main() -> None:
-    """Run."""
-    Path(DOCS_LOC).mkdir(parents=True, exist_ok=True)
+    """Run conversion."""
+    Path(settings.changes_docs_loc).mkdir(parents=True, exist_ok=True)
     # Waza
     waza_df = waza(anew=True)
     write_waza_to_json(waza_df)
-    pretty_waza(waza_df).to_excel(WAZA_DOCS, header=True)
+    pretty_waza(waza_df).to_excel(settings.waza_docs_file, header=True)
     # Mons
     personal_df = mons(anew=True)
     write_df_to_json(personal_df)
-    pretty_df(personal_df).to_excel(PERSONAL_DOCS, header=True)
+    pretty_df(personal_df).to_excel(settings.personal_docs_file, header=True)
     # Trainers
     trainer_df = trainer(anew=True)
     write_trainer_to_json(trainer_df)

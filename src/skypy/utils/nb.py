@@ -1,19 +1,20 @@
-# pylint: disable=unused-import
-# pylint: disable=unused-argument
 __all__ = ["nb_init"]
 
-import typing as ty
-import os, sys
-from loguru import logger
+import os
+import sys
 import warnings
-import pyrootutils
-import pandas as pd
 
-from skypy.const import ABILITIES, POKEMON, TYPES, MOVES
+import pandas as pd
+import pyrootutils
+from loguru import logger
+
+from skypy.const import ABILITIES, MOVES, POKEMON, TYPES
 
 
 def nb_init(logger_level: str = "INFO", add_std: bool = False) -> None:
-    """Disables warnings and correctly finds the root directory of the project. Very handy when running notebooks.
+    """Disables warnings and correctly finds the root directory of the project.
+    Very handy when running notebooks.
+
     Args:
         logger_level (str): 'INFO'
             Logging level for loguru's logger.
@@ -57,7 +58,7 @@ def pretty_df(df: pd.DataFrame) -> pd.DataFrame:
     cols = [c for c in df.columns if "base_stats." in c.lower()]
     tot = 0
     for c in cols:
-        tot += df[c].to_numpy()  # type: ignore
+        tot += df[c].to_numpy()
     df_pretty["BST"] = tot
     # Reorder
     df_pretty = select_fist_columns(
@@ -69,7 +70,7 @@ def pretty_df(df: pd.DataFrame) -> pd.DataFrame:
     return df_pretty
 
 
-def select_fist_columns(df: pd.DataFrame, cols: ty.List[str]) -> pd.DataFrame:
+def select_fist_columns(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     """Places first the provided columns."""
     for i, c in enumerate(cols):
         df = _reorder_columns(df, c, pos=i)

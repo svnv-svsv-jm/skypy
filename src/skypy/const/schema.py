@@ -1,26 +1,7 @@
-GEMTYPE = [
-    "DEFAULT",
-    "DRAGON",
-    "HAGANE",
-    "HIKOU",
-    "JIMEN",
-    "DENKI",
-    "ESPER",
-    "KOORI",
-    "KUSA",
-    "MIZU",
-    "MUSHI",
-    "NORMAL",
-    "KAKUTOU",
-    "HONOO",
-    "GHOST",
-    "AKU",
-    "FAIRY",
-    "IWA",
-    "DOKU",
-]
+import typing as ty
 
-BALLIDS = [
+BallIDs = ty.Literal[
+    "NONE",
     "MASUTAABOORU",
     "MONSUTAABOORU",
     "HAIPAABOORU",
@@ -33,8 +14,9 @@ BALLIDS = [
     "HEBIIBOORU",
     "PUREMIABOORU",
 ]
+BALLIDS = ty.get_args(BallIDs)
 
-STATS_COLUMNS = [
+StatsColumns = ty.Literal[
     "base_stats.HP",
     "base_stats.ATK",
     "base_stats.DEF",
@@ -42,8 +24,9 @@ STATS_COLUMNS = [
     "base_stats.SPD",
     "base_stats.SPE",
 ]
+STATS_COLUMNS = ty.get_args(StatsColumns)
 
-INT_COLUMNS = [
+IntColumns = ty.Literal[
     "type_1",
     "type_2",
     "ability_1",
@@ -62,3 +45,4 @@ INT_COLUMNS = [
     "exp_addend",
     "moneyRate",
 ]
+INT_COLUMNS = ty.get_args(IntColumns)

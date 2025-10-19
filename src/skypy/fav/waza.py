@@ -100,6 +100,7 @@ class WazaEditor:
             },
         )
         waza_df = set_waza(waza_df, waza="dragon pulse", power=95)
+        waza_df = set_waza(waza_df, waza="spark", power=90)
         return waza_df
 
     def edit_moves_accuracy_buffs(self, waza_df: pd.DataFrame) -> pd.DataFrame:

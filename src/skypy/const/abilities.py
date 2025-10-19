@@ -1,4 +1,8 @@
-ABILITIES = (
+__all__ = ["Abilities", "ABILITIES"]
+
+import typing as ty
+
+Abilities = ty.Literal[
     "—",
     "Stench",
     "Drizzle",
@@ -310,4 +314,6 @@ ABILITIES = (
     "Tera Shell",
     "Teraform Zero",
     "Poison Puppeteer",
-)
+]
+
+ABILITIES = ty.get_args(Abilities)

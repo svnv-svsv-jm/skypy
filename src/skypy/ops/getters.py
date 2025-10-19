@@ -24,7 +24,7 @@ import copy
 
 from skypy.const.pkmn import POKEMON
 from skypy.const.abilities import ABILITIES
-from skypy.const.types import TYPES
+from skypy.const.pkmn_types import TYPES
 from skypy.const.schema import STATS_COLUMNS
 from skypy.const.waza import MOVES
 from skypy.const.devid import DEV_ID

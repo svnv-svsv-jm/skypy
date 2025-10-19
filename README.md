@@ -6,11 +6,10 @@ Inspired by [Project Sky](https://gamebanana.com/tools/11558). This is a (still 
 
 ## Installation
 
-You need Python.
+You need `uv`.
 
 ```bash
-python -m pip install --upgrade pip poetry
-python -m poetry install
+uv sync
 ```
 
 Now you're good to go.
@@ -32,7 +31,7 @@ You can read and edit mon's abilities, stats, types, etc. Also moves.
 Once you're done, run:
 
 ```bash
-make bin
+just bin
 ```
 
 to create your `bin/personal_array.bin` and `bin/waza_array.bin` file.
@@ -44,7 +43,7 @@ In your dumped ROM's folder, copy `personal_array.bin` to `romfs/avalon/data/per
 Run:
 
 ```bash
-make mod
+just mod
 ```
 
 This will create your mod here `bin/__mod__`. Copy this folder to your emulator. You will probably also need the `__mod__/romfs/arc/data.trpfd` file. Please get one by dumping a real copy of the game or by using [Trinity](https://github.com/Inidar1/Switch-Pokemon-Modding-Tutorials/wiki).

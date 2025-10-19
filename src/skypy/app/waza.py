@@ -18,15 +18,12 @@ from .utils import to_bin
 class MoveEditor(ctk.CTkScrollableFrame):
     """Move editor."""
 
-    def __init__(self, master: tk.Tk, **kwargs: ty.Any) -> None:
+    def __init__(self, master: ctk.CTk, **kwargs: ty.Any) -> None:
         """
         Args:
             master (tk.Tk): Main app.
         """
         super().__init__(master, **kwargs)
-        self.master = master
-        self.master.title("Move editor")
-        self.master.geometry("1200x500")
         self.df = read_waza()
         logger.debug(f"Got {self.df.head()}")
         # Attributes
@@ -55,7 +52,7 @@ class MoveEditor(ctk.CTkScrollableFrame):
         self.waza_list.bind("<<ListboxSelect>>", self.__select_item)
         # Create data info
         self.move_info_frame = ctk.CTkScrollableFrame(self.master)
-        self.move_info_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=1)
+        self.move_info_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
         self.move_info_labels: ty.Dict[str, ctk.CTkLabel] = {}
         self.move_info_entries: ty.Dict[str, ctk.CTkEntry] = {}
         for c in self.df.columns:
