@@ -1,13 +1,12 @@
-from typing import Any, List
-from loguru import logger
+from typing import Any
 
 import pandas as pd
 
-from skypy.ops import read_data
 from skypy.fav.personal import PersonalEditor
+from skypy.ops import read_data
 
 
-def mons(df: pd.DataFrame = None, **kwargs: Any) -> pd.DataFrame:
+def mons(df: pd.DataFrame | None = None, **kwargs: Any) -> pd.DataFrame:
     """Mons."""
     # Table
     if df is None:

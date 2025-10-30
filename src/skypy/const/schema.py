@@ -45,4 +45,4 @@ IntColumns = ty.Literal[
     "exp_addend",
     "moneyRate",
 ]
-INT_COLUMNS = ty.get_args(IntColumns)
+INT_COLUMNS = list(ty.get_args(IntColumns))

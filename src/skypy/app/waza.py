@@ -1,17 +1,18 @@
 __all__ = ["MoveEditor"]
 
-import typing as ty
-from loguru import logger
-import tkinter as tk
-import customtkinter as ctk
 import copy
-import pandas as pd
-from pandastable import Table, TableModel
+import tkinter as tk
+import typing as ty
 
-from skypy.const import ABILITIES, POKEMON, TYPES, MOVES
+import customtkinter as ctk  # type: ignore[import-untyped]
+import pandas as pd
+from loguru import logger
+
+from skypy.const import MOVES, TYPES
 from skypy.ops import read_waza, write_waza_to_json
-from skypy.ops.setters import set_waza
 from skypy.ops.getters import resume_waza
+from skypy.ops.setters import set_waza
+
 from .utils import to_bin
 
 
@@ -19,9 +20,8 @@ class MoveEditor(ctk.CTkScrollableFrame):
     """Move editor."""
 
     def __init__(self, master: ctk.CTk, **kwargs: ty.Any) -> None:
-        """
-        Args:
-            master (tk.Tk): Main app.
+        """Args:
+        master (tk.Tk): Main app.
         """
         super().__init__(master, **kwargs)
         self.df = read_waza()
@@ -53,8 +53,8 @@ class MoveEditor(ctk.CTkScrollableFrame):
         # Create data info
         self.move_info_frame = ctk.CTkScrollableFrame(self.master)
         self.move_info_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-        self.move_info_labels: ty.Dict[str, ctk.CTkLabel] = {}
-        self.move_info_entries: ty.Dict[str, ctk.CTkEntry] = {}
+        self.move_info_labels: dict[str, ctk.CTkLabel] = {}
+        self.move_info_entries: dict[str, ctk.CTkEntry] = {}
         for c in self.df.columns:
             self.move_info_labels[c] = ctk.CTkLabel(self.move_info_frame, text=c)
             self.move_info_labels[c].pack()
@@ -95,7 +95,7 @@ class MoveEditor(ctk.CTkScrollableFrame):
         # Add clicked list item to entry box
         self.waza_entry.insert(0, self.waza_list.get(tk.ACTIVE))
 
-    def __update(self, data: ty.List[str]) -> None:
+    def __update(self, data: list[str]) -> None:
         """Update the listbox."""
         # Clear the listbox
         self.waza_list.delete(0, tk.END)

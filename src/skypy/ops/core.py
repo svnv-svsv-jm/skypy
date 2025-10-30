@@ -14,16 +14,17 @@ __all__ = [
     "read_trdevid",
 ]
 
-from loguru import logger
-from typing import Union, Sequence, Any, List, Dict, Tuple, Optional
-import pandas as pd
-import numpy as np
 import json
 import os
 from pathlib import Path
+from typing import Any
 
-from skypy.settings import settings
+import numpy as np
+import pandas as pd
+from loguru import logger
+
 from skypy.const import INT_COLUMNS
+from skypy.settings import settings
 
 
 def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
@@ -32,7 +33,9 @@ def display_trainer(df: pd.DataFrame) -> pd.DataFrame:
     tmp = df.copy()
     for i in range(6):
         c = f"poke{i+1}.devId"
-        tmp[c] = tmp[c].apply(lambda x: devid.loc[devid["devName"] == x, "name"].values[0])
+        tmp[c] = tmp[c].apply(
+            lambda x: devid.loc[devid["devName"] == x, "name"].values[0]
+        )
     return tmp
 
 
@@ -54,7 +57,9 @@ def read_devid(**kwargs: Any) -> pd.DataFrame:
 
 def read_trdevid(**kwargs: Any) -> pd.DataFrame:
     """Read devid."""
-    df = pd.json_normalize(settings.files.data_trdevid.model_dump(), record_path="trainers")
+    df = pd.json_normalize(
+        settings.files.data_trdevid.model_dump(), record_path="trainers"
+    )
     df = force_columns_to_int(df)
     df = df.fillna(np.nan)
     return df
@@ -223,12 +228,12 @@ def df_to_formatted_json(
     df: pd.DataFrame,
     sep: str = ".",
     first_key: str = "entry",
-    keys_to_suspect: Optional[List[str]] = ["dex"],
-) -> Dict[str, Any]:
+    keys_to_suspect: list[str] | None = ["dex"],
+) -> dict[str, Any]:
     """The opposite of `json_normalize`."""
     result = []
     for _, row in df.iterrows():
-        parsed_row: Dict[str, Any] = {}
+        parsed_row: dict[str, Any] = {}
         for col_label, v in row.items():
             keys = col_label.split(sep)  # type: ignore
             current = parsed_row

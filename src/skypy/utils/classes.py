@@ -4,16 +4,20 @@ import typing as ty
 
 
 def get_all_subclasses(
-    base_class: ty.Type[ty.Any],
+    base_class: type[ty.Any],
     only_direct: bool = True,
-) -> ty.List[ty.Type]:
+) -> list[type]:
     """Finds subclasses of a base class.
 
     Args:
-        base_class (ty.Type): _description_
+        base_class (type):
+            Base class to find subclasses of.
+
+        only_direct (bool):
+            If `True`, only find direct subclasses.
 
     Returns:
-        ty.List[ty.Type]:
+        list[type]:
             List of subclasses of base class.
     """
     # Also find sub-subclasses

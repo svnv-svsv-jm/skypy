@@ -1,5 +1,3 @@
-# pylint: disable=too-many-lines
-
 __all__ = ["POKEMON"]
 
 import typing as ty

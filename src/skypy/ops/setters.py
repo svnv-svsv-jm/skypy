@@ -10,33 +10,35 @@ __all__ = [
     "set_trainer",
 ]
 
-from loguru import logger
-from typing import Union, Sequence, Any, List, Dict, Tuple
-import pandas as pd
+from collections.abc import Sequence
+from typing import Any
 
-from skypy.schemas import EvoData
+import pandas as pd
+from loguru import logger
+
 from skypy.const.abilities import ABILITIES
 from skypy.const.pkmn_types import TYPES
 from skypy.const.schema import STATS_COLUMNS
-from skypy.const.waza import MOVES, INFLICT
+from skypy.const.waza import MOVES
+from skypy.schemas import EvoData
+
 from .getters import (
+    LVLUP_MOVE_TYPE,
+    get_evo_data,
+    get_learnset_raw,
     get_pokemon,
     get_pokemon_loc,
-    get_stats_from_pkmn,
-    get_learnset_raw,
-    LVLUP_MOVE_TYPE,
-    get_waza,
-    get_pkmn_id,
-    get_evo_data,
     get_species_id,
+    get_stats_from_pkmn,
     get_trainer,
+    get_waza,
 )
 
 
 def set_trainer(
     df: pd.DataFrame,
     trdevid: str,
-    edits: Dict[str, Any] = None,
+    edits: dict[str, Any] = None,
 ) -> pd.DataFrame:
     """Change a trainer's data.
 
@@ -118,7 +120,7 @@ def set_waza(
     power: int = None,
     inflicts: str = None,
     inflict_chance: int = None,
-    edits: Dict[str, Any] = None,
+    edits: dict[str, Any] = None,
 ) -> pd.DataFrame:
     """Change waza's data."""
     waza_df, waza_idx = get_waza(df, waza.lower(), return_idx=True)
@@ -144,10 +146,10 @@ def set_waza(
     if power is not None:
         waza_df["power"] = power
     # Status
-    if inflicts is not None:
-        waza_df["inflict.value"] = INFLICT[inflicts.lower()]
-        if inflict_chance is not None:
-            waza_df["inflict.chance"] = inflict_chance
+    # if inflicts is not None:
+    #     waza_df["inflict.value"] = INFLICT[inflicts.lower()]
+    #     if inflict_chance is not None:
+    #         waza_df["inflict.chance"] = inflict_chance
     # Free form: all the others
     if edits is not None:
         for key, val in edits.items():
@@ -161,11 +163,11 @@ def set_waza(
 def set_pokemon(
     df: pd.DataFrame,
     name: str,
-    ability: Union[str, Sequence[str]] = None,
-    ability_index: Union[int, Sequence[int]] = None,
-    types: Tuple[str, str] = None,
-    stats: Union[Sequence[int], Dict[str, int]] = None,
-    add_to_stats: Union[Sequence[int], Dict[str, int]] = None,
+    ability: str | Sequence[str] | None = None,
+    ability_index: int | Sequence[int] | None = None,
+    types: tuple[str, str] | None = None,
+    stats: Sequence[int] | dict[str, int] | None = None,
+    add_to_stats: Sequence[int] | dict[str, int] | None = None,
 ) -> pd.DataFrame:
     """Set attributes for a Pokemon."""
     logger.debug(f"Setting attributes for {name.upper()}")
@@ -191,7 +193,7 @@ def set_pokemon(
 
 def set_type(
     pkmn: pd.DataFrame,
-    types: Tuple[str, str],
+    types: tuple[str, str],
 ) -> pd.DataFrame:
     """Set Pokemon's type(s)."""
     # Get ID of Types
@@ -205,8 +207,8 @@ def set_type(
 
 def set_stats(
     pkmn: pd.DataFrame,
-    stats: Union[Sequence[int], Dict[str, int]] = None,
-    add_to_stats: Union[Sequence[int], Dict[str, int]] = None,
+    stats: Sequence[int] | dict[str, int] | None = None,
+    add_to_stats: Sequence[int] | dict[str, int] | None = None,
 ) -> pd.DataFrame:
     """Set Pokemon's stats."""
     logger.debug("Setting stats...")
@@ -235,18 +237,18 @@ def set_stats(
 
 def set_ability(
     pkmn: pd.DataFrame,
-    ability: Union[str, Sequence[str]],
-    index: Union[int, Sequence[int]] = None,
+    ability: str | Sequence[str],
+    index: int | Sequence[int] | None = None,
 ) -> pd.DataFrame:
     """Sets ability."""
-    if isinstance(ability, (list, tuple)):
+    if isinstance(ability, (list | tuple)):
         for i, a in enumerate(ability):
             pkmn = set_ability(pkmn, a, index=i)
         return pkmn
     # Choose ability's index
     if index is None:
         index = [0, 1, 2]  # 1st, 2nd and hidden
-    elif isinstance(index, (int, float)):
+    elif isinstance(index, (int | float)):
         index = [int(index)]
     else:
         index = [int(x) for x in index]
@@ -268,7 +270,7 @@ def set_ability(
 def add_move_raw(
     df: pd.DataFrame,
     pokemon: str,
-    move: Union[LVLUP_MOVE_TYPE, Sequence[LVLUP_MOVE_TYPE]],
+    move: LVLUP_MOVE_TYPE | Sequence[LVLUP_MOVE_TYPE],
     readable: bool = False,
 ) -> Sequence[LVLUP_MOVE_TYPE]:
     """Add move to Pokemon's learnset (raw)."""
@@ -285,14 +287,17 @@ def add_move_raw(
         else:
             move_id = move_
             move_name = move_db[move_id]
-        to_add: LVLUP_MOVE_TYPE = {"level": lvl, "move": move_name if readable else move_id}
+        to_add: LVLUP_MOVE_TYPE = {
+            "level": lvl,
+            "move": move_name if readable else move_id,
+        }
         learnset_raw.append(to_add)
         _check_moves_are_there(m, learnset_raw)
     return learnset_raw
 
 
 def _check_moves_are_there(
-    move_to_add: Union[LVLUP_MOVE_TYPE, Sequence[LVLUP_MOVE_TYPE]],
+    move_to_add: LVLUP_MOVE_TYPE | Sequence[LVLUP_MOVE_TYPE],
     learnset_new_raw: Sequence[LVLUP_MOVE_TYPE],
 ) -> None:
     """Raises an error if moves that were to be added are not found."""
@@ -317,7 +322,7 @@ def _check_moves_are_there(
 def add_move(
     df: pd.DataFrame,
     pokemon: str,
-    move: Union[LVLUP_MOVE_TYPE, Sequence[LVLUP_MOVE_TYPE]],
+    move: LVLUP_MOVE_TYPE | Sequence[LVLUP_MOVE_TYPE],
 ) -> pd.DataFrame:
     """Add move to Pokemon's learnset (raw)."""
     logger.debug(f"Adding {move} to {pokemon.upper()}'s learnset...")

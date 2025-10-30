@@ -1,11 +1,12 @@
 __all__ = ["Settings", "settings"]
 
+import json
 import os
 import typing as ty
-from loguru import logger
 from functools import cached_property
-import json
+
 import pydantic
+from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from skypy.schemas import DevIdList, ItemIdList, TrDevIdList
@@ -166,7 +167,7 @@ class Files(pydantic.BaseModel):
         """Load `devid_list.json` data."""
         filename = self.file_devid
         logger.trace(f"Loading: {filename}")
-        with open(filename, "r", encoding="utf-8-sig") as f:
+        with open(filename, encoding="utf-8-sig") as f:
             data_: dict = json.load(f)
             data = DevIdList(**data_)
         return data
@@ -177,7 +178,7 @@ class Files(pydantic.BaseModel):
         """Load `devid_list.json` data."""
         filename = self.file_itemid
         logger.trace(f"Loading: {filename}")
-        with open(filename, "r", encoding="utf-8-sig") as f:
+        with open(filename, encoding="utf-8-sig") as f:
             data_: dict = json.load(f)
             data = ItemIdList(**data_)
         return data
@@ -188,7 +189,7 @@ class Files(pydantic.BaseModel):
         """Load `devid_list.json` data."""
         filename = self.file_trdevid
         logger.trace(f"Loading: {filename}")
-        with open(filename, "r", encoding="utf-8-sig") as f:
+        with open(filename, encoding="utf-8-sig") as f:
             data_: dict = json.load(f)
             data = TrDevIdList(**data_)
         return data

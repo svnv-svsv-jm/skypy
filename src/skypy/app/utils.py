@@ -1,11 +1,10 @@
 __all__ = ["to_bin"]
 
-from loguru import logger
-import subprocess
 import os
 import shutil
+import subprocess
 
-from skypy.const.loc import BIN_FOLDER, WAZA_SCHEMA, FILENAME_WAZA
+from skypy.const.loc import BIN_FOLDER, FILENAME_WAZA, WAZA_SCHEMA
 
 
 def to_bin(

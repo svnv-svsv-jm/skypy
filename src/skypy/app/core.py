@@ -1,12 +1,10 @@
 __all__ = ["App"]
 
-import typing as ty
-from loguru import logger
 import tkinter as tk
-import customtkinter as ctk
-from pandastable import Table, TableModel
+import typing as ty
 
-from .waza import MoveEditor
+import customtkinter as ctk
+
 from .mon import MonEditor
 
 
@@ -27,9 +25,13 @@ class App(ctk.CTk):
 
     def create_buttons(self) -> None:
         """Create buttons to switch between frames."""
-        button_frame1 = tk.Button(self, text="Pokémon Editor", command=self.show_mon_editor)
+        button_frame1 = tk.Button(
+            self, text="Pokémon Editor", command=self.show_mon_editor
+        )
         button_frame1.pack(side=tk.LEFT, padx=10, pady=10)
-        button_frame2 = tk.Button(self, text="Move Editor", command=self.show_move_editor)
+        button_frame2 = tk.Button(
+            self, text="Move Editor", command=self.show_move_editor
+        )
         button_frame2.pack(side=tk.RIGHT, padx=10, pady=10)
 
     def show_move_editor(self) -> None:
