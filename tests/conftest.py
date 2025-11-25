@@ -85,7 +85,7 @@ def log_filename(request: pytest.FixtureRequest) -> str:
 @pytest.fixture
 def artifacts_path(request: pytest.FixtureRequest) -> str:
     """Artifacts path."""
-    path = os.path.join(root, "artifacts")
+    path = os.path.join(root, "pytest_artifacts")
     os.makedirs(path, exist_ok=True)
     return path
 

@@ -7,6 +7,8 @@ __all__ = [
 ]
 
 
+import json
+
 import pydantic
 
 from skypy.types import (
@@ -21,6 +23,7 @@ from skypy.types import (
     ZASeikaku,
     ZAWaza,
 )
+from skypy.types.mappers import waza_translation
 
 
 class ZAEffortTalentValues(pydantic.BaseModel):
@@ -125,6 +128,11 @@ class ZAWazaData(pydantic.BaseModel):
         serialization_alias="isPlusWaza",
         alias="isPlusWaza",
     )
+
+    @property
+    def waza_id_english(self) -> str:
+        """Get the translated Waza ID."""
+        return waza_translation.get(self.waza_id, self.waza_id)
 
 
 class ZAPokemonData(pydantic.BaseModel):
@@ -437,3 +445,23 @@ class ZATrainerDataArray(pydantic.BaseModel):
     values: list[ZATrainerData] = pydantic.Field(
         description="Values.",
     )
+
+    def get_trainer(self, trid: str) -> ZATrainerData:
+        """Get a trainer by ID."""
+        for trainer in self.values:
+            if trainer.trid == trid:
+                return trainer
+        raise ValueError(f"Trainer with ID {trid} not found.")
+
+    def set_trainer(self, trid: str, trainer: ZATrainerData) -> None:
+        """Set a trainer by ID."""
+        for i, t in enumerate(self.values):
+            if t.trid == trid:
+                self.values[i] = trainer
+                return
+        raise ValueError(f"Trainer with ID {trid} not found.")
+
+    def dump(self, path: str) -> None:
+        """Dump the data to a JSON file."""
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(self.model_dump(by_alias=True), f, indent=2, ensure_ascii=False)

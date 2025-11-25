@@ -8,7 +8,8 @@ import customtkinter as ctk
 import pydantic
 from loguru import logger
 
-from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray
+from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray, ZAWazaData
+from skypy.types.mappers import waza_translation
 from skypy.types.za import (
     RareType,
     Sex,
@@ -20,6 +21,8 @@ from skypy.types.za import (
     ZASeikaku,
     ZAWaza,
 )
+
+inverted_waza_translation = {value: key for key, value in waza_translation.items()}
 
 
 class ZATrainerEditor(ctk.CTk):
@@ -330,67 +333,67 @@ class ZATrainerEditor(ctk.CTk):
                 "Dev ID",
                 poke_attr.dev_id,
                 list(ty.get_args(ZADevID)),
-                lambda v, p=poke_attr: self._set_attr(p, "dev_id", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "dev_id", v),
                 parent=poke_frame,
             )
             self._create_field(
                 "Level",
                 str(poke_attr.level),
-                lambda v, p=poke_attr: self._set_attr(p, "level", v, int),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "level", v, int),
                 parent=poke_frame,
             )
             self._create_field(
                 "Form ID",
                 str(poke_attr.form_id),
-                lambda v, p=poke_attr: self._set_attr(p, "form_id", v, int),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "form_id", v, int),
                 parent=poke_frame,
             )
             self._create_dropdown(
                 "Sex",
                 poke_attr.sex,
                 list(ty.get_args(Sex)),
-                lambda v, p=poke_attr: self._set_attr(p, "sex", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "sex", v),
                 parent=poke_frame,
             )
             self._create_dropdown(
                 "Item",
                 poke_attr.item,
                 list(ty.get_args(ZAItemID)),
-                lambda v, p=poke_attr: self._set_attr(p, "item", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "item", v),
                 parent=poke_frame,
             )
             self._create_dropdown(
                 "Ball ID",
                 poke_attr.ball_id,
                 list(ty.get_args(ZABallID)),
-                lambda v, p=poke_attr: self._set_attr(p, "ball_id", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "ball_id", v),
                 parent=poke_frame,
             )
             self._create_dropdown(
                 "Seikaku",
                 poke_attr.seikaku,
                 list(ty.get_args(ZASeikaku)),
-                lambda v, p=poke_attr: self._set_attr(p, "seikaku", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "seikaku", v),
                 parent=poke_frame,
             )
             self._create_dropdown(
                 "Tokusei",
                 poke_attr.tokusei,
                 list(ty.get_args(Tokusei)),
-                lambda v, p=poke_attr: self._set_attr(p, "tokusei", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "tokusei", v),
                 parent=poke_frame,
             )
             self._create_dropdown(
                 "Rare Type",
                 poke_attr.rare_type,
                 list(ty.get_args(RareType)),
-                lambda v, p=poke_attr: self._set_attr(p, "rare_type", v),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "rare_type", v),
                 parent=poke_frame,
             )
             self._create_field(
                 "Scale Value",
                 str(poke_attr.scale_value),
-                lambda v, p=poke_attr: self._set_attr(p, "scale_value", v, int),
+                setter=lambda v, p=poke_attr: self._set_attr(p, "scale_value", v, int),
                 parent=poke_frame,
             )
 
@@ -402,21 +405,7 @@ class ZATrainerEditor(ctk.CTk):
 
             for waza_num in range(1, 5):
                 waza_key = f"waza{waza_num}"
-                waza_data = getattr(poke_attr, waza_key)
-                # Handle both dict and object access
-                if isinstance(waza_data, dict):
-                    waza_id = waza_data.get("wazaId", "WAZA_NULL")
-                    is_plus = waza_data.get("isPlusWaza", False)
-                else:
-                    # If it's an object, try attribute access
-                    waza_id = getattr(
-                        waza_data, "wazaId", getattr(waza_data, "waza_id", "WAZA_NULL")
-                    )
-                    is_plus = getattr(
-                        waza_data,
-                        "isPlusWaza",
-                        getattr(waza_data, "is_plus_waza", False),
-                    )
+                waza_data: ZAWazaData = getattr(poke_attr, waza_key)
 
                 # Create a frame for each move
                 waza_frame = ctk.CTkFrame(poke_frame)
@@ -428,44 +417,41 @@ class ZATrainerEditor(ctk.CTk):
                 waza_name_label.pack(side="left", padx=5)
 
                 # Move ID Entry
-                def on_waza_change(val: str, wd=waza_data) -> None:  # Capture waza_data
-                    if isinstance(wd, dict):
-                        wd["wazaId"] = val
-                    else:
-                        if hasattr(wd, "wazaId"):
-                            wd.wazaId = val
-                        elif hasattr(wd, "waza_id"):
-                            wd.waza_id = val
+                def on_waza_change(val: str) -> None:
+                    """On Waza Change.
+
+                    Args:
+                        val (str):
+                            The value to set the Waza ID to.
+                            This is the English name of the Waza ID if we translated it already, otherwise it's the original ID.
+                    """
+                    logger.trace(f"On Waza Change: {val}")
+                    waza_data.waza_id = inverted_waza_translation.get(val, val)
+                    logger.trace(f"New Waza ID: {waza_data.waza_id} | {val}")
 
                 waza_option_menu = ctk.CTkOptionMenu(
                     waza_frame,
-                    values=list(ty.get_args(ZAWaza)),
-                    command=lambda v, wd=waza_data: on_waza_change(v, wd),
+                    values=[
+                        ZAWazaData(waza_id=waza).waza_id_english
+                        for waza in ty.get_args(ZAWaza)
+                    ],
+                    command=on_waza_change,
                 )
-                waza_option_menu.set(str(waza_id))
+                waza_option_menu.set(str(waza_data.waza_id_english))
                 waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
 
                 # Plus Checkbox
-                def on_plus_change(val: bool, wd=waza_data) -> None:
-                    if isinstance(wd, dict):
-                        wd["isPlusWaza"] = val
-                    else:
-                        if hasattr(wd, "isPlusWaza"):
-                            wd.isPlusWaza = val
-                        elif hasattr(wd, "is_plus_waza"):
-                            wd.is_plus_waza = val
-
-                # Re-doing checkbox logic to capture widget
-                # Define variable
-                plus_var = ctk.IntVar(value=1 if is_plus else 0)
-                plus_var.trace_add(
-                    "write", lambda *args, v=plus_var: on_plus_change(bool(v.get()))
-                )
+                def on_plus_change() -> None:
+                    """On Plus Change."""
+                    logger.trace(f"On Plus Change: {waza_data.is_plus_waza}")
+                    waza_data.is_plus_waza = not waza_data.is_plus_waza
+                    logger.trace(f"New Plus Waza: {waza_data.is_plus_waza}")
 
                 plus_checkbox = ctk.CTkCheckBox(
                     waza_frame,
                     text="Plus Waza",
-                    variable=plus_var,
+                    variable=ctk.BooleanVar(value=waza_data.is_plus_waza),
+                    command=on_plus_change,
                 )
                 plus_checkbox.pack(side="left", padx=5)
 
@@ -551,15 +537,13 @@ class ZATrainerEditor(ctk.CTk):
         """Save all trainer data to the JSON file."""
         # Convert pydantic models back to dict format
         zatrdata = ZATrainerDataArray(values=self.trdata)
-        output_data = zatrdata.model_dump(by_alias=True)
-
-        # Write to file
-        path = os.path.join(self.output_dir, self.file_name)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(output_data, f, indent=2, ensure_ascii=False)
+        zatrdata.dump(os.path.join(self.output_dir, self.file_name))
 
         # Show confirmation
-        self.status_label.configure(text=f"Saved to {path}", text_color="green")
+        self.status_label.configure(
+            text=f"Saved to {os.path.join(self.output_dir, self.file_name)}",
+            text_color="green",
+        )
 
         # Clear status after 3 seconds
         self.after(

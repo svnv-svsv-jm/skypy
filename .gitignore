@@ -21,7 +21,7 @@ resources/preprocessed
 .pytest_cache
 .mypy_cache
 .coverage
-.coverage 2
+.coverage *
 .coverage.*
 coverage.*
 .testmon*
