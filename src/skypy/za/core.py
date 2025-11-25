@@ -2,6 +2,7 @@ __all__ = ["ZATrainerEditor"]
 
 import json
 import os
+import subprocess
 import typing as ty
 
 import customtkinter as ctk
@@ -554,15 +555,18 @@ class ZATrainerEditor(ctk.CTk):
         # Update displayed data
         self.display_trainer_data()
 
-    def save_trainer_data(self) -> None:
+    def save_trainer_data(self, output_dir: str | None = None) -> None:
         """Save all trainer data to the JSON file."""
+        output_dir = output_dir or self.output_dir
+
         # Convert pydantic models back to dict format
         zatrdata = ZATrainerDataArray(values=self.trdata)
-        zatrdata.dump(os.path.join(self.output_dir, self.file_name))
+        file_out = os.path.join(output_dir, self.file_name)
+        zatrdata.dump(file_out)
 
         # Show confirmation
         self.status_label.configure(
-            text=f"Saved to {os.path.join(self.output_dir, self.file_name)}",
+            text=f"Saved to {file_out}",
             text_color="green",
         )
 
@@ -570,3 +574,18 @@ class ZATrainerEditor(ctk.CTk):
         self.after(
             3000, lambda: self.status_label.configure(text="", text_color="gray")
         )
+
+        # Create binaries
+        if os.path.exists(os.path.join(self.input_dir, "trdata_array.bfbs")):
+            logger.trace(f"Creating binary for {file_out}...")
+            subprocess.run(
+                [
+                    "flatc",
+                    "-b",
+                    "-o",
+                    os.path.dirname(file_out),
+                    os.path.join(self.input_dir, "trdata_array.bfbs"),
+                    file_out,
+                ]
+            )
+            logger.trace(f"Binary created for {file_out}.")
