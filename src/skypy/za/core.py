@@ -8,7 +8,7 @@ import customtkinter as ctk
 import pydantic
 from loguru import logger
 
-from skypy.schemas import ZAPokemonData, ZATrainerData
+from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray
 from skypy.types.za import (
     RareType,
     Sex,
@@ -33,6 +33,7 @@ class ZATrainerEditor(ctk.CTk):
         output_dir: str = "assets/za/Output",
         file_name: str = "trdata_array.json",
         title: str = "ZA Trainer Editor",
+        ignore_output_dir: bool = False,
         visible: bool = True,
         **kwargs: ty.Any,
     ) -> None:
@@ -59,6 +60,10 @@ class ZATrainerEditor(ctk.CTk):
                 Title of the window.
                 Default is `"ZA Trainer Editor"`.
 
+            ignore_output_dir (bool):
+                Whether to not use the output directory.
+                Default is `False`.
+
             visible (bool):
                 Whether to show the window.
 
@@ -72,12 +77,14 @@ class ZATrainerEditor(ctk.CTk):
         self.output_dir = output_dir
         self.file_name = file_name
         self.selected_trainer_index: int = 0
+        self.ignore_output_dir = ignore_output_dir
 
         # Load trainer data
         self.trdata = self.load_trainer_data(
             file_name=self.file_name,
             input_dir=self.input_dir,
             output_dir=self.output_dir,
+            ignore_output_dir=ignore_output_dir,
         )
 
         # Set up UI
@@ -96,6 +103,7 @@ class ZATrainerEditor(ctk.CTk):
         file_name: str | None = None,
         input_dir: str | None = None,
         output_dir: str | None = None,
+        ignore_output_dir: bool = False,
     ) -> list[ZATrainerData]:
         """Load trainer data from a JSON file."""
         logger.trace("Loading trainer data...")
@@ -107,7 +115,7 @@ class ZATrainerEditor(ctk.CTk):
         # If output folder exists, use it
         dir_path = input_dir
         logger.trace(f"Set target directory to {dir_path}")
-        if os.path.exists(output_dir):
+        if os.path.exists(output_dir) and not ignore_output_dir:
             logger.trace(f"Output folder exists ({output_dir}), using it....")
             dir_path = output_dir
             logger.trace(f"Set new target directory to {dir_path}")
@@ -124,15 +132,15 @@ class ZATrainerEditor(ctk.CTk):
         logger.trace(f"Loaded trainer data from {path}.")
         return trdata
 
-    def create_widgets(self) -> None:
-        """Create UI widgets."""
-        logger.trace(f"Creating widgets ({type(self)}): {self}")
-        # Top frame for combobox
-        top_frame = ctk.CTkFrame(self)
-        top_frame.pack(fill="x", padx=10, pady=10)
+    def create_top_frame(self) -> None:
+        """Create the top frame."""
+        self.top_frame = ctk.CTkFrame(self)
+        self.top_frame.pack(fill="x", padx=10, pady=10)
 
+    def create_trainer_combobox(self) -> None:
+        """Create the trainer combobox."""
         # Create a label for the combobox
-        label = ctk.CTkLabel(top_frame, text="Select Trainer:")
+        label = ctk.CTkLabel(self.top_frame, text="Select Trainer:")
         label.pack(side="left", padx=10)
 
         # Get list of trainer IDs for the combobox
@@ -140,32 +148,58 @@ class ZATrainerEditor(ctk.CTk):
 
         # Create combobox
         self.trainer_combobox = ctk.CTkComboBox(
-            top_frame,
+            self.top_frame,
             values=trainer_ids,
             command=self.on_trainer_selected,
         )
         self.trainer_combobox.pack(side="left", padx=10, fill="x", expand=True)
-        # Set default selection
-        if trainer_ids:
-            self.trainer_combobox.set(trainer_ids[0])
 
-        # Create scrollable frame for trainer data
+        # Set default selection
+        self.trainer_combobox.set(trainer_ids[0])
+
+    def create_data_frame(self) -> None:
+        """Create the data frame."""
         self.data_frame = ctk.CTkScrollableFrame(self)
         self.data_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
+    def create_bottom_frame(self) -> None:
+        """Create the bottom frame."""
+        self.bottom_frame = ctk.CTkFrame(self)
+        self.bottom_frame.pack(fill="x", padx=10, pady=10)
+
+    def create_save_button(self) -> None:
+        """Create the save button."""
+        self.save_button = ctk.CTkButton(
+            self.bottom_frame, text="Save Changes", command=self.save_trainer_data
+        )
+        self.save_button.pack(side="left", padx=10)
+
+    def create_status_label(self) -> None:
+        """Create the status label."""
+        self.status_label = ctk.CTkLabel(self.bottom_frame, text="", text_color="gray")
+        self.status_label.pack(side="left", padx=10)
+
+    def create_widgets(self) -> None:
+        """Create UI widgets."""
+        logger.trace(f"Creating widgets ({type(self)}): {self}")
+
+        # Top frame for combobox
+        self.create_top_frame()
+
+        # Create a label for the combobox
+        self.create_trainer_combobox()
+
+        # Create scrollable frame for trainer data
+        self.create_data_frame()
+
         # Create bottom frame for save button and status
-        bottom_frame = ctk.CTkFrame(self)
-        bottom_frame.pack(fill="x", padx=10, pady=10)
+        self.create_bottom_frame()
 
         # Create save button
-        save_button = ctk.CTkButton(
-            bottom_frame, text="Save Changes", command=self.save_trainer_data
-        )
-        save_button.pack(side="left", padx=10)
+        self.create_save_button()
 
         # Create status label
-        self.status_label = ctk.CTkLabel(bottom_frame, text="", text_color="gray")
-        self.status_label.pack(side="left", padx=10)
+        self.create_status_label()
 
         logger.trace(f"Created widgets ({type(self)}): {self}")
 
@@ -515,13 +549,11 @@ class ZATrainerEditor(ctk.CTk):
     def save_trainer_data(self) -> None:
         """Save all trainer data to the JSON file."""
         # Convert pydantic models back to dict format
-        trainer_dicts = [trainer.model_dump(by_alias=True) for trainer in self.trdata]
-
-        # Create the JSON structure
-        output_data = {"values": trainer_dicts}
+        zatrdata = ZATrainerDataArray(values=self.trdata)
+        output_data = zatrdata.model_dump(by_alias=True)
 
         # Write to file
-        path = os.path.join(self.output_dir, "trdata_array.json")
+        path = os.path.join(self.output_dir, self.file_name)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
