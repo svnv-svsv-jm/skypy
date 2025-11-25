@@ -233,19 +233,19 @@ class ZAPokemonData(pydantic.BaseModel):
         serialization_alias="scaleValue",
         alias="scaleValue",
     )
-    waza1: dict = pydantic.Field(
+    waza1: ZAWazaData = pydantic.Field(
         description="Waza 1.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
-    waza2: dict = pydantic.Field(
+    waza2: ZAWazaData = pydantic.Field(
         description="Waza 2.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
-    waza3: dict = pydantic.Field(
+    waza3: ZAWazaData = pydantic.Field(
         description="Waza 3.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
-    waza4: dict = pydantic.Field(
+    waza4: ZAWazaData = pydantic.Field(
         description="Waza 4.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
