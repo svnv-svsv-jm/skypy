@@ -1,0 +1,84 @@
+{
+  "DamagePerMegaAura": 30,
+  "DamagePerRandomAmplitude": 15,
+  "DamagePerTrainerBattle": 70,
+  "DamagePerWildBattle": 70,
+  "DamagePerWeatherAdvantage": 0,
+  "DamagePerWeatherDisadvantage": 0,
+  "DamagePerCritical": 0,
+  "DamagePerCriticalPlus": 0,
+  "DamagePerTypeMatch": 0,
+  "DamagePerTypeMatchPlus": 0,
+  "DamagePerMamoruThroughPlus": 0,
+  "DamagePerTypeAff": {
+    "PerType18": 15,
+    "PerType14": 30,
+    "PerType12": 60,
+    "PerType1": 100,
+    "PerType2": 200,
+    "PerType4": 400,
+    "PerType8": 800
+  },
+  "DamagePerTypeAffPlus": {
+    "PerType18": 18,
+    "PerType14": 36,
+    "PerType12": 72,
+    "PerType1": 120,
+    "PerType2": 260,
+    "PerType4": 520,
+    "PerType8": 1040
+  },
+  "DamagePerMegaTypeAff": {
+    "PerType18": 100,
+    "PerType14": 100,
+    "PerType12": 100,
+    "PerType1": 100,
+    "PerType2": 100,
+    "PerType4": 63,
+    "PerType8": 63
+  },
+  "DamagePerMegaTypeAffPlus": {
+    "PerType18": 100,
+    "PerType14": 100,
+    "PerType12": 100,
+    "PerType1": 100,
+    "PerType2": 100,
+    "PerType4": 63,
+    "PerType8": 63
+  },
+  "ReflectorDamageCutRatio": 66,
+  "HikarinokabeDamageCutRatio": 66,
+  "NeedleGuardDamageDemon": 0,
+  "StealthRockDamageDemon": {
+    "DemonType1": 8,
+    "DemonType12": 16,
+    "DemonType14": 32,
+    "DemonType18": 32,
+    "DemonType116": 32,
+    "DemonType132": 32,
+    "DemonType2": 6,
+    "DemonType4": 4,
+    "DemonType8": 4,
+    "DemonType16": 4,
+    "DemonType32": 4
+  },
+  "StealthRockDamageDemonPlus": {
+    "DemonType1": 8,
+    "DemonType12": 16,
+    "DemonType14": 32,
+    "DemonType18": 32,
+    "DemonType116": 32,
+    "DemonType132": 32,
+    "DemonType2": 6,
+    "DemonType4": 4,
+    "DemonType8": 4,
+    "DemonType16": 4,
+    "DemonType32": 4
+  },
+  "CriticalRankRatio": [
+    24,
+    8,
+    2,
+    1
+  ]
+}

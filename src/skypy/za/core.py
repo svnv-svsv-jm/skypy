@@ -7,6 +7,7 @@ import typing as ty
 
 import customtkinter as ctk
 import pydantic
+import pyinstrument
 from loguru import logger
 
 from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray, ZAWazaData
@@ -190,6 +191,7 @@ class ZATrainerEditor(ctk.CTk):
         self.status_label = ctk.CTkLabel(self.bottom_frame, text="", text_color="gray")
         self.status_label.pack(side="left", padx=10)
 
+    @pyinstrument.profile()
     def create_widgets(self) -> None:
         """Create UI widgets."""
         logger.trace(f"Creating widgets ({type(self)}): {self}")
@@ -214,13 +216,17 @@ class ZATrainerEditor(ctk.CTk):
 
         logger.trace(f"Created widgets ({type(self)}): {self}")
 
+    @pyinstrument.profile()
     def display_trainer_data(self) -> None:
         """Display the current trainer's data."""
         logger.trace(f"Displaying trainer data ({type(self)}): {self}")
+
         # Clear existing widgets
         for widget in self.data_frame.winfo_children():
+            logger.trace(f"Destroying widget: {widget}")
             widget.destroy()
 
+        logger.trace(f"Selecting trainer index: {self.selected_trainer_index}")
         trainer = self.trdata[self.selected_trainer_index]
 
         # Basic Information Section
@@ -229,7 +235,11 @@ class ZATrainerEditor(ctk.CTk):
         )
         basic_label.pack(pady=(10, 5), anchor="w")
 
-        self._create_field("Trainer ID", trainer.trid, readonly=True)
+        self._create_field(
+            "Trainer ID",
+            trainer.trid,
+            readonly=True,
+        )
         self._create_field(
             "Trainer Type",
             str(trainer.trtype),
@@ -498,6 +508,8 @@ class ZATrainerEditor(ctk.CTk):
         parent: ctk.CTkFrame | None = None,
     ) -> None:
         """Create a label and entry field pair."""
+        logger.trace(f"Creating field: {label_text} = {value} (readonly: {readonly})")
+
         field_frame = ctk.CTkFrame(parent or self.data_frame)
         field_frame.pack(fill="x", pady=2, padx=10)
 
@@ -518,6 +530,7 @@ class ZATrainerEditor(ctk.CTk):
         self, label_text: str, value: bool, setter: ty.Callable[[bool], None]
     ) -> None:
         """Create a checkbox field."""
+        logger.trace(f"Creating checkbox: {label_text} = {value}")
         # Use IntVar for checkbox variable
         var = ctk.IntVar(value=1 if value else 0)
         var.trace_add("write", lambda *args: setter(bool(var.get())))
@@ -534,13 +547,17 @@ class ZATrainerEditor(ctk.CTk):
         parent: ctk.CTkFrame | None = None,
     ) -> None:
         """Create a dropdown field."""
+        logger.trace(f"Creating dropdown: {label_text} = {value} (values: {values})")
         field_frame = ctk.CTkFrame(parent or self.data_frame)
         field_frame.pack(fill="x", pady=2, padx=10)
 
         label = ctk.CTkLabel(field_frame, text=f"{label_text}:", width=200)
         label.pack(side="left", padx=5)
 
+        logger.trace("Sorting values...")
         values.sort()
+        logger.trace("Sorted values.")
+
         option_menu = ctk.CTkOptionMenu(field_frame, values=values, command=setter)
         option_menu.set(value)
         option_menu.pack(side="left", fill="x", expand=True, padx=5)

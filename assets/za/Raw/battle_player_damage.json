@@ -1,0 +1,116 @@
+{
+  "Move": [
+    {
+      "WazaPower": 25,
+      "Damage": 30
+    },
+    {
+      "WazaPower": 50,
+      "Damage": 40
+    },
+    {
+      "WazaPower": 75,
+      "Damage": 50
+    },
+    {
+      "WazaPower": 100,
+      "Damage": 60
+    },
+    {
+      "WazaPower": 999,
+      "Damage": 70
+    }
+  ],
+  "PokemonRatio": [
+    {
+      "TotalPower": 300,
+      "Ratio": 0.5
+    },
+    {
+      "TotalPower": 400,
+      "Ratio": 0.75
+    },
+    {
+      "TotalPower": 500,
+      "Ratio": 1
+    },
+    {
+      "TotalPower": 599,
+      "Ratio": 1.25
+    },
+    {
+      "TotalPower": 9999,
+      "Ratio": 1.5
+    }
+  ],
+  "MegaPokemon": [
+    {
+      "DevNo": 359,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 80,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 323,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 71,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 15,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 701,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 354,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 181,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 689,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 303,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 478,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 334,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 3,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 149,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 248,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 121,
+      "Ratio": 0
+    },
+    {
+      "DevNo": 718,
+      "Ratio": 0
+    }
+  ]
+}
