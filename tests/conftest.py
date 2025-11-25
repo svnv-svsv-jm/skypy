@@ -9,7 +9,9 @@ import pyrootutils
 import pytest
 from loguru import logger
 
+from skypy.schemas import ZATrainerData
 from skypy.types import LogLevel
+from skypy.za import ZATrainerEditor
 
 
 def get_root() -> str:
@@ -384,3 +386,21 @@ def za_trainer_data_dummy(za_trainer_data_raw: dict) -> list[dict]:
     values = za_trainer_data_raw["values"]
     # Return first Trainer, which is the dummy one
     return values[0]
+
+
+@pytest.fixture
+def za_trainer_data_dummy_parsed(za_trainer_data_dummy: dict) -> list[ZATrainerData]:
+    """Trainer data for the first (dummy) trainer."""
+    return [ZATrainerData(**za_trainer_data_dummy)]
+
+
+@pytest.fixture
+def za_trainer_editor_app() -> ty.Iterator[ZATrainerEditor]:
+    """ZA Trainer Editor app."""
+    # Setup: Create the root window
+    app = ZATrainerEditor(visible=False)
+
+    yield app
+
+    # Teardown: Destroy the app after the test
+    app.destroy()

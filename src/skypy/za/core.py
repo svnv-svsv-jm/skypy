@@ -19,25 +19,33 @@ class ZATrainerEditor(ctk.CTk):
         height: int = 600,
         input_dir: str = "assets/za/Input",
         output_dir: str = "assets/za/Output",
+        visible: bool = True,
         **kwargs: ty.Any,
     ) -> None:
         """Init."""
         super().__init__(**kwargs)
+        if not visible:
+            self.withdraw()
         self.title("ZA Trainer Editor")
         self.geometry(f"{width}x{height}")
         self.input_dir = input_dir
         self.output_dir = output_dir
-        path = os.path.join(self.input_dir, "trdata_array.json")
-        with open(path, encoding="utf-8") as f:
-            trdata = json.load(f)
-        self.trdata = pydantic.TypeAdapter(list[ZATrainerData]).validate_python(
-            trdata["values"]
-        )
+        self.trdata = self.load_trainer_data()
         self.selected_trainer_index: int = 0
         self.create_widgets()
         # Display initial trainer data
-        if self.trdata:
-            self.display_trainer_data()
+        self.display_trainer_data()
+
+    def load_trainer_data(self, input_dir: str | None = None) -> list[ZATrainerData]:
+        """Load trainer data from a JSON file."""
+        input_dir = input_dir or self.input_dir
+        path = os.path.join(input_dir, "trdata_array.json")
+        with open(path, encoding="utf-8") as f:
+            trdata = json.load(f)
+        trdata = pydantic.TypeAdapter(list[ZATrainerData]).validate_python(
+            trdata["values"]
+        )
+        return trdata
 
     def create_widgets(self) -> None:
         """Create UI widgets."""
