@@ -54,6 +54,7 @@ init:
 
 # Python install
 venv venv=VENV python=PYTHONVERSION:
+    rm -rf {{ venv }} || echo "ok"
     uv python install {{ python }}
     uv venv {{ venv }} --python={{ python }}
     source "{{ venv }}/bin/activate"
@@ -98,9 +99,6 @@ ruff dir=DIRS2CHECK:
 
 unit-test:
     {{ PYTHON_EXEC }} pytest -m "not integtest" -x --testmon --cov=src/ --cov-fail-under {{ COV_FAIL_UNDER }}
-
-integ-test:
-    {{ PYTHON_EXEC }} pytest -m "integtest" --testmon --cov=src/
 
 nbmake:
     {{ PYTHON_EXEC }} pytest -x --testmon --nbmake --overwrite {{ EXAMPLE_DIR }}

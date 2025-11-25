@@ -1,0 +1,14 @@
+This is still a beta build of this randomizer. It is mostly a proof of concept.
+
+What it does:
+when you click the randomizer.py file it will give you two new bin files in the output.
+
+What you need to do next is make a directory for those bin files.
+For the encount_data_array.bin, it is world/ik_data/field/pokemon/encount_data/Encount/data
+For the pokemon_data_array.bin it is world/ik_data/field/pokemon/pokemon_data/pokemon_data
+
+Then just make the world folder a zip and load it into trinity when the romfs for ZA is loaded in
+
+Click apply mods then add it to your mod location.
+
+Let me know if you run into any issues or have any ideas for features while I am working on the actual randomizer

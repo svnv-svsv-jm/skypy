@@ -1,9 +1,9 @@
-from loguru import logger
 import typer
+from loguru import logger
 
+from skypy.app import App
 from skypy.fav.main import main as _apply
 from skypy.utils.logger import set_up_logging
-from skypy.app import App
 
 # Define app
 app = typer.Typer()
