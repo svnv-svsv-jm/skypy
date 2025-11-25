@@ -9,7 +9,7 @@ import pyrootutils
 import pytest
 from loguru import logger
 
-from skypy.schemas import ZATrainerData
+from skypy.schemas import ZATrainerData, ZATrainerDataArray
 from skypy.types import LogLevel
 from skypy.za import ZATrainerEditor
 
@@ -83,6 +83,14 @@ def log_filename(request: pytest.FixtureRequest) -> str:
 
 
 @pytest.fixture
+def artifacts_path(request: pytest.FixtureRequest) -> str:
+    """Artifacts path."""
+    path = os.path.join(root, "artifacts")
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
+@pytest.fixture
 def log_file(artifacts_path: str, log_filename: str) -> str:
     """File where to store logs."""
     return os.path.join(
@@ -152,7 +160,7 @@ def za_trainer_data_path(za_assets_dir: str) -> str:
 
 
 @pytest.fixture
-def za_trainer_data_raw(za_trainer_data_path: str) -> dict:
+def za_trainer_data_raw(za_trainer_data_path: str) -> dict[str, list[dict]]:
     """Load raw data from the trainer data file."""
     # Load the trpfs file which contains the actual trainer data
     trpfs_file = Path(za_trainer_data_path)
@@ -404,3 +412,9 @@ def za_trainer_editor_app() -> ty.Iterator[ZATrainerEditor]:
 
     # Teardown: Destroy the app after the test
     app.destroy()
+
+
+@pytest.fixture
+def zatrdata(za_trainer_data_raw: dict) -> ZATrainerDataArray:
+    """ZA Trainer data array."""
+    return ZATrainerDataArray(**za_trainer_data_raw)

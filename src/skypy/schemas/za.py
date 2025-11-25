@@ -1,4 +1,10 @@
-__all__ = ["ZATrainerData", "ZAEffortTalentValues", "ZAWazaData", "ZAPokemonData"]
+__all__ = [
+    "ZATrainerDataArray",
+    "ZATrainerData",
+    "ZAEffortTalentValues",
+    "ZAWazaData",
+    "ZAPokemonData",
+]
 
 
 import pydantic
@@ -416,4 +422,18 @@ class ZATrainerData(pydantic.BaseModel):
     )
     poke6: ZAPokemonData = pydantic.Field(
         description="Pokemon.",
+    )
+
+
+class ZATrainerDataArray(pydantic.BaseModel):
+    """Trainer data array."""
+
+    model_config = pydantic.ConfigDict(
+        validate_default=True,
+        validate_assignment=True,
+        extra="forbid",
+    )
+
+    values: list[ZATrainerData] = pydantic.Field(
+        description="Values.",
     )

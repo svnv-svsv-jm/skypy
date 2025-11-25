@@ -6,6 +6,7 @@ import typing as ty
 
 import customtkinter as ctk
 import pydantic
+from loguru import logger
 
 from skypy.schemas import ZAPokemonData, ZATrainerData
 from skypy.types.za import (
@@ -30,36 +31,102 @@ class ZATrainerEditor(ctk.CTk):
         height: int = 600,
         input_dir: str = "assets/za/Input",
         output_dir: str = "assets/za/Output",
+        file_name: str = "trdata_array.json",
+        title: str = "ZA Trainer Editor",
         visible: bool = True,
         **kwargs: ty.Any,
     ) -> None:
-        """Init."""
+        """Init.
+
+        Args:
+            width (int):
+                Width of the window.
+
+            height (int):
+                Height of the window.
+
+            input_dir (str):
+                Directory to load trainer data from.
+
+            output_dir (str):
+                Directory to save trainer data to.
+
+            file_name (str):
+                File name to load trainer data from.
+                Default is `"trdata_array.json"`.
+
+            title (str):
+                Title of the window.
+                Default is `"ZA Trainer Editor"`.
+
+            visible (bool):
+                Whether to show the window.
+
+            **kwargs (Any):
+                Additional keyword arguments to pass to the parent class.
+        """
         super().__init__(**kwargs)
-        if not visible:
-            self.withdraw()
-        self.title("ZA Trainer Editor")
-        self.geometry(f"{width}x{height}")
+        # Set up attributes
+        self.app_title = title
         self.input_dir = input_dir
         self.output_dir = output_dir
-        self.trdata = self.load_trainer_data()
+        self.file_name = file_name
         self.selected_trainer_index: int = 0
+
+        # Load trainer data
+        self.trdata = self.load_trainer_data(
+            file_name=self.file_name,
+            input_dir=self.input_dir,
+            output_dir=self.output_dir,
+        )
+
+        # Set up UI
+        self.title(self.app_title)
+        self.geometry(f"{width}x{height}")
         self.create_widgets()
-        # Display initial trainer data
         self.display_trainer_data()
 
-    def load_trainer_data(self, input_dir: str | None = None) -> list[ZATrainerData]:
+        # Hide window if not visible
+        if not visible:
+            self.withdraw()
+        logger.trace(f"Initialized ({type(self)}): {self}")
+
+    def load_trainer_data(
+        self,
+        file_name: str | None = None,
+        input_dir: str | None = None,
+        output_dir: str | None = None,
+    ) -> list[ZATrainerData]:
         """Load trainer data from a JSON file."""
+        logger.trace("Loading trainer data...")
+        # Inputs
+        file_name = os.path.basename(file_name or self.file_name)
         input_dir = input_dir or self.input_dir
-        path = os.path.join(input_dir, "trdata_array.json")
+        output_dir = output_dir or self.output_dir
+
+        # If output folder exists, use it
+        dir_path = input_dir
+        logger.trace(f"Set target directory to {dir_path}")
+        if os.path.exists(output_dir):
+            logger.trace(f"Output folder exists ({output_dir}), using it....")
+            dir_path = output_dir
+            logger.trace(f"Set new target directory to {dir_path}")
+
+        # Load data
+        logger.trace(f"Joining {dir_path} and {file_name}")
+        path = os.path.join(dir_path, file_name)
+        logger.trace(f"Loading data from {path}...")
         with open(path, encoding="utf-8") as f:
             trdata = json.load(f)
         trdata = pydantic.TypeAdapter(list[ZATrainerData]).validate_python(
             trdata["values"]
         )
+        logger.trace(f"Loaded trainer data from {path}.")
         return trdata
 
     def create_widgets(self) -> None:
         """Create UI widgets."""
+        logger.trace(f"Creating widgets ({type(self)}): {self}")
         # Top frame for combobox
         top_frame = ctk.CTkFrame(self)
         top_frame.pack(fill="x", padx=10, pady=10)
@@ -100,8 +167,11 @@ class ZATrainerEditor(ctk.CTk):
         self.status_label = ctk.CTkLabel(bottom_frame, text="", text_color="gray")
         self.status_label.pack(side="left", padx=10)
 
+        logger.trace(f"Created widgets ({type(self)}): {self}")
+
     def display_trainer_data(self) -> None:
         """Display the current trainer's data."""
+        logger.trace(f"Displaying trainer data ({type(self)}): {self}")
         # Clear existing widgets
         for widget in self.data_frame.winfo_children():
             widget.destroy()
@@ -361,6 +431,8 @@ class ZATrainerEditor(ctk.CTk):
                     variable=plus_var,
                 )
                 plus_checkbox.pack(side="left", padx=5)
+
+        logger.trace(f"Displayed trainer data ({type(self)}): {self}")
 
     def _set_attr(self, obj: ty.Any, attr: str, value: str, dtype: type = str) -> None:
         """Helper to safely set attributes with type conversion."""

@@ -10,15 +10,11 @@ from skypy.za import ZATrainerEditor
 @pytest.mark.parametrize("input_dir", ["assets/za/Input", "assets/za/Output"])
 @pytest.mark.parametrize("output_dir", ["assets/za/Input", "assets/za/Output"])
 def test_ui_initialization(
-    running_locally: bool,
     input_dir: str,
     output_dir: str,
     za_trainer_data_dummy_parsed: list[ZATrainerData],
 ) -> None:
     """Test UI initialization."""
-    if not running_locally:
-        pytest.skip("Skipping manual visual test.")
-
     with (
         mock.patch.object(ZATrainerEditor, "create_widgets") as create_widgets,
         mock.patch.object(
@@ -34,6 +30,7 @@ def test_ui_initialization(
             visible=False,
             input_dir=input_dir,
             output_dir=output_dir,
+            title="Test UI Initialization",
         )
         create_widgets.assert_called_once()
         display_trainer_data.assert_called_once()
@@ -42,6 +39,7 @@ def test_ui_initialization(
     assert ui.selected_trainer_index == 0
     assert ui.input_dir == input_dir
     assert ui.output_dir == output_dir
+    assert ui.app_title == "Test UI Initialization"
 
 
 if __name__ == "__main__":
