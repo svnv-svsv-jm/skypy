@@ -8,6 +8,17 @@ import customtkinter as ctk
 import pydantic
 
 from skypy.schemas import ZAPokemonData, ZATrainerData
+from skypy.types.za import (
+    RareType,
+    Sex,
+    Tokusei,
+    ZABallID,
+    ZADevID,
+    ZAItemID,
+    ZARank,
+    ZASeikaku,
+    ZAWaza,
+)
 
 
 class ZATrainerEditor(ctk.CTk):
@@ -114,8 +125,11 @@ class ZATrainerEditor(ctk.CTk):
             str(trainer.trtype2),
             lambda v: self._set_attr(trainer, "trtype2", v, int),
         )
-        self._create_field(
-            "ZA Rank", trainer.za_rank, lambda v: self._set_attr(trainer, "za_rank", v)
+        self._create_dropdown(
+            "ZA Rank",
+            trainer.za_rank,
+            list(ty.get_args(ZARank)),
+            lambda v: self._set_attr(trainer, "za_rank", v),
         )
         self._create_field(
             "Money Rate",
@@ -205,65 +219,72 @@ class ZATrainerEditor(ctk.CTk):
             )
             poke_title.pack(anchor="w", padx=10, pady=5)
 
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Dev ID",
                 poke_attr.dev_id,
+                list(ty.get_args(ZADevID)),
                 lambda v, p=poke_attr: self._set_attr(p, "dev_id", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_field(
                 "Level",
                 str(poke_attr.level),
                 lambda v, p=poke_attr: self._set_attr(p, "level", v, int),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_field(
                 "Form ID",
                 str(poke_attr.form_id),
                 lambda v, p=poke_attr: self._set_attr(p, "form_id", v, int),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Sex",
                 poke_attr.sex,
+                list(ty.get_args(Sex)),
                 lambda v, p=poke_attr: self._set_attr(p, "sex", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Item",
                 poke_attr.item,
+                list(ty.get_args(ZAItemID)),
                 lambda v, p=poke_attr: self._set_attr(p, "item", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Ball ID",
                 poke_attr.ball_id,
+                list(ty.get_args(ZABallID)),
                 lambda v, p=poke_attr: self._set_attr(p, "ball_id", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Seikaku",
                 poke_attr.seikaku,
+                list(ty.get_args(ZASeikaku)),
                 lambda v, p=poke_attr: self._set_attr(p, "seikaku", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Tokusei",
                 poke_attr.tokusei,
+                list(ty.get_args(Tokusei)),
                 lambda v, p=poke_attr: self._set_attr(p, "tokusei", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_dropdown(
                 "Rare Type",
                 poke_attr.rare_type,
+                list(ty.get_args(RareType)),
                 lambda v, p=poke_attr: self._set_attr(p, "rare_type", v),
+                parent=poke_frame,
             )
-            self._create_field_in_frame(
-                poke_frame,
+            self._create_field(
                 "Scale Value",
                 str(poke_attr.scale_value),
                 lambda v, p=poke_attr: self._set_attr(p, "scale_value", v, int),
+                parent=poke_frame,
             )
 
             # WAZA (Moves) Section
@@ -300,8 +321,6 @@ class ZATrainerEditor(ctk.CTk):
                 waza_name_label.pack(side="left", padx=5)
 
                 # Move ID Entry
-                waza_var = ctk.StringVar(value=str(waza_id))
-
                 def on_waza_change(val: str, wd=waza_data) -> None:  # Capture waza_data
                     if isinstance(wd, dict):
                         wd["wazaId"] = val
@@ -311,11 +330,13 @@ class ZATrainerEditor(ctk.CTk):
                         elif hasattr(wd, "waza_id"):
                             wd.waza_id = val
 
-                waza_var.trace_add(
-                    "write", lambda *args, v=waza_var: on_waza_change(v.get())
+                waza_option_menu = ctk.CTkOptionMenu(
+                    waza_frame,
+                    values=list(ty.get_args(ZAWaza)),
+                    command=lambda v, wd=waza_data: on_waza_change(v, wd),
                 )
-                waza_id_entry = ctk.CTkEntry(waza_frame, textvariable=waza_var)
-                waza_id_entry.pack(side="left", fill="x", expand=True, padx=5)
+                waza_option_menu.set(str(waza_id))
+                waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
 
                 # Plus Checkbox
                 def on_plus_change(val: bool, wd=waza_data) -> None:
@@ -359,9 +380,10 @@ class ZATrainerEditor(ctk.CTk):
         value: str,
         setter: ty.Callable[[str], None] | None = None,
         readonly: bool = False,
+        parent: ctk.CTkFrame | None = None,
     ) -> None:
         """Create a label and entry field pair."""
-        field_frame = ctk.CTkFrame(self.data_frame)
+        field_frame = ctk.CTkFrame(parent or self.data_frame)
         field_frame.pack(fill="x", pady=2, padx=10)
 
         label = ctk.CTkLabel(field_frame, text=f"{label_text}:", width=200)
@@ -377,26 +399,6 @@ class ZATrainerEditor(ctk.CTk):
             entry = ctk.CTkEntry(field_frame, textvariable=var)
             entry.pack(side="left", fill="x", expand=True, padx=5)
 
-    def _create_field_in_frame(
-        self,
-        parent: ctk.CTkFrame,
-        label_text: str,
-        value: str,
-        setter: ty.Callable[[str], None] | None = None,
-    ) -> None:
-        """Create a label and entry field pair within a parent frame."""
-        field_frame = ctk.CTkFrame(parent)
-        field_frame.pack(fill="x", pady=2, padx=10)
-
-        label = ctk.CTkLabel(field_frame, text=f"{label_text}:", width=150)
-        label.pack(side="left", padx=5)
-
-        var = ctk.StringVar(value=value)
-        if setter:
-            var.trace_add("write", lambda *args: setter(var.get()))
-        entry = ctk.CTkEntry(field_frame, textvariable=var)
-        entry.pack(side="left", fill="x", expand=True, padx=5)
-
     def _create_checkbox(
         self, label_text: str, value: bool, setter: ty.Callable[[bool], None]
     ) -> None:
@@ -407,6 +409,26 @@ class ZATrainerEditor(ctk.CTk):
 
         checkbox = ctk.CTkCheckBox(self.data_frame, text=label_text, variable=var)
         checkbox.pack(anchor="w", padx=20, pady=2)
+
+    def _create_dropdown(
+        self,
+        label_text: str,
+        value: str,
+        values: list[str],
+        setter: ty.Callable[[str], None],
+        parent: ctk.CTkFrame | None = None,
+    ) -> None:
+        """Create a dropdown field."""
+        field_frame = ctk.CTkFrame(parent or self.data_frame)
+        field_frame.pack(fill="x", pady=2, padx=10)
+
+        label = ctk.CTkLabel(field_frame, text=f"{label_text}:", width=200)
+        label.pack(side="left", padx=5)
+
+        values.sort()
+        option_menu = ctk.CTkOptionMenu(field_frame, values=values, command=setter)
+        option_menu.set(value)
+        option_menu.pack(side="left", fill="x", expand=True, padx=5)
 
     def on_trainer_selected(self, choice: str) -> None:
         """Handle trainer selection from combobox."""

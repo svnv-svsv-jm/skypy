@@ -13,7 +13,7 @@ from skypy.types import (
     ZAItemID,
     ZARank,
     ZASeikaku,
-    ZAWazaID,
+    ZAWaza,
 )
 
 
@@ -107,7 +107,7 @@ class ZAWazaData(pydantic.BaseModel):
         extra="forbid",
     )
 
-    waza_id: ZAWazaID = pydantic.Field(
+    waza_id: ZAWaza = pydantic.Field(
         description="Waza ID.",
         examples=["WAZA_NULL"],
         serialization_alias="wazaId",
