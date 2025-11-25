@@ -115,7 +115,10 @@ class ZATrainerEditor(ctk.CTk):
         # If output folder exists, use it
         dir_path = input_dir
         logger.trace(f"Set target directory to {dir_path}")
-        if os.path.exists(output_dir) and not ignore_output_dir:
+        if (
+            os.path.exists(os.path.join(output_dir, file_name))
+            and not ignore_output_dir
+        ):
             logger.trace(f"Output folder exists ({output_dir}), using it....")
             dir_path = output_dir
             logger.trace(f"Set new target directory to {dir_path}")
@@ -468,17 +471,15 @@ class ZATrainerEditor(ctk.CTk):
 
         logger.trace(f"Displayed trainer data ({type(self)}): {self}")
 
+    @logger.catch((ValueError, TypeError), reraise=False)
     def _set_attr(self, obj: ty.Any, attr: str, value: str, dtype: type = str) -> None:
         """Helper to safely set attributes with type conversion."""
-        try:
-            if dtype is bool:
-                # This shouldn't happen for entries usually, but for completeness
-                val = value.lower() == "true"
-            else:
-                val = dtype(value)
-            setattr(obj, attr, val)
-        except (ValueError, TypeError):
-            pass
+        if dtype is bool:
+            # This shouldn't happen for entries usually, but for completeness
+            val = value.lower() == "true"
+        else:
+            val = dtype(value)
+        setattr(obj, attr, val)
 
     def _create_field(
         self,
