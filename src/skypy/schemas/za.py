@@ -23,7 +23,7 @@ from skypy.types import (
     ZASeikaku,
     ZAWaza,
 )
-from skypy.types.mappers import waza_translation
+from skypy.types.mappers import dev_translation, item_translation, waza_translation
 
 
 class ZAEffortTalentValues(pydantic.BaseModel):
@@ -42,12 +42,14 @@ class ZAEffortTalentValues(pydantic.BaseModel):
     )
 
     hp: int = pydantic.Field(
+        0,
         description="HP.",
         examples=[0],
         ge=0,
         le=255,
     )
     attack: int = pydantic.Field(
+        0,
         description="Attack.",
         examples=[0],
         ge=0,
@@ -56,6 +58,7 @@ class ZAEffortTalentValues(pydantic.BaseModel):
         serialization_alias="atk",
     )
     defense: int = pydantic.Field(
+        0,
         description="Defense.",
         examples=[0],
         ge=0,
@@ -64,6 +67,7 @@ class ZAEffortTalentValues(pydantic.BaseModel):
         serialization_alias="def",
     )
     special_attack: int = pydantic.Field(
+        0,
         description="Special attack.",
         examples=[0],
         ge=0,
@@ -72,6 +76,7 @@ class ZAEffortTalentValues(pydantic.BaseModel):
         serialization_alias="spAtk",
     )
     special_defense: int = pydantic.Field(
+        0,
         description="Special defense.",
         examples=[0],
         ge=0,
@@ -80,6 +85,7 @@ class ZAEffortTalentValues(pydantic.BaseModel):
         serialization_alias="spDef",
     )
     speed: int = pydantic.Field(
+        0,
         description="Agility.",
         examples=[0],
         ge=0,
@@ -117,12 +123,14 @@ class ZAWazaData(pydantic.BaseModel):
     )
 
     waza_id: ZAWaza = pydantic.Field(
+        "WAZA_NULL",
         description="Waza ID.",
         examples=["WAZA_NULL"],
         serialization_alias="wazaId",
         alias="wazaId",
     )
     is_plus_waza: bool = pydantic.Field(
+        False,
         description="Is plus waza.",
         examples=[False],
         serialization_alias="isPlusWaza",
@@ -188,58 +196,69 @@ class ZAPokemonData(pydantic.BaseModel):
         alias="devId",
     )
     form_id: FormID = pydantic.Field(
+        0,
         description="Form ID.",
         examples=[0],
         serialization_alias="formId",
         alias="formId",
     )
     sex: Sex = pydantic.Field(
+        "DEFAULT",
         description="Sex.",
         examples=["DEFAULT", "MALE", "FEMALE"],
     )
     item: ZAItemID = pydantic.Field(
+        "ITEMID_NONE",
         description="Item.",
         examples=["ITEMID_NONE"],
     )
     level: int = pydantic.Field(
+        10,
         description="Level.",
         examples=[10],
         ge=0,
         le=100,
     )
     ball_id: ZABallID = pydantic.Field(
+        "MONSUTAABOORU",
         description="Ball ID.",
         examples=["MONSUTAABOORU"],
         serialization_alias="ballId",
         alias="ballId",
     )
     seikaku: ZASeikaku = pydantic.Field(
+        "GANBARIYA",
         description="Seikaku.",
         examples=["GANBARIYA"],
     )
     tokusei: Tokusei = pydantic.Field(
+        "RANDOM_12",
         description="Tokusei.",
         examples=["RANDOM_12"],
     )
     talent_value: ZAEffortTalentValues = pydantic.Field(
+        ZAEffortTalentValues(),
         description="Talent value.",
         examples=[{"hp": 0, "atk": 0, "def": 0, "spAtk": 0, "spDef": 0, "agi": 0}],
         serialization_alias="talentValue",
         alias="talentValue",
     )
     effort_value: ZAEffortTalentValues = pydantic.Field(
+        ZAEffortTalentValues(),
         description="Effort value.",
         examples=[{"hp": 0, "atk": 0, "def": 0, "spAtk": 0, "spDef": 0, "agi": 0}],
         serialization_alias="effortValue",
         alias="effortValue",
     )
     rare_type: RareType = pydantic.Field(
+        "NO_RARE",
         description="Rare type.",
         examples=["NO_RARE"],
         serialization_alias="rareType",
         alias="rareType",
     )
     scale_value: int = pydantic.Field(
+        128,
         description="Scale value.",
         examples=[128],
         ge=1,
@@ -248,21 +267,35 @@ class ZAPokemonData(pydantic.BaseModel):
         alias="scaleValue",
     )
     waza1: ZAWazaData = pydantic.Field(
+        ZAWazaData(),
         description="Waza 1.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
     waza2: ZAWazaData = pydantic.Field(
+        ZAWazaData(),
         description="Waza 2.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
     waza3: ZAWazaData = pydantic.Field(
+        ZAWazaData(),
         description="Waza 3.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
     waza4: ZAWazaData = pydantic.Field(
+        ZAWazaData(),
         description="Waza 4.",
         examples=[{"wazaId": "WAZA_NULL", "isPlusWaza": False}],
     )
+
+    @property
+    def dev_id_english(self) -> str:
+        """Get the translated Dev ID."""
+        return dev_translation.get(self.dev_id, self.dev_id)
+
+    @property
+    def item_english(self) -> str:
+        """Get the translated Item ID."""
+        return item_translation.get(self.item, self.item)
 
 
 class ZATrainerData(pydantic.BaseModel):

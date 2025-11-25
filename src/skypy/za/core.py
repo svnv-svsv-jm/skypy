@@ -9,7 +9,7 @@ import pydantic
 from loguru import logger
 
 from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray, ZAWazaData
-from skypy.types.mappers import waza_translation
+from skypy.types.mappers import dev_translation, item_translation, waza_translation
 from skypy.types.za import (
     RareType,
     Sex,
@@ -23,6 +23,10 @@ from skypy.types.za import (
 )
 
 inverted_waza_translation = {value: key for key, value in waza_translation.items()}
+inverted_dev_translation = {value: key for key, value in dev_translation.items()}
+inverted_item_translation = {value: key for key, value in item_translation.items()}
+wazas = [ZAWazaData(wazaId=waza).waza_id_english for waza in ty.get_args(ZAWaza)]
+wazas.sort()
 
 
 class ZATrainerEditor(ctk.CTk):
@@ -329,13 +333,40 @@ class ZATrainerEditor(ctk.CTk):
             )
             poke_title.pack(anchor="w", padx=10, pady=5)
 
+            def on_dev_id_change(val: str) -> None:
+                """On Dev ID Change."""
+                logger.trace(f"On Dev ID Change: {val}")
+                poke_attr.dev_id = inverted_dev_translation.get(val, val)
+                logger.trace(f"New Dev ID: {poke_attr.dev_id} | {val}")
+
             self._create_dropdown(
                 "Dev ID",
-                poke_attr.dev_id,
-                list(ty.get_args(ZADevID)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "dev_id", v),
+                poke_attr.dev_id_english,
+                values=[
+                    ZAPokemonData(devId=dev).dev_id_english
+                    for dev in ty.get_args(ZADevID)
+                ],
+                setter=on_dev_id_change,
                 parent=poke_frame,
             )
+
+            def on_item_change(val: str) -> None:
+                """On Item Change."""
+                logger.trace(f"On Item Change: {val}")
+                poke_attr.item = inverted_item_translation.get(val, val)
+                logger.trace(f"New Item: {poke_attr.item} | {val}")
+
+            self._create_dropdown(
+                "Item",
+                poke_attr.item_english,
+                values=[
+                    ZAPokemonData(item=item, devId="DEV_NULL").item_english
+                    for item in ty.get_args(ZAItemID)
+                ],
+                setter=on_item_change,
+                parent=poke_frame,
+            )
+
             self._create_field(
                 "Level",
                 str(poke_attr.level),
@@ -353,13 +384,6 @@ class ZATrainerEditor(ctk.CTk):
                 poke_attr.sex,
                 list(ty.get_args(Sex)),
                 setter=lambda v, p=poke_attr: self._set_attr(p, "sex", v),
-                parent=poke_frame,
-            )
-            self._create_dropdown(
-                "Item",
-                poke_attr.item,
-                list(ty.get_args(ZAItemID)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "item", v),
                 parent=poke_frame,
             )
             self._create_dropdown(
@@ -431,10 +455,7 @@ class ZATrainerEditor(ctk.CTk):
 
                 waza_option_menu = ctk.CTkOptionMenu(
                     waza_frame,
-                    values=[
-                        ZAWazaData(waza_id=waza).waza_id_english
-                        for waza in ty.get_args(ZAWaza)
-                    ],
+                    values=wazas,
                     command=on_waza_change,
                 )
                 waza_option_menu.set(str(waza_data.waza_id_english))
