@@ -30,7 +30,7 @@ jobs:
 
       - name: Build app
         run: |
-          just app "ZA-Trainer-Editor"
+          just build-app
 
       - name: Zip dist folder
         run: |

@@ -190,7 +190,7 @@ trpfd:
 # --------------------------------
 
 # Use --add-data="$(LOC):customtkinter/" or not
-app name="ZA-Trainer-Editor" loc=APP_LOC:
+build-app name="ZA-Trainer-Editor" loc=APP_LOC:
     pyinstaller --noconfirm --onedir --windowed \
     --icon "icon.ico" \
     --name {{ name }} \
