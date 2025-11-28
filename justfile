@@ -28,7 +28,6 @@ APP_LOC := `uv pip show customtkinter | grep Location | cut -d' ' -f2`
 OUTPUT := "output"
 SCHEMADIR := "src/skypy/assets/schema"
 BINDIR := "bin"
-APPNAME := "MoveEditor"
 EXT := "bfbs"
 MODDIR := BINDIR + "/__mod__"
 
@@ -98,7 +97,7 @@ ruff dir=DIRS2CHECK:
     {{ PYTHON_EXEC }} ruff format {{ dir }}
 
 unit-test:
-    {{ PYTHON_EXEC }} pytest -m "not integtest" -x --testmon --cov=src/ --cov-fail-under {{ COV_FAIL_UNDER }}
+    {{ PYTHON_EXEC }} pytest -x --testmon --cov=src/ --cov-fail-under {{ COV_FAIL_UNDER }}
 
 nbmake:
     {{ PYTHON_EXEC }} pytest -x --testmon --nbmake --overwrite {{ EXAMPLE_DIR }}
@@ -198,6 +197,3 @@ build-app name="ZA-Trainer-Editor" loc=APP_LOC:
     --add-data "pyproject.toml:." \
     --add-data "src/skypy/assets:skypy/assets" \
     src/skypy/__main__.py
-
-test-app:
-    ./dist/{{ APPNAME }}/{{ APPNAME }}

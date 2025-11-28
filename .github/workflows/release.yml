@@ -24,45 +24,90 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get current version
+        id: current_version
+        run: |
+          VERSION=$(grep -m1 'version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Get latest release version
+        id: latest_release
+        run: |
+          LATEST=$(gh release view --json tagName -q .tagName 2>/dev/null || echo "0.0.0")
+          # Remove 'v' prefix if present
+          LATEST=${LATEST#v}
+          echo "version=$LATEST" >> $GITHUB_OUTPUT
+          echo "Latest release: $LATEST"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Check if version is newer
+        id: version_check
+        run: |
+          CURRENT="${{ steps.current_version.outputs.version }}"
+          LATEST="${{ steps.latest_release.outputs.version }}"
+
+          # Compare versions using sort -V
+          if [ "$CURRENT" = "$LATEST" ]; then
+            echo "Version $CURRENT is the same as latest release"
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          elif [ "$(printf '%s\n' "$LATEST" "$CURRENT" | sort -V | tail -n1)" = "$CURRENT" ]; then
+            echo "Version $CURRENT is newer than $LATEST"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version $CURRENT is older than $LATEST"
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up uv
+        if: steps.version_check.outputs.should_release == 'true'
         uses: astral-sh/setup-uv@v4
 
       - name: Set up just
+        if: steps.version_check.outputs.should_release == 'true'
         uses: extractions/setup-just@v2
 
       - name: Install dependencies and test
+        if: steps.version_check.outputs.should_release == 'true'
         run: |
           just prepare
           just install
 
       - name: Build app
+        if: steps.version_check.outputs.should_release == 'true'
         run: |
           just build-app ${APPNAME}
 
       - name: Zip dist folder
+        if: steps.version_check.outputs.should_release == 'true'
         run: |
           cd dist/
           zip -r ${APPNAME}.zip ${APPNAME}.app
 
       - name: Create Release
+        if: steps.version_check.outputs.should_release == 'true'
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: uv run python -c "import skypy; print(skypy.__version__)"
-          release_name: uv run python -c "import skypy; print(skypy.__version__)"
+          tag_name: ${{ steps.current_version.outputs.version }}
+          release_name: ${{ steps.current_version.outputs.version }}
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload App
+        if: steps.version_check.outputs.should_release == 'true'
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/${APPNAME}.zip
-          asset_name: ${APPNAME}
+          asset_path: ./dist/${{ env.APPNAME }}.zip
+          asset_name: ${{ env.APPNAME }}.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
