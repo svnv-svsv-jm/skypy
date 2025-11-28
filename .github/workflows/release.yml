@@ -1,18 +1,17 @@
-name: Test and deploy
+name: Release
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  deploy:
-    runs-on: ${{ matrix.os }}
-
+  release:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        python-version: ["3.11"]
+        os: [macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     env:
       APPNAME: ZA-Trainer-Editor
