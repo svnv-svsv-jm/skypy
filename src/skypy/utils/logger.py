@@ -8,7 +8,7 @@ import typing as ty
 from loguru import logger
 from loguru._defaults import LOGURU_FORMAT  # type: ignore
 
-from skypy.settings import settings
+from skypy import settings
 
 DEFAULT_FORMAT = f"{LOGURU_FORMAT}" + " | <yellow>{extra}</yellow>\n"
 DEFAULT_LOG_LEVEL = "INFO"
@@ -30,7 +30,7 @@ def set_up_logging(
         level = settings.log_level
 
     # Set up logger
-    logger_id:int = logger.add(
+    logger_id: int = logger.add(
         sys.stdout,
         level=level.upper(),
         format=Formatter(serialize=serialize, show_file_info=show_file_info),  # type: ignore
@@ -51,7 +51,7 @@ def serialize(record: logging.LogRecord, show_file_info: bool = False) -> str:
     else:
         line_info = f"{name}.{module}.{function}:{line}"
     # Create set
-    subset:dict[str,ty.Any] = {
+    subset: dict[str, ty.Any] = {
         "timestamp": record["time"].timestamp(),  # type: ignore
         "message": f'{line_info} | {record["message"]}',  # type: ignore
         "log.level": record["level"].name,  # type: ignore
@@ -76,15 +76,14 @@ class Formatter:
     """Custom formatter for `loguru`, to get the right serialized logs for ElasticSearch."""
 
     def __init__(self, serialize: bool = False, show_file_info: bool = False) -> None:
-        """
-        Args:
-            serialize (bool):
-                Whether to serialize logs for ElasticSearch or not.
+        """Args:
+        serialize (bool):
+            Whether to serialize logs for ElasticSearch or not.
 
-            show_file_info (bool, optional):
-                Whether to add information about the file path where the log statement is coming from.
-                If `False`, only the module and function and the line will be shown, not the full path.
-                Defaults to `False`.
+        show_file_info (bool, optional):
+            Whether to add information about the file path where the log statement is coming from.
+            If `False`, only the module and function and the line will be shown, not the full path.
+            Defaults to `False`.
         """
         self.serialize = serialize
         self.show_file_info = show_file_info

@@ -3,8 +3,6 @@ name: Test and deploy
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 jobs:
   deploy:
@@ -19,23 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up just
+        uses: extractions/setup-just@v2
 
       - name: Install dependencies and test
         run: |
-          pip install --upgrade pip
-          pip install virtualenv
-          virtualenv venv
-          source venv/bin/activate
-          make install
+          just prepare
+          just install
 
       - name: Build app
         run: |
-          source venv/bin/activate
-          make app APPNAME="SVMoveEditor"
+          just app "ZA-Trainer-Editor"
 
       - name: Zip dist folder
         run: |
@@ -46,8 +41,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: python -c "import skypy; print(skypy.__version__)"
-          release_name: python -c "import skypy; print(skypy.__version__)"
+          tag_name: uv run python -c "import skypy; print(skypy.__version__)"
+          release_name: uv run python -c "import skypy; print(skypy.__version__)"
           draft: false
           prerelease: false
         env:

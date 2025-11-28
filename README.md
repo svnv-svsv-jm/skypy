@@ -16,4 +16,17 @@ Once you have the binary file, that's your mod. Make sure it is at `mod/romfs/wo
 
 ## Installation from source
 
-> Coming soon...
+You neeed `uv` and `just`.
+
+Set up:
+
+```bash
+just prepare
+just install
+```
+
+Run:
+
+```bash
+just trainer-editor
+```

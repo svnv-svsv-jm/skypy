@@ -24,7 +24,7 @@ DIRS2CHECK := "src tests"
 
 # VARIABLES
 
-APP_LOC := `shell pip show customtkinter | grep Location | awk '{print $$NF}'`
+APP_LOC := `uv pip show customtkinter | grep Location | cut -d' ' -f2`
 OUTPUT := "output"
 SCHEMADIR := "src/skypy/assets/schema"
 BINDIR := "bin"
@@ -131,13 +131,11 @@ pre-commit: pre-commit-install
 
 # --------------------------------
 # Run
-
 # --------------------------------
-run cmd="apply":
-    {{ PYTHON_EXEC }} {{ PROJECT_NAME }} {{ cmd }}
 
-ui:
-    {{ PYTHON_EXEC }} {{ PROJECT_NAME }}
+# Run the app
+trainer-editor:
+    {{ PYTHON_EXEC }} python -m skypy "trainer-editor-za"
 
 # --------------------------------
 # Create binary files (the MODS)
@@ -192,11 +190,11 @@ trpfd:
 # --------------------------------
 
 # Use --add-data="$(LOC):customtkinter/" or not
-app LOC=APP_LOC:
+app name="ZA-Trainer-Editor" loc=APP_LOC:
     pyinstaller --noconfirm --onedir --windowed \
     --icon "icon.ico" \
-    --name {{ APPNAME }} \
-    --add-data="$(LOC):customtkinter/" \
+    --name {{ name }} \
+    --add-data="{{ loc }}:customtkinter/" \
     --add-data "pyproject.toml:." \
     --add-data "src/skypy/assets:skypy/assets" \
     src/skypy/__main__.py
