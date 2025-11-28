@@ -3,12 +3,13 @@ import pytest
 from skypy.za import ZATrainerEditor
 
 
+@pytest.mark.parametrize("output_dir", [None, "pytest_artifacts/za/Output"])
 def test_ui_save(
     za_trainer_editor_app: ZATrainerEditor,
-    artifacts_path: str,
+    output_dir: str,
 ) -> None:
     """Test `save_trainer_data`."""
-    za_trainer_editor_app.save_trainer_data(output_dir=artifacts_path)
+    za_trainer_editor_app.save_trainer_data(output_dir=output_dir)
 
 
 if __name__ == "__main__":

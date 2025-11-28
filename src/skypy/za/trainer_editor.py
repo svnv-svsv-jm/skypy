@@ -3,6 +3,7 @@ __all__ = ["ZATrainerEditor"]
 import json
 import os
 import subprocess
+import sys
 import typing as ty
 
 import customtkinter as ctk
@@ -27,6 +28,23 @@ wazas = [ZAWazaData(waza_id=waza).waza_id_english for waza in ty.get_args(ZAWaza
 wazas.sort()
 
 
+def _get_app_directory() -> str:
+    """Get the directory where the app is running from.
+
+    For bundled `.app`, returns the directory containing the `.app` bundle.
+    For running from code, returns the current working directory.
+    """
+    if getattr(sys, "frozen", False):
+        # Running as bundled app - sys.executable is like:
+        # /path/to/ZA-Trainer-Editor.app/Contents/MacOS/ZA-Trainer-Editor
+        # Go up 3 levels to get the directory containing the .app
+        return os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))
+        )
+    # Running from source
+    return os.getcwd()
+
+
 class ZATrainerEditor(ctk.CTk):
     """ZA Trainer Editor."""
 
@@ -35,7 +53,7 @@ class ZATrainerEditor(ctk.CTk):
         width: int = 800,
         height: int = 600,
         input_dir: str = settings.files.za_assets,
-        output_dir: str = "assets/za/Output",
+        output_dir: str | None = None,
         file_name: str = "trdata_array.json",
         title: str = "ZA Trainer Editor",
         ignore_output_dir: bool = False,
@@ -79,7 +97,7 @@ class ZATrainerEditor(ctk.CTk):
         # Set up attributes
         self.app_title = title
         self.input_dir = input_dir
-        self.output_dir = output_dir
+        self.output_dir = output_dir or os.path.join(_get_app_directory(), "Output")
         self.file_name = file_name
         self.selected_trainer_index: int = 0
         self.ignore_output_dir = ignore_output_dir
@@ -184,8 +202,36 @@ class ZATrainerEditor(ctk.CTk):
 
     def create_status_label(self) -> None:
         """Create the status label."""
-        self.status_label = ctk.CTkLabel(self.bottom_frame, text="", text_color="gray")
+        self.status_label = ctk.CTkLabel(
+            self.bottom_frame,
+            text="Have fun!",
+            text_color="white",
+        )
         self.status_label.pack(side="left", padx=10)
+
+    def create_output_directory_input(self) -> None:
+        """Let the user change the output directory."""
+
+        def on_output_directory_change(*_: object) -> None:
+            """On output directory change."""
+            self.output_dir = self._output_dir_var.get()
+            logger.trace(f"Output directory changed to: {self.output_dir}")
+
+        self._output_dir_var = ctk.StringVar(value=self.output_dir)
+        self._output_dir_var.trace_add("write", on_output_directory_change)
+
+        self.output_directory_label = ctk.CTkLabel(
+            self.top_frame,
+            text="Output Directory:",
+        )
+        self.output_directory_label.pack(side="left", padx=(10, 5))
+
+        self.output_directory_input = ctk.CTkEntry(
+            self.top_frame,
+            textvariable=self._output_dir_var,
+            width=200,
+        )
+        self.output_directory_input.pack(side="left", padx=(0, 10))
 
     @pyinstrument.profile()
     def create_widgets(self) -> None:
@@ -194,6 +240,9 @@ class ZATrainerEditor(ctk.CTk):
 
         # Top frame for combobox
         self.create_top_frame()
+
+        # Create output directory input
+        self.create_output_directory_input()
 
         # Create a label for the combobox
         self.create_trainer_combobox()
@@ -575,26 +624,34 @@ class ZATrainerEditor(ctk.CTk):
         file_name: str | None = None,
     ) -> None:
         """Save all trainer data to the JSON file and create binaries."""
-        logger.trace(f"Saving trainer data ({type(self)}): {self}")
-        output_dir = output_dir or self.output_dir
-        file_name = file_name or self.file_name
-        os.makedirs(output_dir, exist_ok=True)
+        with logger.catch(
+            Exception,
+            reraise=False,
+            onerror=lambda e: self.status_label.configure(
+                text=f"Error: {e}",
+                text_color="red",
+            ),
+        ):
+            logger.trace(f"Saving trainer data ({type(self)}): {self}")
+            output_dir = output_dir or self.output_dir
+            file_name = file_name or self.file_name
+            os.makedirs(output_dir, exist_ok=True)
 
-        # Convert pydantic models back to dict format
-        zatrdata = ZATrainerDataArray(table=self.trdata)
-        file_out = os.path.join(output_dir, file_name)
-        zatrdata.dump(file_out)
+            # Convert pydantic models back to dict format
+            zatrdata = ZATrainerDataArray(table=self.trdata)
+            file_out = os.path.join(output_dir, file_name)
+            zatrdata.dump(file_out)
 
-        # Show confirmation
-        self.status_label.configure(
-            text=f"Saved to {file_out}",
-            text_color="green",
-        )
+            # Show confirmation
+            self.status_label.configure(
+                text=f"Saved to {file_out}",
+                text_color="green",
+            )
 
-        # Clear status after 3 seconds
-        self.after(
-            3000, lambda: self.status_label.configure(text="", text_color="gray")
-        )
+            # Clear status after 3 seconds
+            self.after(
+                3000, lambda: self.status_label.configure(text="", text_color="gray")
+            )
 
         # Create binaries
         if os.path.exists(os.path.join(self.input_dir, "trdata_array.bfbs")):

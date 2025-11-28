@@ -15,7 +15,7 @@ jobs:
         python-version: ["3.11"]
 
     env:
-      APPNAME: ZATrainerEditor
+      APPNAME: ZA-Trainer-Editor
 
     steps:
       - uses: actions/checkout@v3
@@ -33,12 +33,12 @@ jobs:
 
       - name: Build app
         run: |
-          just build-app
+          just build-app ${APPNAME}
 
       - name: Zip dist folder
         run: |
           cd dist/
-          zip -r ${APPNAME}.zip .
+          zip -r ${APPNAME}.zip ${APPNAME}.app
 
       - name: Create Release
         id: create_release
