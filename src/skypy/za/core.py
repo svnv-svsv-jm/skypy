@@ -11,7 +11,6 @@ import pyinstrument
 from loguru import logger
 
 from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray, ZAWazaData
-from skypy.types.mappers import dev_translation, item_translation, waza_translation
 from skypy.types.za import (
     RareType,
     Sex,
@@ -21,13 +20,13 @@ from skypy.types.za import (
     ZAItemID,
     ZARank,
     ZASeikaku,
-    ZAWaza,
+    ZAWazaID,
 )
 
-inverted_waza_translation = {value: key for key, value in waza_translation.items()}
-inverted_dev_translation = {value: key for key, value in dev_translation.items()}
-inverted_item_translation = {value: key for key, value in item_translation.items()}
-wazas = [ZAWazaData(wazaId=waza).waza_id_english for waza in ty.get_args(ZAWaza)]
+# inverted_waza_translation = {value: key for key, value in waza_translation.items()}
+# inverted_dev_translation = {value: key for key, value in dev_translation.items()}
+# inverted_item_translation = {value: key for key, value in item_translation.items()}
+wazas = [ZAWazaData(wazaId=waza).waza_id_english for waza in ty.get_args(ZAWazaID)]
 wazas.sort()
 
 

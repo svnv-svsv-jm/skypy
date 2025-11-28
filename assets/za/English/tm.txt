@@ -1,0 +1,107 @@
+TM001	Headbutt
+TM002	Dragon Claw
+TM003	Psyshock
+TM004	Rock Smash
+TM005	Roar
+TM006	Calm Mind
+TM007	Toxic
+TM008	Thunder Wave
+TM009	Flip Turn
+TM010	Brick Break
+TM011	Bulk Up
+TM012	Rock Slide
+TM013	Ice Beam
+TM014	Fire Fang
+TM015	Ice Fang
+TM016	Light Screen
+TM017	Protect
+TM018	Power-Up Punch
+TM019	Power Gem
+TM020	Play Rough
+TM021	Thunder Fang
+TM022	Aerial Ace
+TM023	Thunder Punch
+TM024	Ice Punch
+TM025	Crunch
+TM026	Energy Ball
+TM027	Swift
+TM028	Dig
+TM029	Fire Punch
+TM030	Swords Dance
+TM031	Reflect
+TM032	Double Team
+TM033	Body Slam
+TM034	Night Slash
+TM035	Endure
+TM036	Rock Tomb
+TM037	Stealth Rock
+TM038	Fire Blast
+TM039	Discharge
+TM040	Bullet Seed
+TM041	Water Pulse
+TM042	Giga Drain
+TM043	Fly
+TM044	Hyper Beam
+TM045	Knock Off
+TM046	Mud Shot
+TM047	Agility
+TM048	Self-Destruct
+TM049	Icy Wind
+TM050	Overheat
+TM051	Safeguard
+TM052	Earth Power
+TM053	Sludge Bomb
+TM054	Draco Meteor
+TM055	Giga Impact
+TM056	Double-Edge
+TM057	Will-O-Wisp
+TM058	Iron Head
+TM059	Zen Headbutt
+TM060	Future Sight
+TM061	Shadow Claw
+TM062	Flamethrower
+TM063	Psychic
+TM064	Solar Beam
+TM065	Stone Edge
+TM066	Volt Switch
+TM067	Thunderbolt
+TM068	Heat Wave
+TM069	Earthquake
+TM070	Whirlpool
+TM071	Hyper Voice
+TM072	Fire Spin
+TM073	Surf
+TM074	Shadow Ball
+TM075	Dragon Pulse
+TM076	Liquidation
+TM077	Poison Jab
+TM078	Bulldoze
+TM079	Hurricane
+TM080	Iron Defense
+TM081	X-Scissor
+TM082	U-turn
+TM083	Nasty Plot
+TM084	Flash Cannon
+TM085	Substitute
+TM086	Wild Charge
+TM087	Iron Tail
+TM088	Spikes
+TM089	Toxic Spikes
+TM090	Dark Pulse
+TM091	Curse
+TM092	Dazzling Gleam
+TM093	Outrage
+TM094	Whirlwind
+TM095	Taunt
+TM096	Hydro Pump
+TM097	Heal Block
+TM098	Waterfall
+TM099	Metronome
+TM100	Gunk Shot
+TM101	Electroweb
+TM102	Focus Blast
+TM103	Work Up
+TM104	Flare Blitz
+TM105	Blizzard
+TM106	Thunder
+TM107	Close Combat

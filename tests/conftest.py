@@ -155,8 +155,8 @@ def za_assets_dir(assets_dir: str) -> str:
 
 @pytest.fixture
 def za_trainer_data_path(za_assets_dir: str) -> str:
-    """Zelda Trainer data path."""
-    return os.path.join(za_assets_dir, "Input/trdata_array.json")
+    """ZA Trainer data path."""
+    return os.path.join(za_assets_dir, "Raw/trdata_array.json")
 
 
 @pytest.fixture
@@ -171,17 +171,37 @@ def za_trainer_data_raw(za_trainer_data_path: str) -> dict[str, list[dict]]:
 
 
 @pytest.fixture
-def za_trainer_data_dummy(za_trainer_data_raw: dict) -> list[dict]:
-    """Trainer data for the first (dummy) trainer."""
-    values = za_trainer_data_raw["values"]
+def za_trainers(za_trainer_data_raw: dict) -> list[dict]:
+    """ZA list of trainers (data0)."""
+    return za_trainer_data_raw["Table"]
+
+
+@pytest.fixture
+def za_pokemon_data_raw(za_trainer_data_raw: dict) -> list[dict]:
+    """Load raw data from the trainer data file and extract the pokemon data."""
+    all_pokemon = []
+    for trdata in za_trainer_data_raw["Table"]:
+        all_pokemon.append(trdata["Poke1"])
+        all_pokemon.append(trdata["Poke2"])
+        all_pokemon.append(trdata["Poke3"])
+        all_pokemon.append(trdata["Poke4"])
+        all_pokemon.append(trdata["Poke5"])
+        all_pokemon.append(trdata["Poke6"])
+    return all_pokemon
+
+
+@pytest.fixture
+def za_trainer_data_example(za_trainer_data_raw: dict) -> dict:
+    """Trainer data for the first trainer."""
+    values = za_trainer_data_raw["Table"]
     # Return first Trainer, which is the dummy one
     return values[0]
 
 
 @pytest.fixture
-def za_trainer_data_dummy_parsed(za_trainer_data_dummy: dict) -> list[ZATrainerData]:
+def za_trainer_data_example_parsed(za_trainer_data_example: dict) -> ZATrainerData:
     """Trainer data for the first (dummy) trainer."""
-    return [ZATrainerData(**za_trainer_data_dummy)]
+    return ZATrainerData(**za_trainer_data_example)
 
 
 @pytest.fixture
