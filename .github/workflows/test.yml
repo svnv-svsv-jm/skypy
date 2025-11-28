@@ -3,6 +3,8 @@ name: Test and update master
 on:
   push:
     branches: ["develop"]
+  pull_request:
+    branches: ["main", "develop"]
 
 jobs:
   test:
