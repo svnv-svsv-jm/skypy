@@ -14,6 +14,9 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ["3.11"]
 
+    env:
+      APPNAME: ZATrainerEditor
+
     steps:
       - uses: actions/checkout@v3
 
@@ -35,7 +38,7 @@ jobs:
       - name: Zip dist folder
         run: |
           cd dist/
-          zip -r kivy-app-${{ matrix.os }}.zip .
+          zip -r ${APPNAME}.zip .
 
       - name: Create Release
         id: create_release
@@ -53,8 +56,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/kivy-app-${{ matrix.os }}.zip
-          asset_name: kivy-app-${{ matrix.os }}.zip
+          asset_path: ./dist/${APPNAME}.zip
+          asset_name: ${APPNAME}
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
