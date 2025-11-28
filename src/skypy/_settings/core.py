@@ -49,6 +49,10 @@ class Files(pydantic.BaseModel):
         os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "assets")),
         description="Directory for assets.",
     )
+    za_assets: str = pydantic.Field(
+        os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "assets", "za")),
+        description="Directory for assets.",
+    )
     trainer_data: str = pydantic.Field(
         "trdata_array.json",
         description="File name for the trainer data.",

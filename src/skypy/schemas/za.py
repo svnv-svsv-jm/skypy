@@ -10,6 +10,7 @@ __all__ = [
 import json
 
 import pydantic
+from loguru import logger
 from pydantic.alias_generators import to_pascal
 
 from skypy import settings
@@ -355,7 +356,11 @@ class ZATrainerDataArray(pydantic.BaseModel):
                 return
         raise ValueError(f"Trainer with ID {trid} not found.")
 
-    def dump(self, path: str) -> None:
+    def dump(self, path: str, rename_root_key: str | None = None) -> None:
         """Dump the data to a JSON file."""
         with open(path, "w", encoding="utf-8") as f:
-            json.dump(self.model_dump(by_alias=True), f, indent=2, ensure_ascii=False)
+            data = self.model_dump(by_alias=True)
+            if rename_root_key:
+                data = {rename_root_key: data["Table"]}
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            logger.trace(f"Dumped data to {path}: {data}")

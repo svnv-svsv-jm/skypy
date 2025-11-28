@@ -34,7 +34,7 @@ class ZATrainerEditor(ctk.CTk):
         self,
         width: int = 800,
         height: int = 600,
-        input_dir: str = "assets/za/Raw",
+        input_dir: str = settings.files.za_assets,
         output_dir: str = "assets/za/Output",
         file_name: str = "trdata_array.json",
         title: str = "ZA Trainer Editor",
