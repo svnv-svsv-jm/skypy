@@ -14,7 +14,7 @@ def test_create_widgets(zatrdata: ZATrainerDataArray) -> None:
         mock.patch.object(
             ZATrainerEditor,
             "load_trainer_data",
-            return_value=zatrdata.values,
+            return_value=zatrdata.table,
         ) as load_trainer_data,
         mock.patch.object(
             ZATrainerEditor, "display_trainer_data"

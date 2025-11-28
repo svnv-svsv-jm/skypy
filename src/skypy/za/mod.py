@@ -21,7 +21,7 @@ def apply_trdata_mod(zatrdata: ZATrainerDataArray) -> None:
     # Edit trainer
     name = "00_test_data"
     trainer = zatrdata.get_trainer(name)
-    trainer.poke1.level = 100
+    trainer.poke_1.level = 100
     zatrdata.set_trainer(name, trainer)
 
     logger.trace("`trdata` mod applied.")

@@ -126,6 +126,7 @@ class ZAPokemonData(pydantic.BaseModel):
     )
 
     dev_id: ZADevID = pydantic.Field(
+        0,
         description="Species ID.",
     )
     form_id: FormID = pydantic.Field(
@@ -204,6 +205,11 @@ class ZAPokemonData(pydantic.BaseModel):
     def ball_id_english(self) -> str:
         """Get the English name of the Ball."""
         return settings.za_items_table[self.ball_id]
+
+    @property
+    def item_english(self) -> str:
+        """Get the English name of the Item."""
+        return settings.za_items_table[self.item]
 
 
 class ZATrainerData(_ByAliasInitializer, _ByAliasSerializer, pydantic.BaseModel):
@@ -336,16 +342,16 @@ class ZATrainerDataArray(pydantic.BaseModel):
 
     def get_trainer(self, trid: str) -> ZATrainerData:
         """Get a trainer by ID."""
-        for trainer in self.values:
-            if trainer.trid == trid:
+        for trainer in self.table:
+            if trainer.tr_id == trid:
                 return trainer
         raise ValueError(f"Trainer with ID {trid} not found.")
 
     def set_trainer(self, trid: str, trainer: ZATrainerData) -> None:
         """Set a trainer by ID."""
-        for i, t in enumerate(self.values):
-            if t.trid == trid:
-                self.values[i] = trainer
+        for i, t in enumerate(self.table):
+            if t.tr_id == trid:
+                self.table[i] = trainer
                 return
         raise ValueError(f"Trainer with ID {trid} not found.")
 

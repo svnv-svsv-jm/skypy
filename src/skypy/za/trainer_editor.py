@@ -10,23 +10,20 @@ import pydantic
 import pyinstrument
 from loguru import logger
 
+from skypy import settings
 from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray, ZAWazaData
 from skypy.types.za import (
-    RareType,
     Sex,
-    Tokusei,
     ZABallID,
     ZADevID,
     ZAItemID,
-    ZARank,
-    ZASeikaku,
     ZAWazaID,
 )
 
 # inverted_waza_translation = {value: key for key, value in waza_translation.items()}
 # inverted_dev_translation = {value: key for key, value in dev_translation.items()}
 # inverted_item_translation = {value: key for key, value in item_translation.items()}
-wazas = [ZAWazaData(wazaId=waza).waza_id_english for waza in ty.get_args(ZAWazaID)]
+wazas = [ZAWazaData(waza_id=waza).waza_id_english for waza in ty.get_args(ZAWazaID)]
 wazas.sort()
 
 
@@ -37,7 +34,7 @@ class ZATrainerEditor(ctk.CTk):
         self,
         width: int = 800,
         height: int = 600,
-        input_dir: str = "assets/za/Input",
+        input_dir: str = "assets/za/Raw",
         output_dir: str = "assets/za/Output",
         file_name: str = "trdata_array.json",
         title: str = "ZA Trainer Editor",
@@ -137,11 +134,11 @@ class ZATrainerEditor(ctk.CTk):
         logger.trace(f"Loading data from {path}...")
         with open(path, encoding="utf-8") as f:
             trdata = json.load(f)
-        trdata = pydantic.TypeAdapter(list[ZATrainerData]).validate_python(
-            trdata["values"]
-        )
+        trainers: list[ZATrainerData] = pydantic.TypeAdapter(
+            list[ZATrainerData]
+        ).validate_python(trdata["Table"])
         logger.trace(f"Loaded trainer data from {path}.")
-        return trdata
+        return trainers
 
     def create_top_frame(self) -> None:
         """Create the top frame."""
@@ -155,7 +152,7 @@ class ZATrainerEditor(ctk.CTk):
         label.pack(side="left", padx=10)
 
         # Get list of trainer IDs for the combobox
-        trainer_ids = [trainer.trid for trainer in self.trdata]
+        trainer_ids = [trainer.tr_id for trainer in self.trdata]
 
         # Create combobox
         self.trainer_combobox = ctk.CTkComboBox(
@@ -226,7 +223,7 @@ class ZATrainerEditor(ctk.CTk):
             widget.destroy()
 
         logger.trace(f"Selecting trainer index: {self.selected_trainer_index}")
-        trainer = self.trdata[self.selected_trainer_index]
+        trainer: ZATrainerData = self.trdata[self.selected_trainer_index]
 
         # Basic Information Section
         basic_label = ctk.CTkLabel(
@@ -236,24 +233,8 @@ class ZATrainerEditor(ctk.CTk):
 
         self._create_field(
             "Trainer ID",
-            trainer.trid,
+            trainer.tr_id,
             readonly=True,
-        )
-        self._create_field(
-            "Trainer Type",
-            str(trainer.trtype),
-            lambda v: self._set_attr(trainer, "trtype", v, int),
-        )
-        self._create_field(
-            "Trainer Type 2",
-            str(trainer.trtype2),
-            lambda v: self._set_attr(trainer, "trtype2", v, int),
-        )
-        self._create_dropdown(
-            "ZA Rank",
-            trainer.za_rank,
-            list(ty.get_args(ZARank)),
-            lambda v: self._set_attr(trainer, "za_rank", v),
         )
         self._create_field(
             "Money Rate",
@@ -273,7 +254,9 @@ class ZATrainerEditor(ctk.CTk):
             lambda v: setattr(trainer, "meg_evolution", v),
         )
         self._create_checkbox(
-            "Last Hand", trainer.last_hand, lambda v: setattr(trainer, "last_hand", v)
+            "Last Hand",
+            trainer.last_hand_mega,
+            lambda v: setattr(trainer, "last_hand", v),
         )
 
         # AI Flags Section
@@ -296,7 +279,9 @@ class ZATrainerEditor(ctk.CTk):
             label = flag.replace("_", " ").title()
             # Capture flag in closure default arg
             self._create_checkbox(
-                label, getattr(trainer, flag), lambda v, f=flag: setattr(trainer, f, v)
+                label,
+                getattr(trainer, flag),
+                lambda v, f=flag: setattr(trainer, f, v),  # type: ignore
             )
 
         # View Settings Section
@@ -333,7 +318,7 @@ class ZATrainerEditor(ctk.CTk):
         pokemon_label.pack(pady=(20, 5), anchor="w")
 
         for i in range(1, 7):
-            poke_attr: ZAPokemonData = getattr(trainer, f"poke{i}")
+            poke_attr: ZAPokemonData = getattr(trainer, f"poke_{i}")
             # Show all pokemon slots, even if empty
             poke_frame = ctk.CTkFrame(self.data_frame)
             poke_frame.pack(fill="x", pady=5, padx=10)
@@ -346,14 +331,14 @@ class ZATrainerEditor(ctk.CTk):
             def on_dev_id_change(val: str) -> None:
                 """On Dev ID Change."""
                 logger.trace(f"On Dev ID Change: {val}")
-                poke_attr.dev_id = inverted_dev_translation.get(val, val)
+                poke_attr.dev_id = settings.za_species_table.index(val)
                 logger.trace(f"New Dev ID: {poke_attr.dev_id} | {val}")
 
             self._create_dropdown(
                 "Dev ID",
                 poke_attr.dev_id_english,
                 values=[
-                    ZAPokemonData(devId=dev).dev_id_english
+                    ZAPokemonData(dev_id=dev).dev_id_english
                     for dev in ty.get_args(ZADevID)
                 ],
                 setter=on_dev_id_change,
@@ -363,71 +348,84 @@ class ZATrainerEditor(ctk.CTk):
             def on_item_change(val: str) -> None:
                 """On Item Change."""
                 logger.trace(f"On Item Change: {val}")
-                poke_attr.item = inverted_item_translation.get(val, val)
+                poke_attr.item = settings.za_items_table.index(val)
                 logger.trace(f"New Item: {poke_attr.item} | {val}")
 
             self._create_dropdown(
                 "Item",
                 poke_attr.item_english,
                 values=[
-                    ZAPokemonData(item=item, devId="DEV_NULL").item_english
+                    ZAPokemonData(item=item).item_english
                     for item in ty.get_args(ZAItemID)
                 ],
                 setter=on_item_change,
                 parent=poke_frame,
             )
 
+            def on_level_change(val: str) -> None:
+                """On Level Change."""
+                logger.trace(f"On Level Change: {val}")
+                poke_attr.level = int(val)
+                logger.trace(f"New Level: {poke_attr.level} | {val}")
+
             self._create_field(
                 "Level",
                 str(poke_attr.level),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "level", v, int),
+                setter=on_level_change,
                 parent=poke_frame,
             )
+
+            def on_form_id_change(val: str) -> None:
+                """On Form ID Change."""
+                logger.trace(f"On Form ID Change: {val}")
+                poke_attr.form_id = int(val)
+                logger.trace(f"New Form ID: {poke_attr.form_id} | {val}")
+
             self._create_field(
                 "Form ID",
                 str(poke_attr.form_id),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "form_id", v, int),
+                setter=on_form_id_change,
                 parent=poke_frame,
             )
+
+            def on_sex_change(val: str) -> None:
+                """On Sex Change."""
+                logger.trace(f"On Sex Change: {val}")
+                poke_attr.sex = int(val)
+                logger.trace(f"New Sex: {poke_attr.sex} | {val}")
+
             self._create_dropdown(
                 "Sex",
-                poke_attr.sex,
-                list(ty.get_args(Sex)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "sex", v),
+                str(poke_attr.sex),
+                list(str(ty.get_args(Sex))),
+                setter=on_sex_change,
                 parent=poke_frame,
             )
+
+            def on_ball_id_change(val: str) -> None:
+                """On Ball ID Change."""
+                logger.trace(f"On Ball ID Change: {val}")
+                poke_attr.ball_id = settings.za_items_table.index(val)
+                logger.trace(f"New Ball ID: {poke_attr.ball_id} | {val}")
+
             self._create_dropdown(
                 "Ball ID",
-                poke_attr.ball_id,
-                list(ty.get_args(ZABallID)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "ball_id", v),
+                poke_attr.ball_id_english,
+                list(str(ty.get_args(ZABallID))),
+                setter=on_ball_id_change,
                 parent=poke_frame,
             )
-            self._create_dropdown(
-                "Seikaku",
-                poke_attr.seikaku,
-                list(ty.get_args(ZASeikaku)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "seikaku", v),
-                parent=poke_frame,
-            )
-            self._create_dropdown(
-                "Tokusei",
-                poke_attr.tokusei,
-                list(ty.get_args(Tokusei)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "tokusei", v),
-                parent=poke_frame,
-            )
-            self._create_dropdown(
-                "Rare Type",
-                poke_attr.rare_type,
-                list(ty.get_args(RareType)),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "rare_type", v),
-                parent=poke_frame,
-            )
+
+            def on_scale_value_change(val: str) -> None:
+                """On Scale Value Change."""
+                logger.trace(f"On Scale Value Change: {val}")
+                poke_attr.scale_value = int(val)
+                logger.trace(f"New Scale Value: {poke_attr.scale_value} | {val}")
+
             self._create_field(
                 "Scale Value",
                 str(poke_attr.scale_value),
-                setter=lambda v, p=poke_attr: self._set_attr(p, "scale_value", v, int),
+                setter=on_scale_value_change,
                 parent=poke_frame,
             )
 
@@ -438,7 +436,7 @@ class ZATrainerEditor(ctk.CTk):
             waza_label.pack(anchor="w", padx=20, pady=(10, 5))
 
             for waza_num in range(1, 5):
-                waza_key = f"waza{waza_num}"
+                waza_key = f"waza_{waza_num}"
                 waza_data: ZAWazaData = getattr(poke_attr, waza_key)
 
                 # Create a frame for each move
@@ -460,7 +458,7 @@ class ZATrainerEditor(ctk.CTk):
                             This is the English name of the Waza ID if we translated it already, otherwise it's the original ID.
                     """
                     logger.trace(f"On Waza Change: {val}")
-                    waza_data.waza_id = inverted_waza_translation.get(val, val)
+                    waza_data.waza_id = settings.za_waza_table.index(val)
                     logger.trace(f"New Waza ID: {waza_data.waza_id} | {val}")
 
                 waza_option_menu = ctk.CTkOptionMenu(
@@ -565,19 +563,26 @@ class ZATrainerEditor(ctk.CTk):
         """Handle trainer selection from combobox."""
         # Find the index of the selected trainer
         for idx, trainer in enumerate(self.trdata):
-            if trainer.trid == choice:
+            if trainer.tr_id == choice:
                 self.selected_trainer_index = idx
                 break
         # Update displayed data
         self.display_trainer_data()
 
-    def save_trainer_data(self, output_dir: str | None = None) -> None:
-        """Save all trainer data to the JSON file."""
+    def save_trainer_data(
+        self,
+        output_dir: str | None = None,
+        file_name: str | None = None,
+    ) -> None:
+        """Save all trainer data to the JSON file and create binaries."""
+        logger.trace(f"Saving trainer data ({type(self)}): {self}")
         output_dir = output_dir or self.output_dir
+        file_name = file_name or self.file_name
+        os.makedirs(output_dir, exist_ok=True)
 
         # Convert pydantic models back to dict format
-        zatrdata = ZATrainerDataArray(values=self.trdata)
-        file_out = os.path.join(output_dir, self.file_name)
+        zatrdata = ZATrainerDataArray(table=self.trdata)
+        file_out = os.path.join(output_dir, file_name)
         zatrdata.dump(file_out)
 
         # Show confirmation
@@ -604,4 +609,4 @@ class ZATrainerEditor(ctk.CTk):
                     file_out,
                 ]
             )
-            logger.trace(f"Binary created for {file_out}.")
+            logger.debug(f"Binary created for {file_out}.")
