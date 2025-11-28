@@ -80,13 +80,13 @@ jobs:
       - name: Build app
         if: steps.version_check.outputs.should_release == 'true'
         run: |
-          just build-app ${APPNAME}
+          just build-app ${{ env.APPNAME }}
 
       - name: Zip dist folder
         if: steps.version_check.outputs.should_release == 'true'
         run: |
           cd dist/
-          zip -r ${APPNAME}.zip ${APPNAME}.app
+          zip -r ${{ env.APPNAME }}.zip ${{ env.APPNAME }}.app
 
       - name: Create Release
         if: steps.version_check.outputs.should_release == 'true'

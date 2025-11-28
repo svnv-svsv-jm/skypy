@@ -1,3 +1,0 @@
-test_encount_init_poke_0: 353 -> 98
-test_encount_init_poke_1: 353 -> 450
-test_encount_init_poke_2: 133 -> 705

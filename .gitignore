@@ -16,6 +16,7 @@ test.py
 .data
 bin
 resources/preprocessed
+*.spec
 
 # PyTest
 .pytest_cache
