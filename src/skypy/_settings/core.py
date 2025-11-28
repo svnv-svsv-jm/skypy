@@ -1,15 +1,10 @@
 __all__ = ["Settings", "settings"]
 
-import json
 import os
 import typing as ty
-from functools import cached_property
 
 import pydantic
-from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from skypy.schemas import DevIdList, ItemIdList, TrDevIdList
 
 
 class AppliedChanges(pydantic.BaseModel):
@@ -161,39 +156,6 @@ class Files(pydantic.BaseModel):
         """Full path to devid file."""
         return os.path.join(self.json_folder, self.trdevid)
 
-    @pydantic.computed_field(repr=False)  # type: ignore
-    @cached_property
-    def data_devid(self) -> DevIdList:
-        """Load `devid_list.json` data."""
-        filename = self.file_devid
-        logger.trace(f"Loading: {filename}")
-        with open(filename, encoding="utf-8-sig") as f:
-            data_: dict = json.load(f)
-            data = DevIdList(**data_)
-        return data
-
-    @pydantic.computed_field(repr=False)  # type: ignore
-    @cached_property
-    def data_itemid(self) -> ItemIdList:
-        """Load `devid_list.json` data."""
-        filename = self.file_itemid
-        logger.trace(f"Loading: {filename}")
-        with open(filename, encoding="utf-8-sig") as f:
-            data_: dict = json.load(f)
-            data = ItemIdList(**data_)
-        return data
-
-    @pydantic.computed_field(repr=False)  # type: ignore
-    @cached_property
-    def data_trdevid(self) -> TrDevIdList:
-        """Load `devid_list.json` data."""
-        filename = self.file_trdevid
-        logger.trace(f"Loading: {filename}")
-        with open(filename, encoding="utf-8-sig") as f:
-            data_: dict = json.load(f)
-            data = TrDevIdList(**data_)
-        return data
-
 
 class Settings(BaseSettings):
     """App settings."""
@@ -222,6 +184,42 @@ class Settings(BaseSettings):
         Files(),
         description="Files.",
     )
+
+    @property
+    def za_species_table_file(self) -> str:
+        """ZA species table file."""
+        return os.path.join(self.files.assets, "za", "species.txt")
+
+    @property
+    def za_species_table(self) -> list[str]:
+        """ZA species table."""
+        with open(self.za_species_table_file, encoding="utf-8") as f:
+            species_list = [line.strip() for line in f if line.strip()]
+        return species_list
+
+    @property
+    def za_waza_table_file(self) -> str:
+        """ZA waza table file."""
+        return os.path.join(self.files.assets, "za", "moves.txt")
+
+    @property
+    def za_waza_table(self) -> list[str]:
+        """ZA waza table."""
+        with open(self.za_waza_table_file, encoding="utf-8") as f:
+            waza_list = [line.strip() for line in f if line.strip()]
+        return waza_list
+
+    @property
+    def za_items_table_file(self) -> str:
+        """ZA items table file."""
+        return os.path.join(self.files.assets, "za", "items.txt")
+
+    @property
+    def za_items_table(self) -> list[str]:
+        """ZA items table."""
+        with open(self.za_items_table_file, encoding="utf-8") as f:
+            items_list = [line.strip() for line in f if line.strip()]
+        return items_list
 
 
 settings = Settings()

@@ -12,6 +12,7 @@ import json
 import pydantic
 from pydantic.alias_generators import to_pascal
 
+from skypy import settings
 from skypy.types import (
     FormID,
     RareType,
@@ -106,6 +107,11 @@ class ZAWazaData(pydantic.BaseModel):
         description="Is plus waza.",
     )
 
+    @property
+    def waza_id_english(self) -> str:
+        """Get the English name of the Waza."""
+        return settings.za_waza_table[self.waza_id]
+
 
 class ZAPokemonData(pydantic.BaseModel):
     """Pokemon data."""
@@ -127,11 +133,11 @@ class ZAPokemonData(pydantic.BaseModel):
         description="Form ID.",
     )
     sex: Sex = pydantic.Field(
-        "DEFAULT",
+        0,
         description="Sex.",
     )
     item: ZAItemID = pydantic.Field(
-        "ITEMID_NONE",
+        0,
         description="Item.",
     )
     level: int = pydantic.Field(
@@ -188,6 +194,16 @@ class ZAPokemonData(pydantic.BaseModel):
         ZAWazaData(),
         description="Waza 4.",
     )
+
+    @property
+    def dev_id_english(self) -> str:
+        """Get the English name of the Pokemon."""
+        return settings.za_species_table[self.dev_id]
+
+    @property
+    def ball_id_english(self) -> str:
+        """Get the English name of the Ball."""
+        return settings.za_items_table[self.ball_id]
 
 
 class ZATrainerData(_ByAliasInitializer, _ByAliasSerializer, pydantic.BaseModel):
