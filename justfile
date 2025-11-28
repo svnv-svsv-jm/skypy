@@ -135,7 +135,7 @@ pre-commit: pre-commit-install
 
 # Run the app
 trainer-editor:
-    {{ PYTHON_EXEC }} python -m skypy "trainer-editor-za"
+    {{ PYTHON_EXEC }} python -m skypy
 
 # --------------------------------
 # Create binary files (the MODS)
@@ -191,7 +191,7 @@ trpfd:
 
 # Use --add-data="$(LOC):customtkinter/" or not
 build-app name="ZA-Trainer-Editor" loc=APP_LOC:
-    pyinstaller --noconfirm --onedir --windowed \
+    uv run pyinstaller --noconfirm --onedir --windowed \
     --icon "icon.ico" \
     --name {{ name }} \
     --add-data="{{ loc }}:customtkinter/" \

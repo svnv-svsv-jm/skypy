@@ -7,15 +7,9 @@ from skypy.za import ZATrainerEditor
 app = typer.Typer()
 
 
-@app.callback()
-def main() -> None:
-    """Default command."""
-    set_up_logging()
-
-
 @app.command()
 def trainer_editor_za() -> None:
-    """Default command."""
+    """Launch the ZA Trainer Editor."""
     set_up_logging()
     ui = ZATrainerEditor()
     ui.mainloop()
