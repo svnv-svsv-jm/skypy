@@ -13,3 +13,7 @@ Edit as you want, then `Save`. It will create a folder with the output `.json` f
 > This will happen automatically in the future.
 
 Once you have the binary file, that's your mod. Make sure it is at `mod/romfs/world/ik_data/trainer/trdata/trdata_array.bin`.
+
+## Installation from source
+
+> Coming soon...

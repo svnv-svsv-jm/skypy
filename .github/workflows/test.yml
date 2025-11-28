@@ -11,24 +11,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.13"]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up just
+        uses: extractions/setup-just@v2
 
       - name: Install dependencies and test
         run: |
-          pip install --upgrade pip
-          pip install virtualenv
-          virtualenv venv
-          source venv/bin/activate
-          make install
-          make test
+          just prepare
+          just install
 
       - name: Push to main if tests pass
         if: success()
