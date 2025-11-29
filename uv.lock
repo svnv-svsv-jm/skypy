@@ -1318,6 +1318,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-random"
+version = "0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9b/90/8aee557c63d0840a2bac5507066f01254a219e00d85a70042c96fd987bc5/pytest-random-0.02.tar.gz", hash = "sha256:92f25db8c5d9ffc20d90b51997b914372d6955cb9cf1f6ead45b90514fc0eddd", size = 1902, upload-time = "2013-04-28T16:03:45.754Z" }
+
+[[package]]
 name = "pytest-testmon"
 version = "2.1.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1596,6 +1605,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-mock" },
     { name = "pytest-mypy" },
+    { name = "pytest-random" },
     { name = "pytest-testmon" },
     { name = "pytest-xdist" },
     { name = "ruff" },
@@ -1643,6 +1653,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-mock" },
     { name = "pytest-mypy" },
+    { name = "pytest-random", specifier = ">=0.2" },
     { name = "pytest-testmon" },
     { name = "pytest-xdist" },
     { name = "ruff", specifier = ">=0.11.6" },

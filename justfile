@@ -137,52 +137,20 @@ trainer-editor:
     {{ PYTHON_EXEC }} python -m skypy
 
 # --------------------------------
-# Create binary files (the MODS)
-
+# Files
 # --------------------------------
-bin:
-    rm {{ BINDIR }}/*.bin || echo "no bins"
-    flatc -b {{ SCHEMADIR }}/personal_array.fbs {{ OUTPUT }}/personal_array.json || echo "ERROR for personal_array"
-    flatc -b {{ SCHEMADIR }}/waza_array.fbs {{ OUTPUT }}/waza_array.json || echo "ERROR for waza_array"
-    flatc -b {{ SCHEMADIR }}/trdata_array.bfbs {{ OUTPUT }}/trdata_array.json || echo "ERROR for trdata_array"
-    mv *.bin {{ BINDIR }}/.
 
-mod:
-    just bin
-    mkdir -p {{ MODDIR }}/romfs/avalon/data
-    mv {{ BINDIR }}/personal_array.bin {{ MODDIR }}/romfs/avalon/data/.
-    mv {{ BINDIR }}/waza_array.bin {{ MODDIR }}/romfs/avalon/data/.
-    mkdir -p {{ MODDIR }}/romfs/world/data/trainer/trdata
-    mv {{ BINDIR }}/trdata_array.bin {{ MODDIR }}/romfs/world/data/trainer/trdata/.
-    cp info.toml {{ MODDIR }}/.
-    cp -r sandbox/arc {{ MODDIR }}/romfs/.
+# Create binary from JSON
+encode-binary-from-json:
+    mkdir -p bin
+    rm bin/*.bin || echo "no bins"
+    flatc -b sandbox/trdata_array.bfbs sandbox/trdata_array.json
+    mv *.bin bin/.
 
-# --------------------------------
 # Decode binary files to JSON
-
-# --------------------------------
-json-decode filename ext:
-    rm {{ filename }}.json || echo ""
-    flatc --json --strict-json --raw-binary {{ SCHEMADIR }}/{{ filename }}.{{ ext }} -- {{ BINDIR }}/{{ filename }}.bin
-    mv {{ filename }}.json {{ OUTPUT }}/. || echo ""
-
-json-personal:
-    just json-decode personal_array fbs
-
-json-trainer:
-    json-decode trdata_array bfbs
-
-json-waza:
-    json-decode waza_array fbs
-
-json: json-personal json-trainer json-waza
-
-# --------------------------------
-# Deserialize data.trpfd
-
-# --------------------------------
-trpfd:
-    flatc --json --strict-json --raw-binary -- {{ BINDIR }}/data.trpfd
+decode-binary-to-json:
+    flatc --json --strict-json --raw-binary sandbox/trdata_array.bfbs -- sandbox/trdata_array.bin
+    mv trdata_array.json assets/za/Raw/trdata_array.json
 
 # --------------------------------
 # App

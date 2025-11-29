@@ -15,8 +15,11 @@ test.py
 # Data
 .data
 bin
+*.bin
 resources/preprocessed
 *.spec
+*.bfbs
+Output
 
 # PyTest
 .pytest_cache
