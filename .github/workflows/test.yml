@@ -1,4 +1,4 @@
-name: Test and update master
+name: Tests
 
 on:
   push:
@@ -24,10 +24,13 @@ jobs:
       - name: Set up just
         uses: extractions/setup-just@v2
 
+      - name: Install Tkinter on macOS
+        if: runner.os == 'macOS'
+        run: brew install python-tk@${{ matrix.python-version }}
+
       - name: Install dependencies and test
         run: |
-          just prepare
-          just install
+          just prepare ".venv" "${{ matrix.python-version }}" "/opt/homebrew/bin"
 
       - name: Test
         run: |

@@ -53,10 +53,12 @@ init:
     mkdir -p logs
 
 # Python install
-venv venv=VENV python=PYTHONVERSION:
+venv venv=VENV python_version=PYTHONVERSION python_path=PYTHON_PATH:
+    @echo "--- Creating venv ---"
     rm -rf {{ venv }} || echo "ok"
-    uv python install {{ python }}
-    uv venv {{ venv }} --python={{ PYTHON_PATH }}/python{{ python }}
+    uv python install {{ python_version }}
+    uv venv {{ venv }} --python={{ python_path }}/python{{ python_version }}
+    @echo "--- Activating venv ---"
     source "{{ venv }}/bin/activate"
 
 # Pre-commit
@@ -73,8 +75,9 @@ lock:
     uv lock
 
 # Prepare CI/CD
-prepare venv=VENV python=PYTHONVERSION:
-    just venv "{{ venv }}" "{{ python }}"
+prepare venv=VENV python_version=PYTHONVERSION python_path=PYTHON_PATH:
+    just venv "{{ venv }}" "{{ python_version }}" "{{ python_path }}"
+    @echo "--- Installing dependencies ---"
     just install
 
 # Build distribution
