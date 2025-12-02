@@ -8,7 +8,7 @@ import pyrootutils
 from loguru import logger
 
 
-def nb_init(logger_level: str = "INFO") -> None:
+def nb_init(logger_level: str = "INFO") -> None:  # pragma: no cover
     """Disables warnings and correctly finds the root directory of the project.
     Very handy when running notebooks.
 

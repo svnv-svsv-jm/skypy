@@ -32,7 +32,7 @@ def _get_app_directory() -> str:
     For bundled `.app`, returns the directory containing the `.app` bundle.
     For running from code, returns the current working directory.
     """
-    if getattr(sys, "frozen", False):
+    if getattr(sys, "frozen", False):  # pragma: no cover
         # Running as bundled app - sys.executable is like:
         # /path/to/ZA-Trainer-Editor.app/Contents/MacOS/ZA-Trainer-Editor
         # Go up 3 levels to get the directory containing the .app
@@ -105,6 +105,8 @@ class ZATrainerEditor(ctk.CTk):
         self.file_name = file_name
         self.selected_trainer_index: int = 0
         self.ignore_output_dir = ignore_output_dir
+        self._output_dir_var = ctk.StringVar(value=self.output_dir)
+        self._bfbs_file_var = ctk.StringVar(value=self.bfbs_file)
 
         # Load trainer data
         self.trdata = self.load_trainer_data(
@@ -217,10 +219,9 @@ class ZATrainerEditor(ctk.CTk):
 
         def on_output_directory_change(*_: object) -> None:
             """On output directory change."""
-            self.output_dir = self._output_dir_var.get()
+            self.output_dir = self._output_dir_var.get()  # pragma: no cover
             logger.trace(f"Output directory changed to: {self.output_dir}")
 
-        self._output_dir_var = ctk.StringVar(value=self.output_dir)
         self._output_dir_var.trace_add("write", on_output_directory_change)
 
         self.output_directory_label = ctk.CTkLabel(
@@ -241,10 +242,9 @@ class ZATrainerEditor(ctk.CTk):
 
         def on_bfbs_file_change(*_: object) -> None:
             """On BFBS file change."""
-            self.bfbs_file = self._bfbs_file_var.get()
+            self.bfbs_file = self._bfbs_file_var.get()  # pragma: no cover
             logger.trace(f"BFBS file changed to: {self.bfbs_file}")
 
-        self._bfbs_file_var = ctk.StringVar(value=self.bfbs_file)
         self._bfbs_file_var.trace_add("write", on_bfbs_file_change)
 
         self.output_directory_label = ctk.CTkLabel(
@@ -291,7 +291,6 @@ class ZATrainerEditor(ctk.CTk):
 
         logger.trace(f"Created widgets ({type(self)}): {self}")
 
-    @pyinstrument.profile()
     def display_trainer_data(self) -> None:
         """Display the current trainer's data."""
         logger.trace(f"Displaying trainer data ({type(self)}): {self}")

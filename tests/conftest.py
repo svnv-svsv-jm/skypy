@@ -10,6 +10,7 @@ import pendulum
 import pyrootutils
 import pytest
 from loguru import logger
+from typer.testing import CliRunner
 
 from skypy import settings
 from skypy.schemas import ZATrainerData, ZATrainerDataArray
@@ -238,3 +239,9 @@ def cleanup() -> ty.Iterator[None]:
     output_file = os.path.join(root, "Output")
     if os.path.exists(output_file):
         shutil.rmtree(output_file)
+
+
+@pytest.fixture
+def cli_runner() -> CliRunner:
+    """Fixture to create a CLI runner."""
+    return CliRunner()

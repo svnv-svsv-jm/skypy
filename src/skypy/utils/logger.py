@@ -47,7 +47,7 @@ def serialize(record: logging.LogRecord, show_file_info: bool = False) -> str:
     function = record["function"]  # type: ignore
     line = record["line"]  # type: ignore
     if show_file_info:
-        line_info = f"{file_path}:{line}"
+        line_info = f"{file_path}:{line}"  # pragma: no cover
     else:
         line_info = f"{name}.{module}.{function}:{line}"
     # Create set

@@ -499,8 +499,7 @@ class ZATrainerDataArray(pydantic.BaseModel):
         for i, t in enumerate(self.table):
             if t.tr_id == trid:
                 self.table[i] = trainer
-                return
-        raise ValueError(f"Trainer with ID {trid} not found.")
+                break
 
     def dump(
         self,

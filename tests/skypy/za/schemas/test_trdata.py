@@ -4,7 +4,14 @@ import pydantic
 import pytest
 from loguru import logger
 
-from skypy.schemas import ZATrainerData
+from skypy.schemas import ZATrainerData, ZATrainerDataArray
+
+
+def test_trainer_data_array(za_trainers: list[dict]) -> None:
+    """Test `ZATrainerDataArray` class can parse original trainer data."""
+    zatrdata = ZATrainerDataArray(Table=za_trainers)  # type: ignore
+    with pytest.raises(ValueError):
+        zatrdata.get_trainer("xxx")
 
 
 def test_trainer_data(za_debug_trainer_data: dict) -> None:

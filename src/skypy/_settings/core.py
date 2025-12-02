@@ -24,20 +24,6 @@ class AppliedChanges(pydantic.BaseModel):
         description="Name (with extension) of the file where we store the docs for the applied changes to personal.",
     )
 
-    @pydantic.computed_field(repr=False)  # type: ignore
-    @property
-    def waza_docs_file(self) -> str:
-        """Waza docs file location."""
-        f = os.path.join(self.docs_loc, self.waza_docs)
-        return f
-
-    @pydantic.computed_field(repr=False)  # type: ignore
-    @property
-    def personal_docs_file(self) -> str:
-        """Personal docs file location."""
-        f = os.path.join(self.docs_loc, self.personal_docs)
-        return f
-
 
 class Files(pydantic.BaseModel):
     """Settings for locations and files."""
@@ -101,69 +87,9 @@ class Files(pydantic.BaseModel):
 
     @pydantic.computed_field()  # type: ignore
     @property
-    def input_folder(self) -> str:
-        """Input folder."""
-        return os.path.join(self.root, self.input_folder_name)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def output_folder(self) -> str:
-        """Output folder."""
-        return os.path.join(self.root, self.output_folder_name)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def json_folder(self) -> str:
-        """JSON folder."""
-        return os.path.join(self.assets, "json")
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def schema_folder(self) -> str:
-        """Schema folder."""
-        return os.path.join(self.assets, "schema")
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def waza_schema(self) -> str:
-        """Waza schema file."""
-        return os.path.join(self.schema_folder, self.waza_array)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
     def file_trainer_data(self) -> str:
         """Full path to trainer data file."""
         return os.path.join(self.assets, "za", self.trainer_data)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def file_personal(self) -> str:
-        """Full path to personal file."""
-        return os.path.join(self.json_folder, self.personal)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def file_waza(self) -> str:
-        """Full path to waza file."""
-        return os.path.join(self.json_folder, self.waza)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def file_devid(self) -> str:
-        """Full path to devid file."""
-        return os.path.join(self.json_folder, self.devid)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def file_itemid(self) -> str:
-        """Full path to devid file."""
-        return os.path.join(self.json_folder, self.itemid)
-
-    @pydantic.computed_field()  # type: ignore
-    @property
-    def file_trdevid(self) -> str:
-        """Full path to devid file."""
-        return os.path.join(self.json_folder, self.trdevid)
 
 
 class Settings(BaseSettings):

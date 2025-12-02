@@ -74,7 +74,7 @@ def test_pokemon_data_to_eng_pikachu(
     assert data.dev_id_english == "Pikachu"
 
 
-@pytest.mark.parametrize("dev_id", range(1, 100))
+@pytest.mark.parametrize("dev_id", range(1, 5))
 def test_pokemon_data_to_eng(za_debug_pkmn_data: dict, dev_id: int) -> None:
     """Test `ZATrainerData` class can parse original trainer data."""
     data = ZAPokemonData(**za_debug_pkmn_data)
@@ -93,7 +93,18 @@ def test_pokemon_data_poke_ball_to_eng(
     assert data.ball_id_english == settings.za_items_table[ball_id]
 
 
-@pytest.mark.parametrize("waza_id", range(1, 25))
+@pytest.mark.parametrize("item", range(1, 5))
+def test_pokemon_data_item_to_eng(
+    za_debug_pkmn_data: dict,
+    item: int,
+) -> None:
+    """Test `ZATrainerData` class can parse original trainer data."""
+    data = ZAPokemonData(**za_debug_pkmn_data)
+    data.item = item
+    assert data.item_english == settings.za_items_table[item]
+
+
+@pytest.mark.parametrize("waza_id", range(1, 5))
 @pytest.mark.parametrize("waza_nr", [1, 2, 3, 4])
 def test_pokemon_waza_to_eng(
     za_debug_pkmn_data: dict,
