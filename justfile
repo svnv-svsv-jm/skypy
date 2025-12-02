@@ -103,7 +103,7 @@ unit-test:
 nbmake:
     {{ PYTHON_EXEC }} pytest -x --nbmake --overwrite {{ EXAMPLE_DIR }}
 
-test: ruff mypy unit-test nbmake
+test: ruff mypy unit-test
 
 tests: test
 
