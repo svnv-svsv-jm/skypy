@@ -2,7 +2,6 @@ __all__ = ["ZATrainerEditor"]
 
 import json
 import os
-import subprocess
 import sys
 import typing as ty
 
@@ -102,7 +101,7 @@ class ZATrainerEditor(ctk.CTk):
         self.app_title = title
         self.input_dir = input_dir
         self.output_dir = output_dir or os.path.join(_get_app_directory(), "Output")
-        self.bfbs_file = bfbs_file or os.path.join("sandbox", "trdata_array.bfbs")
+        self.bfbs_file = bfbs_file or settings.files.za_trainers_bfbs_file
         self.file_name = file_name
         self.selected_trainer_index: int = 0
         self.ignore_output_dir = ignore_output_dir
@@ -667,12 +666,15 @@ class ZATrainerEditor(ctk.CTk):
             logger.trace(f"Saving trainer data ({type(self)}): {self}")
             output_dir = output_dir or self.output_dir
             file_name = file_name or self.file_name
+            bfbs_file = bfbs_file or self.bfbs_file
             os.makedirs(output_dir, exist_ok=True)
 
             # Convert pydantic models back to dict format
             zatrdata = ZATrainerDataArray(Table=self.trdata)
             file_out = os.path.join(output_dir, file_name)
-            zatrdata.dump(file_out)
+            logger.trace(f"Dumping data to {file_out}...")
+            zatrdata.dump(file_out, bfbs_file=bfbs_file, create_binaries=True)
+            logger.trace(f"Data dumped to {file_out}.")
 
             # Show confirmation
             self.status_label.configure(
@@ -684,19 +686,3 @@ class ZATrainerEditor(ctk.CTk):
             self.after(
                 3000, lambda: self.status_label.configure(text="", text_color="gray")
             )
-
-        # Create binaries
-        bfbs_file = bfbs_file or self.bfbs_file
-        if os.path.exists(bfbs_file):
-            logger.trace(f"Creating binary for {file_out}...")
-            subprocess.run(
-                [
-                    "flatc",
-                    "-b",
-                    "-o",
-                    os.path.dirname(file_out),
-                    bfbs_file,
-                    file_out,
-                ]
-            )
-            logger.debug(f"Binary created for {file_out}.")

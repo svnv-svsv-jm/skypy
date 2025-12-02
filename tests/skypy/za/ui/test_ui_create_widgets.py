@@ -74,6 +74,7 @@ def test_create_trainer_combobox(za_trainer_editor_app: ZATrainerEditor) -> None
             ctk.CTkLabel, "__init__", side_effect=ctk.CTkLabel.__init__, autospec=True
         ) as label_init,
     ):
+        ui.create_top_frame()
         ui.create_trainer_combobox()
         label_init.assert_called_once()
 

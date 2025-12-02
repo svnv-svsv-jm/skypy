@@ -23,7 +23,7 @@ def test_pokemon_data_null_dump() -> None:
         "rareType": "NO_RARE",
         "scaleValue": 128,
     }
-    data = ZAPokemonData(**empty_pkmn)
+    data = ZAPokemonData(**empty_pkmn)  # type: ignore
     raw = data.model_dump(mode="json", by_alias=True, exclude_unset=True)
     assert raw == empty_pkmn
 

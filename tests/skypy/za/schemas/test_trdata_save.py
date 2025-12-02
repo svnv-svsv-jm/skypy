@@ -1,11 +1,14 @@
 import json
 import os
 import pprint as pp
+import subprocess
 import tempfile
+from unittest.mock import patch
 
 import pytest
 from loguru import logger
 
+from skypy import settings
 from skypy.schemas import ZATrainerDataArray
 
 
@@ -21,7 +24,7 @@ def test_trdata_save(
     """
     # Create the data
     trainers = {"Table": za_trainers[:3]}
-    zatrdata = ZATrainerDataArray(**trainers)
+    zatrdata = ZATrainerDataArray(**trainers)  # type: ignore
     logger.info(f"({type(zatrdata)}):\n{pp.pformat(zatrdata)}")
 
     raw = zatrdata.model_dump(mode="json", by_alias=True, exclude_unset=True)
@@ -36,7 +39,18 @@ def test_trdata_save(
 
         logger.info(f"Temporary file: {f.name}")
         # Dump the data
-        zatrdata.dump(f.name)
+        with patch.object(subprocess, "run") as run:
+            zatrdata.dump(f.name, create_binaries=True)
+            run.assert_called_once_with(
+                [
+                    "flatc",
+                    "-b",
+                    "-o",
+                    artifacts_path,
+                    settings.files.za_trainers_bfbs_file,
+                    f.name,
+                ]
+            )
 
         # Tests
         assert os.path.exists(f.name)

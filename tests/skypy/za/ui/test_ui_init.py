@@ -16,13 +16,23 @@ def test_ui_initialization_simple(output_dir: str) -> None:
         os.remove(os.path.join(output_dir, "trdata_array.json"))
     except FileNotFoundError:
         pass
-    with mock.patch.object(ZATrainerEditor, "withdraw") as withdraw:
+
+    with (
+        mock.patch.object(ZATrainerEditor, "withdraw") as withdraw,
+        mock.patch.object(ZATrainerEditor, "create_widgets") as create_widgets,
+        mock.patch.object(
+            ZATrainerEditor, "display_trainer_data"
+        ) as display_trainer_data,
+    ):
         ui = ZATrainerEditor(
             visible=False,
             output_dir=output_dir,
             title="Test UI Initialization",
         )
         logger.info(f"UI: {ui}")
+
+    create_widgets.assert_called_once()
+    display_trainer_data.assert_called_once()
     withdraw.assert_called_once()
     assert ui.selected_trainer_index == 0
     assert ui.output_dir == output_dir

@@ -8,6 +8,8 @@ __all__ = [
 
 
 import json
+import os
+import subprocess
 
 import pydantic
 from loguru import logger
@@ -41,11 +43,12 @@ def get_key_by_value(
     mapping: dict[str, int],
     value: int,
     default: str | None = None,
-) -> str | None:
+) -> str:
     """Get the key by value from a mapping."""
     try:
         return next(key for key, val in mapping.items() if val == value)
     except StopIteration:
+        default = default or list(mapping.keys())[0]
         return default
 
 
@@ -499,9 +502,21 @@ class ZATrainerDataArray(pydantic.BaseModel):
                 return
         raise ValueError(f"Trainer with ID {trid} not found.")
 
-    def dump(self, path: str) -> None:
+    def dump(
+        self,
+        path: str,
+        bfbs_file: str | None = None,
+        create_binaries: bool = False,
+    ) -> None:
         """Dump the data to a JSON file."""
         with open(path, "w", encoding="utf-8") as f:
             data = self.model_dump(mode="json", by_alias=True, exclude_unset=True)
             json.dump(data, f, indent=2, ensure_ascii=False)
             logger.trace(f"Dumped data to {path}: {data}")
+
+        if create_binaries:
+            bfbs_file = bfbs_file or settings.files.za_trainers_bfbs_file
+            if os.path.exists(bfbs_file):
+                logger.trace(f"Creating binary for {path}...")
+                dirname = os.path.dirname(path)
+                subprocess.run(["flatc", "-b", "-o", dirname, bfbs_file, path])

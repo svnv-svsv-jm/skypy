@@ -94,6 +94,10 @@ class Files(pydantic.BaseModel):
         "waza_array.fbs",
         description="File name for the waza array.",
     )
+    za_trainers_bfbs_file: str = pydantic.Field(
+        os.path.join("sandbox", "trdata_array.bfbs"),
+        description="File name for the ZA trainers binary file.",
+    )
 
     @pydantic.computed_field()  # type: ignore
     @property
