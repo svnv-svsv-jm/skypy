@@ -108,7 +108,7 @@ class Settings(BaseSettings):
         description="If `True`, verbosity and strictness on errors are increased.",
     )
     log_level: ty.Literal["TRACE", "DEBUG", "INFO"] = pydantic.Field(
-        "INFO",
+        "TRACE",
         description="Logging level.",
     )
     applied_changes: AppliedChanges = pydantic.Field(
