@@ -16,6 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
+        python-version: ["3.13"]
 
     runs-on: ${{ matrix.os }}
 
@@ -63,19 +64,11 @@ jobs:
             echo "should_release=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Set up uv
+      - name: Set up Python and dependencies
         if: steps.version_check.outputs.should_release == 'true'
-        uses: astral-sh/setup-uv@v4
-
-      - name: Set up just
-        if: steps.version_check.outputs.should_release == 'true'
-        uses: extractions/setup-just@v2
-
-      - name: Install dependencies and test
-        if: steps.version_check.outputs.should_release == 'true'
-        run: |
-          just prepare
-          just install
+        uses: ./.github/actions/setup/action.yaml
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Build app
         if: steps.version_check.outputs.should_release == 'true'

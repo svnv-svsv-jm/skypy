@@ -23,7 +23,7 @@ def test_trdata_save(
     This way, we also check that the file can be overwritten.
     """
     # Create the data
-    trainers = {"Table": za_trainers[:3]}
+    trainers = {"values": za_trainers[:3]}
     zatrdata = ZATrainerDataArray(**trainers)  # type: ignore
     logger.info(f"({type(zatrdata)}):\n{pp.pformat(zatrdata)}")
 
