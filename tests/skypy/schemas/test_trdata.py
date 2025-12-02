@@ -1,3 +1,5 @@
+import json
+import os
 import pprint as pp
 
 import pydantic
@@ -5,6 +7,24 @@ import pytest
 from loguru import logger
 
 from skypy.schemas import ZATrainerData, ZATrainerDataArray
+
+
+def test_dumping_trainer_data_array(
+    artifacts_path: str,
+    za_trainer_data_raw: dict,
+) -> None:
+    """Test `ZATrainerDataArray` class can dump data."""
+    zatrdata = ZATrainerDataArray(**za_trainer_data_raw)
+    fname = os.path.join(artifacts_path, "trdata_array.json")
+    zatrdata.dump(fname)
+    assert os.path.exists(fname)
+    try:
+        with open(fname, encoding="utf-8") as f:
+            data = json.load(f)
+        assert data == za_trainer_data_raw
+    finally:
+        logger.info(f"Removing {fname}...")
+        os.remove(fname)
 
 
 def test_trainer_data_array(za_trainers: list[dict]) -> None:

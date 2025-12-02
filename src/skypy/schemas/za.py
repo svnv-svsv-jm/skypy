@@ -482,6 +482,16 @@ class ZATrainerDataArray(pydantic.BaseModel):
         serialization_alias="Table",
     )
 
+    @pydantic.model_serializer(when_used="json")
+    def model_serialize(self) -> dict:
+        """Serialize the model to a dictionary."""
+        return {
+            "values": [
+                trainer.model_dump(mode="json", by_alias=True, exclude_unset=True)
+                for trainer in self.values
+            ]
+        }
+
     @property
     def table(self) -> list[ZATrainerData]:
         """Get the table of trainers."""
