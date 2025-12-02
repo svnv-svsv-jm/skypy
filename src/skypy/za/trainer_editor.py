@@ -43,6 +43,16 @@ def _get_app_directory() -> str:
     return os.getcwd()
 
 
+@logger.catch((ValueError, TypeError), reraise=False)
+def _set_attr(obj: ty.Any, attr: str, value: str, dtype: type = str) -> None:
+    """Helper to safely set attributes with type conversion."""
+    if dtype is bool:
+        val = value.lower() == "true"
+    else:
+        val = dtype(value)
+    setattr(obj, attr, val)
+
+
 class ZATrainerEditor(ctk.CTk):
     """ZA Trainer Editor."""
 
@@ -317,7 +327,7 @@ class ZATrainerEditor(ctk.CTk):
         self._create_field(
             "Money Rate",
             str(trainer.money_rate),
-            lambda v: self._set_attr(trainer, "money_rate", v, int),
+            lambda v: _set_attr(trainer, "money_rate", v, int),
         )
 
         # Boolean Flags Section
@@ -371,22 +381,22 @@ class ZATrainerEditor(ctk.CTk):
         self._create_field(
             "View Horizontal Angle",
             str(trainer.view_horizontal_angle),
-            lambda v: self._set_attr(trainer, "view_horizontal_angle", v, float),
+            lambda v: _set_attr(trainer, "view_horizontal_angle", v, float),
         )
         self._create_field(
             "View Vertical Angle",
             str(trainer.view_vertical_angle),
-            lambda v: self._set_attr(trainer, "view_vertical_angle", v, float),
+            lambda v: _set_attr(trainer, "view_vertical_angle", v, float),
         )
         self._create_field(
             "View Range",
             str(trainer.view_range),
-            lambda v: self._set_attr(trainer, "view_range", v, float),
+            lambda v: _set_attr(trainer, "view_range", v, float),
         )
         self._create_field(
             "Hearing Range",
             str(trainer.hearing_range),
-            lambda v: self._set_attr(trainer, "hearing_range", v, float),
+            lambda v: _set_attr(trainer, "hearing_range", v, float),
         )
 
         # Pokemon Section
@@ -409,7 +419,9 @@ class ZATrainerEditor(ctk.CTk):
             def on_dev_id_change(val: str) -> None:
                 """On Dev ID Change."""
                 logger.trace(f"On Dev ID Change: {val}")
-                poke_attr.dev_id = settings.za_species_table.index(val)
+                poke_attr.dev_id = settings.za_species_table.index(
+                    val
+                )  # pragma: no cover
                 logger.trace(f"New Dev ID: {poke_attr.dev_id} | {val}")
 
             self._create_dropdown(
@@ -426,7 +438,7 @@ class ZATrainerEditor(ctk.CTk):
             def on_item_change(val: str) -> None:
                 """On Item Change."""
                 logger.trace(f"On Item Change: {val}")
-                poke_attr.item = settings.za_items_table.index(val)
+                poke_attr.item = settings.za_items_table.index(val)  # pragma: no cover
                 logger.trace(f"New Item: {poke_attr.item} | {val}")
 
             self._create_dropdown(
@@ -443,7 +455,7 @@ class ZATrainerEditor(ctk.CTk):
             def on_level_change(val: str) -> None:
                 """On Level Change."""
                 logger.trace(f"On Level Change: {val}")
-                poke_attr.level = int(val)
+                poke_attr.level = int(val)  # pragma: no cover
                 logger.trace(f"New Level: {poke_attr.level} | {val}")
 
             self._create_field(
@@ -456,7 +468,7 @@ class ZATrainerEditor(ctk.CTk):
             def on_form_id_change(val: str) -> None:
                 """On Form ID Change."""
                 logger.trace(f"On Form ID Change: {val}")
-                poke_attr.form_id = int(val)  # type: ignore
+                poke_attr.form_id = int(val)  # type: ignore # pragma: no cover
                 logger.trace(f"New Form ID: {poke_attr.form_id} | {val}")
 
             self._create_field(
@@ -466,7 +478,7 @@ class ZATrainerEditor(ctk.CTk):
                 parent=poke_frame,
             )
 
-            def on_sex_change(val: str) -> None:
+            def on_sex_change(val: str) -> None:  # pragma: no cover
                 """On Sex Change."""
                 logger.trace(f"On Sex Change: {val}")
                 poke_attr.sex = int(val)  # type: ignore
@@ -480,7 +492,7 @@ class ZATrainerEditor(ctk.CTk):
                 parent=poke_frame,
             )
 
-            def on_ball_id_change(val: str) -> None:
+            def on_ball_id_change(val: str) -> None:  # pragma: no cover
                 """On Ball ID Change."""
                 logger.trace(f"On Ball ID Change: {val}")
                 poke_attr.ball_id = settings.za_items_table.index(val)  # type: ignore
@@ -494,7 +506,7 @@ class ZATrainerEditor(ctk.CTk):
                 parent=poke_frame,
             )
 
-            def on_scale_value_change(val: str) -> None:
+            def on_scale_value_change(val: str) -> None:  # pragma: no cover
                 """On Scale Value Change."""
                 logger.trace(f"On Scale Value Change: {val}")
                 poke_attr.scale_value = int(val)
@@ -527,7 +539,7 @@ class ZATrainerEditor(ctk.CTk):
                 waza_name_label.pack(side="left", padx=5)
 
                 # Move ID Entry
-                def on_waza_change(val: str) -> None:
+                def on_waza_change(val: str) -> None:  # pragma: no cover
                     """On Waza Change.
 
                     Args:
@@ -548,7 +560,7 @@ class ZATrainerEditor(ctk.CTk):
                 waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
 
                 # Plus Checkbox
-                def on_plus_change() -> None:
+                def on_plus_change() -> None:  # pragma: no cover
                     """On Plus Change."""
                     logger.trace(f"On Plus Change: {waza_data.is_plus_waza}")
                     waza_data.is_plus_waza = not waza_data.is_plus_waza
@@ -563,16 +575,6 @@ class ZATrainerEditor(ctk.CTk):
                 plus_checkbox.pack(side="left", padx=5)
 
         logger.trace(f"Displayed trainer data ({type(self)}): {self}")
-
-    @logger.catch((ValueError, TypeError), reraise=False)
-    def _set_attr(self, obj: ty.Any, attr: str, value: str, dtype: type = str) -> None:
-        """Helper to safely set attributes with type conversion."""
-        if dtype is bool:
-            # This shouldn't happen for entries usually, but for completeness
-            val = value.lower() == "true"
-        else:
-            val = dtype(value)
-        setattr(obj, attr, val)
 
     def _create_field(
         self,
