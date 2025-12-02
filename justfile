@@ -158,7 +158,7 @@ decode-binary-to-json:
 # --------------------------------
 
 # Use --add-data="$(LOC):customtkinter/" or not
-build-app name="ZA-Trainer-Editor" loc=APP_LOC:
+build-trainer-editor name="ZA-Trainer-Editor" loc=APP_LOC:
     uv run pyinstaller --noconfirm --onedir --windowed \
     --icon "icon.ico" \
     --name {{ name }} \

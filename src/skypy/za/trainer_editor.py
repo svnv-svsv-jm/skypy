@@ -224,15 +224,14 @@ class ZATrainerEditor(ctk.CTk):
         )
         self.status_label.pack(side="left", padx=10)
 
+    def _on_output_directory_change(self, *_: object) -> None:
+        """On output directory change."""
+        self.output_dir = self._output_dir_var.get()
+        logger.trace(f"Output directory changed to: {self.output_dir}")
+
     def create_output_directory_input(self) -> None:
         """Let the user change the output directory."""
-
-        def on_output_directory_change(*_: object) -> None:
-            """On output directory change."""
-            self.output_dir = self._output_dir_var.get()  # pragma: no cover
-            logger.trace(f"Output directory changed to: {self.output_dir}")
-
-        self._output_dir_var.trace_add("write", on_output_directory_change)
+        self._output_dir_var.trace_add("write", self._on_output_directory_change)
 
         self.output_directory_label = ctk.CTkLabel(
             self.top_frame,
@@ -247,15 +246,14 @@ class ZATrainerEditor(ctk.CTk):
         )
         self.output_directory_input.pack(side="left", padx=(0, 10))
 
+    def _on_bfbs_file_change(self, *_: object) -> None:
+        """On BFBS file change."""
+        self.bfbs_file = self._bfbs_file_var.get()
+        logger.trace(f"BFBS file changed to: {self.bfbs_file}")
+
     def create_bfbs_file_input(self) -> None:
         """Let the user change the output directory."""
-
-        def on_bfbs_file_change(*_: object) -> None:
-            """On BFBS file change."""
-            self.bfbs_file = self._bfbs_file_var.get()  # pragma: no cover
-            logger.trace(f"BFBS file changed to: {self.bfbs_file}")
-
-        self._bfbs_file_var.trace_add("write", on_bfbs_file_change)
+        self._bfbs_file_var.trace_add("write", self._on_bfbs_file_change)
 
         self.output_directory_label = ctk.CTkLabel(
             self.top_frame,
@@ -265,7 +263,7 @@ class ZATrainerEditor(ctk.CTk):
 
         self.output_directory_input = ctk.CTkEntry(
             self.top_frame,
-            textvariable=self._output_dir_var,
+            textvariable=self._bfbs_file_var,
             width=200,
         )
         self.output_directory_input.pack(side="left", padx=(0, 10))

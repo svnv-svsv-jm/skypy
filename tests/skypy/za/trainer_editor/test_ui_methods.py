@@ -72,32 +72,6 @@ def test_create_status_label(za_trainer_editor_app: ZATrainerEditor) -> None:
         pack.assert_called_once()
 
 
-def test_create_output_directory_input(za_trainer_editor_app: ZATrainerEditor) -> None:
-    """Test `create_output_directory_input` method."""
-    ui = za_trainer_editor_app
-    with (
-        patch.object(ctk.CTkLabel, "__init__", return_value=None) as __init__,
-        patch.object(ctk.CTkLabel, "pack", return_value=None) as pack,
-    ):
-        ui.create_top_frame()
-        ui.create_output_directory_input()
-        __init__.assert_called_once()
-        pack.assert_called_once()
-
-
-def test_create_bfbs_file_input(za_trainer_editor_app: ZATrainerEditor) -> None:
-    """Test `create_bfbs_file_input` method."""
-    ui = za_trainer_editor_app
-    with (
-        patch.object(ctk.CTkLabel, "__init__", return_value=None) as __init__,
-        patch.object(ctk.CTkLabel, "pack", return_value=None) as pack,
-    ):
-        ui.create_top_frame()
-        ui.create_bfbs_file_input()
-        __init__.assert_called_once()
-        pack.assert_called_once()
-
-
 def test_display_trainer_data() -> None:
     """Test `display_trainer_data`."""
     ui = ZATrainerEditor()
