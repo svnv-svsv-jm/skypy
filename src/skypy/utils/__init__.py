@@ -1,1 +1,2 @@
-from .nb import *
+from .nb import *  # noqa
+from .logger import *  # noqa

@@ -1,5 +1,6 @@
 __all__ = ["Settings", "settings"]
 
+import json
 import os
 import typing as ty
 
@@ -128,7 +129,7 @@ class Files(pydantic.BaseModel):
     @property
     def file_trainer_data(self) -> str:
         """Full path to trainer data file."""
-        return os.path.join(self.json_folder, self.trainer_data)
+        return os.path.join(self.assets, "za", self.trainer_data)
 
     @pydantic.computed_field()  # type: ignore
     @property
@@ -224,6 +225,108 @@ class Settings(BaseSettings):
         with open(self.za_items_table_file, encoding="utf-8") as f:
             items_list = [line.strip() for line in f if line.strip()]
         return items_list
+
+    @property
+    def za_mappings_location(self) -> str:
+        """ZA waza mappings directory."""
+        return os.path.join(self.files.assets, "za", "mappings")
+
+    @property
+    def za_waza_mappings_file(self) -> str:
+        """ZA waza mappings file."""
+        return os.path.join(self.za_mappings_location, "wazaId.json")
+
+    @property
+    def za_waza_mappings(self) -> dict[str, int]:
+        """ZA waza mappings."""
+        return _get_mappings(self.za_waza_mappings_file)
+
+    @property
+    def za_species_mappings_file(self) -> str:
+        """ZA species mappings file."""
+        return os.path.join(self.za_mappings_location, "devId.json")
+
+    @property
+    def za_species_mappings(self) -> dict[str, int]:
+        """ZA species mappings."""
+        return _get_mappings(self.za_species_mappings_file)
+
+    @property
+    def za_ball_mappings_file(self) -> str:
+        """ZA ball mappings file."""
+        return os.path.join(self.za_mappings_location, "ballId.json")
+
+    @property
+    def za_ball_mappings(self) -> dict[str, int]:
+        """ZA ball mappings."""
+        return _get_mappings(self.za_ball_mappings_file)
+
+    @property
+    def za_seikaku_mappings_file(self) -> str:
+        """ZA seikaku mappings file."""
+        return os.path.join(self.za_mappings_location, "seikaku.json")
+
+    @property
+    def za_seikaku_mappings(self) -> dict[str, int]:
+        """ZA seikaku mappings."""
+        return _get_mappings(self.za_seikaku_mappings_file)
+
+    @property
+    def za_rare_type_mappings_file(self) -> str:
+        """ZA rare type mappings file."""
+        return os.path.join(self.za_mappings_location, "rareType.json")
+
+    @property
+    def za_rare_type_mappings(self) -> dict[str, int]:
+        """ZA rare type mappings."""
+        return _get_mappings(self.za_rare_type_mappings_file)
+
+    @property
+    def za_rank_mappings_file(self) -> str:
+        """ZA rank mappings file."""
+        return os.path.join(self.za_mappings_location, "rank.json")
+
+    @property
+    def za_rank_mappings(self) -> dict[str, int]:
+        """ZA rank mappings."""
+        return _get_mappings(self.za_rank_mappings_file)
+
+    @property
+    def za_item_mappings_file(self) -> str:
+        """ZA item mappings file."""
+        return os.path.join(self.za_mappings_location, "item.json")
+
+    @property
+    def za_item_mappings(self) -> dict[str, int]:
+        """ZA item mappings."""
+        return _get_mappings(self.za_item_mappings_file)
+
+    @property
+    def za_sex_mappings_file(self) -> str:
+        """ZA sex mappings file."""
+        return os.path.join(self.za_mappings_location, "sex.json")
+
+    @property
+    def za_sex_mappings(self) -> dict[str, int]:
+        """ZA sex mappings."""
+        return _get_mappings(self.za_sex_mappings_file)
+
+    @property
+    def za_tokusei_mappings_file(self) -> str:
+        """ZA tokusei mappings file."""
+        return os.path.join(self.za_mappings_location, "tokusei.json")
+
+    @property
+    def za_tokusei_mappings(self) -> dict[str, int]:
+        """ZA tokusei mappings."""
+        return _get_mappings(self.za_tokusei_mappings_file)
+
+
+def _get_mappings(filename: str) -> dict[str, int]:
+    """Get mappings from a file."""
+    with open(filename, encoding="utf-8") as f:
+        mappings: dict[str, int] = json.load(f)
+    return mappings
 
 
 settings = Settings()

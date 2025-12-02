@@ -7,7 +7,6 @@ import sys
 import typing as ty
 
 import customtkinter as ctk
-import pydantic
 import pyinstrument
 from loguru import logger
 
@@ -50,10 +49,11 @@ class ZATrainerEditor(ctk.CTk):
 
     def __init__(
         self,
-        width: int = 800,
+        width: int = 950,
         height: int = 600,
         input_dir: str = settings.files.za_assets,
         output_dir: str | None = None,
+        bfbs_file: str | None = None,
         file_name: str = "trdata_array.json",
         title: str = "ZA Trainer Editor",
         ignore_output_dir: bool = False,
@@ -74,6 +74,10 @@ class ZATrainerEditor(ctk.CTk):
 
             output_dir (str):
                 Directory to save trainer data to.
+
+            bfbs_file (str):
+                BFBS file to load trainer data from.
+                Default is `"trdata_array.bfbs"`.
 
             file_name (str):
                 File name to load trainer data from.
@@ -98,6 +102,7 @@ class ZATrainerEditor(ctk.CTk):
         self.app_title = title
         self.input_dir = input_dir
         self.output_dir = output_dir or os.path.join(_get_app_directory(), "Output")
+        self.bfbs_file = bfbs_file or os.path.join("sandbox", "trdata_array.bfbs")
         self.file_name = file_name
         self.selected_trainer_index: int = 0
         self.ignore_output_dir = ignore_output_dir
@@ -151,12 +156,11 @@ class ZATrainerEditor(ctk.CTk):
         path = os.path.join(dir_path, file_name)
         logger.trace(f"Loading data from {path}...")
         with open(path, encoding="utf-8") as f:
-            trdata = json.load(f)
-        trainers: list[ZATrainerData] = pydantic.TypeAdapter(
-            list[ZATrainerData]
-        ).validate_python(trdata["Table"])
+            trdata: dict = json.load(f)
+        assert isinstance(trdata, dict), f"Expected dict, got {type(trdata)}"
+        trainers: ZATrainerDataArray = ZATrainerDataArray(**trdata)
         logger.trace(f"Loaded trainer data from {path}.")
-        return trainers
+        return trainers.values
 
     def create_top_frame(self) -> None:
         """Create the top frame."""
@@ -233,6 +237,30 @@ class ZATrainerEditor(ctk.CTk):
         )
         self.output_directory_input.pack(side="left", padx=(0, 10))
 
+    def create_bfbs_file_input(self) -> None:
+        """Let the user change the output directory."""
+
+        def on_bfbs_file_change(*_: object) -> None:
+            """On BFBS file change."""
+            self.bfbs_file = self._bfbs_file_var.get()
+            logger.trace(f"BFBS file changed to: {self.bfbs_file}")
+
+        self._bfbs_file_var = ctk.StringVar(value=self.bfbs_file)
+        self._bfbs_file_var.trace_add("write", on_bfbs_file_change)
+
+        self.output_directory_label = ctk.CTkLabel(
+            self.top_frame,
+            text="BFBS File:",
+        )
+        self.output_directory_label.pack(side="left", padx=(10, 5))
+
+        self.output_directory_input = ctk.CTkEntry(
+            self.top_frame,
+            textvariable=self._output_dir_var,
+            width=200,
+        )
+        self.output_directory_input.pack(side="left", padx=(0, 10))
+
     @pyinstrument.profile()
     def create_widgets(self) -> None:
         """Create UI widgets."""
@@ -243,6 +271,9 @@ class ZATrainerEditor(ctk.CTk):
 
         # Create output directory input
         self.create_output_directory_input()
+
+        # Create BFBS file input
+        self.create_bfbs_file_input()
 
         # Create a label for the combobox
         self.create_trainer_combobox()
@@ -303,8 +334,8 @@ class ZATrainerEditor(ctk.CTk):
             lambda v: setattr(trainer, "meg_evolution", v),
         )
         self._create_checkbox(
-            "Last Hand",
-            trainer.last_hand_mega,
+            "Last Hand Mega",
+            trainer.last_hand,
             lambda v: setattr(trainer, "last_hand", v),
         )
 
@@ -427,7 +458,7 @@ class ZATrainerEditor(ctk.CTk):
             def on_form_id_change(val: str) -> None:
                 """On Form ID Change."""
                 logger.trace(f"On Form ID Change: {val}")
-                poke_attr.form_id = int(val)
+                poke_attr.form_id = int(val)  # type: ignore
                 logger.trace(f"New Form ID: {poke_attr.form_id} | {val}")
 
             self._create_field(
@@ -440,7 +471,7 @@ class ZATrainerEditor(ctk.CTk):
             def on_sex_change(val: str) -> None:
                 """On Sex Change."""
                 logger.trace(f"On Sex Change: {val}")
-                poke_attr.sex = int(val)
+                poke_attr.sex = int(val)  # type: ignore
                 logger.trace(f"New Sex: {poke_attr.sex} | {val}")
 
             self._create_dropdown(
@@ -454,7 +485,7 @@ class ZATrainerEditor(ctk.CTk):
             def on_ball_id_change(val: str) -> None:
                 """On Ball ID Change."""
                 logger.trace(f"On Ball ID Change: {val}")
-                poke_attr.ball_id = settings.za_items_table.index(val)
+                poke_attr.ball_id = settings.za_items_table.index(val)  # type: ignore
                 logger.trace(f"New Ball ID: {poke_attr.ball_id} | {val}")
 
             self._create_dropdown(
@@ -622,6 +653,7 @@ class ZATrainerEditor(ctk.CTk):
         self,
         output_dir: str | None = None,
         file_name: str | None = None,
+        bfbs_file: str | None = None,
     ) -> None:
         """Save all trainer data to the JSON file and create binaries."""
         with logger.catch(
@@ -638,7 +670,7 @@ class ZATrainerEditor(ctk.CTk):
             os.makedirs(output_dir, exist_ok=True)
 
             # Convert pydantic models back to dict format
-            zatrdata = ZATrainerDataArray(table=self.trdata)
+            zatrdata = ZATrainerDataArray(Table=self.trdata)
             file_out = os.path.join(output_dir, file_name)
             zatrdata.dump(file_out)
 
@@ -654,7 +686,8 @@ class ZATrainerEditor(ctk.CTk):
             )
 
         # Create binaries
-        if os.path.exists(os.path.join(self.input_dir, "trdata_array.bfbs")):
+        bfbs_file = bfbs_file or self.bfbs_file
+        if os.path.exists(bfbs_file):
             logger.trace(f"Creating binary for {file_out}...")
             subprocess.run(
                 [
@@ -662,7 +695,7 @@ class ZATrainerEditor(ctk.CTk):
                     "-b",
                     "-o",
                     os.path.dirname(file_out),
-                    os.path.join(self.input_dir, "trdata_array.bfbs"),
+                    bfbs_file,
                     file_out,
                 ]
             )

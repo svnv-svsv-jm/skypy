@@ -23,6 +23,7 @@ mappings = {
     "item": {},  # Items
     "tokusei": {},  # Abilities
     "rareType": {},  # Rarity
+    "rank": {},  # Rank
 }
 
 # Field name conversions (camelCase -> PascalCase)
@@ -34,6 +35,7 @@ field_map = {
     "item": "Item",
     "tokusei": "Tokusei",
     "rareType": "RareType",
+    "rank": "Rank",
 }
 
 for asset_entry in assets_data:

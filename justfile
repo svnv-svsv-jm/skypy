@@ -17,6 +17,7 @@ PYTHONVERSION := "3.13"
 VENV := ".venv"
 COV_FAIL_UNDER := "100"
 EXAMPLE_DIR := "./examples"
+PYTHON_PATH := "/opt/homebrew/bin"
 
 # Testing
 
@@ -55,7 +56,7 @@ init:
 venv venv=VENV python=PYTHONVERSION:
     rm -rf {{ venv }} || echo "ok"
     uv python install {{ python }}
-    uv venv {{ venv }} --python={{ python }}
+    uv venv {{ venv }} --python={{ PYTHON_PATH }}/python{{ python }}
     source "{{ venv }}/bin/activate"
 
 # Pre-commit
@@ -97,10 +98,10 @@ ruff dir=DIRS2CHECK:
     {{ PYTHON_EXEC }} ruff format {{ dir }}
 
 unit-test:
-    {{ PYTHON_EXEC }} pytest -x --testmon --cov=src/ --cov-fail-under {{ COV_FAIL_UNDER }}
+    {{ PYTHON_EXEC }} pytest -x --cov=src/ --cov-fail-under {{ COV_FAIL_UNDER }}
 
 nbmake:
-    {{ PYTHON_EXEC }} pytest -x --testmon --nbmake --overwrite {{ EXAMPLE_DIR }}
+    {{ PYTHON_EXEC }} pytest -x --nbmake --overwrite {{ EXAMPLE_DIR }}
 
 test: ruff mypy unit-test nbmake
 

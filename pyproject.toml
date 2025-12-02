@@ -45,25 +45,7 @@ dependencies = [
 runner = "svsvllm.__main__:main"
 
 [dependency-groups]
-dev = [
-    "flake8",
-    "ipython",
-    "isort",
-    "pytest",
-    "pytest-cov",
-    "pytest-mock",
-    "pytest-mypy",
-    "pytest-testmon",
-    "pytest-xdist",
-    "virtualenv",
-    "msgpack",
-    "nbmake",
-    "nbstripout",
-    "ruff>=0.11.6",
-    "nbqa>=1.9.1",
-    "mypy>=1.15.0",
-    "pytest-random>=0.2",
-]
+dev = ["pytest", "pytest-cov", "pytest-mock", "nbmake", "ruff>=0.11.6", "mypy>=1.15.0", "pytest-random>=0.2"]
 
 # ----------------
 # Ruff

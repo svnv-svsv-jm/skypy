@@ -11,7 +11,7 @@ import json
 
 import pydantic
 from loguru import logger
-from pydantic.alias_generators import to_pascal
+from pydantic.alias_generators import to_camel as alias_generator
 
 from skypy import settings
 from skypy.types import (
@@ -27,7 +27,26 @@ from skypy.types import (
     ZAWazaID,
 )
 
-from ._base import _ByAliasInitializer, _ByAliasSerializer
+COMMON_MODEL_CFG = pydantic.ConfigDict(
+    extra="forbid",
+    validate_assignment=True,
+    populate_by_name=True,
+    arbitrary_types_allowed=True,
+    validate_default=True,
+    alias_generator=alias_generator,
+)
+
+
+def get_key_by_value(
+    mapping: dict[str, int],
+    value: int,
+    default: str | None = None,
+) -> str | None:
+    """Get the key by value from a mapping."""
+    try:
+        return next(key for key, val in mapping.items() if val == value)
+    except StopIteration:
+        return default
 
 
 class ZAEffortTalentValues(pydantic.BaseModel):
@@ -39,65 +58,62 @@ class ZAEffortTalentValues(pydantic.BaseModel):
     ```
     """
 
-    model_config = pydantic.ConfigDict(
-        validate_default=True,
-        validate_assignment=True,
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        extra="forbid",
-    )
+    model_config = COMMON_MODEL_CFG
 
     HP: int = pydantic.Field(
         0,
         description="HP.",
         ge=0,
         le=255,
+        alias="hp",
+        serialization_alias="hp",
     )
     ATK: int = pydantic.Field(
         0,
         description="Attack.",
         ge=0,
         le=255,
+        alias="atk",
+        serialization_alias="atk",
     )
     DEF: int = pydantic.Field(
         0,
         description="Defense.",
         ge=0,
         le=255,
-        alias="Def",
-        serialization_alias="Def",
+        alias="def",
+        serialization_alias="def",
     )
     SPA: int = pydantic.Field(
         0,
         description="Special attack.",
         ge=0,
         le=255,
+        alias="spAtk",
+        serialization_alias="spAtk",
     )
     SPD: int = pydantic.Field(
         0,
         description="Special defense.",
         ge=0,
         le=255,
+        alias="spDef",
+        serialization_alias="spDef",
     )
     SPE: int = pydantic.Field(
         0,
         description="Agility.",
         ge=0,
         le=255,
+        alias="agi",
+        serialization_alias="agi",
     )
 
 
 class ZAWazaData(pydantic.BaseModel):
     """Waza data."""
 
-    model_config = pydantic.ConfigDict(
-        validate_default=True,
-        validate_assignment=True,
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        alias_generator=to_pascal,
-        extra="forbid",
-    )
+    model_config = COMMON_MODEL_CFG
 
     waza_id: ZAWazaID = pydantic.Field(
         0,
@@ -113,18 +129,24 @@ class ZAWazaData(pydantic.BaseModel):
         """Get the English name of the Waza."""
         return settings.za_waza_table[self.waza_id]
 
+    @pydantic.field_serializer("waza_id", when_used="json")
+    def serialize_waza_id(self, v: int) -> str:
+        """Serialize the Waza ID to the string representation."""
+        return get_key_by_value(settings.za_waza_mappings, v)
+
+    @pydantic.field_validator("waza_id", mode="before")
+    @classmethod
+    def validate_waza_id(cls, v: str | int) -> int:
+        """Validate the Waza ID. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_waza_mappings[v]
+        return v
+
 
 class ZAPokemonData(pydantic.BaseModel):
     """Pokemon data."""
 
-    model_config = pydantic.ConfigDict(
-        extra="forbid",
-        validate_assignment=True,
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        validate_default=True,
-        alias_generator=to_pascal,
-    )
+    model_config = COMMON_MODEL_CFG
 
     dev_id: ZADevID = pydantic.Field(
         0,
@@ -212,80 +234,179 @@ class ZAPokemonData(pydantic.BaseModel):
         """Get the English name of the Item."""
         return settings.za_items_table[self.item]
 
+    @pydantic.field_validator("dev_id", mode="before")
+    @classmethod
+    def validate_dev_id(cls, v: str | int) -> int:
+        """Validate the Dev ID. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_species_mappings[v]
+        return v
 
-class ZATrainerData(_ByAliasInitializer, _ByAliasSerializer, pydantic.BaseModel):
+    @pydantic.field_serializer("dev_id", when_used="json")
+    def serialize_dev_id(self, v: int) -> str:
+        """Serialize the Dev ID to the string representation."""
+        return get_key_by_value(settings.za_species_mappings, v)
+
+    @pydantic.field_validator("ball_id", mode="before")
+    @classmethod
+    def validate_ball_id(cls, v: str | int) -> int:
+        """Validate the Ball ID. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_ball_mappings[v]
+        return v
+
+    @pydantic.field_serializer("ball_id", when_used="json")
+    def serialize_ball_id(self, v: int) -> str:
+        """Serialize the Ball ID to the string representation."""
+        return get_key_by_value(settings.za_ball_mappings, v)
+
+    @pydantic.field_validator("seikaku", mode="before")
+    @classmethod
+    def validate_seikaku(cls, v: str | int) -> int:
+        """Validate the Seikaku. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_seikaku_mappings[v]
+        return v
+
+    @pydantic.field_serializer("seikaku", when_used="json")
+    def serialize_seikaku(self, v: int) -> str:
+        """Serialize the Seikaku to the string representation."""
+        return get_key_by_value(settings.za_seikaku_mappings, v)
+
+    @pydantic.field_validator("rare_type", mode="before")
+    @classmethod
+    def validate_rare_type(cls, v: str | int) -> int:
+        """Validate the Rare type. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_rare_type_mappings[v]
+        return v
+
+    @pydantic.field_serializer("rare_type", when_used="json")
+    def serialize_rare_type(self, v: int) -> str:
+        """Serialize the Rare type to the string representation."""
+        return get_key_by_value(settings.za_rare_type_mappings, v)
+
+    @pydantic.field_validator("item", mode="before")
+    @classmethod
+    def validate_item(cls, v: str | int) -> int:
+        """Validate the Item. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_item_mappings[v]
+        return v
+
+    @pydantic.field_serializer("item", when_used="json")
+    def serialize_item(self, v: int) -> str:
+        """Serialize the Item to the string representation."""
+        return get_key_by_value(settings.za_item_mappings, v)
+
+    @pydantic.field_validator("sex", mode="before")
+    @classmethod
+    def validate_sex(cls, v: str | int) -> int:
+        """Validate the Sex. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_sex_mappings[v]
+        return v
+
+    @pydantic.field_serializer("sex", when_used="json")
+    def serialize_sex(self, v: int) -> str:
+        """Serialize the Sex to the string representation."""
+        return get_key_by_value(settings.za_sex_mappings, v)
+
+    @pydantic.field_validator("tokusei", mode="before")
+    @classmethod
+    def validate_tokusei(cls, v: str | int) -> int:
+        """Validate the Tokusei. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_tokusei_mappings[v]
+        return v
+
+    @pydantic.field_serializer("tokusei", when_used="json")
+    def serialize_tokusei(self, v: int) -> str:
+        """Serialize the Tokusei to the string representation."""
+        return get_key_by_value(settings.za_tokusei_mappings, v)
+
+
+class ZATrainerData(pydantic.BaseModel):
     """Trainer data."""
 
-    model_config = pydantic.ConfigDict(
-        extra="forbid",
-        validate_assignment=True,
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        validate_default=True,
-        alias_generator=to_pascal,
-    )
+    model_config = COMMON_MODEL_CFG
 
     tr_id: str = pydantic.Field(
         description="Trainer ID.",
         examples=["00_test_data"],
+        alias="trid",
+        serialization_alias="trid",
     )
     tr_type: int = pydantic.Field(
         description="Trainer type.",
         examples=[1048451227980125490],
+        alias="trtype",
+        serialization_alias="trtype",
     )
     tr_type_2: int = pydantic.Field(
         description="Trainer type 2.",
         examples=[1048451227980125490],
+        alias="trtype2",
+        serialization_alias="trtype2",
     )
     za_rank: ZARank = pydantic.Field(
+        0,
         description="ZA rank.",
-        examples=["NONE"],
-        alias="ZARank",
-        serialization_alias="ZARank",
     )
     money_rate: int = pydantic.Field(
+        12,
         description="Money rate.",
         examples=[12],
         ge=0,
         le=20,
     )
     meg_evolution: bool = pydantic.Field(
+        False,
         description="Meg evolution.",
         examples=[False],
     )
-    last_hand_mega: bool = pydantic.Field(
-        description="Last hand.",
+    last_hand: bool = pydantic.Field(
+        False,
+        description="Last hand Mega Evolution.",
         examples=[False],
     )
     ai_basic: bool = pydantic.Field(
+        True,
         description="AI basic.",
         examples=[True],
     )
     ai_high: bool = pydantic.Field(
+        True,
         description="AI high.",
         examples=[False],
     )
     ai_expert: bool = pydantic.Field(
+        True,
         description="AI expert.",
         examples=[False],
     )
     ai_double: bool = pydantic.Field(
+        False,
         description="AI double.",
         examples=[False],
     )
     ai_raid: bool = pydantic.Field(
+        False,
         description="AI raid.",
         examples=[False],
     )
     ai_weak: bool = pydantic.Field(
+        False,
         description="AI weak.",
         examples=[False],
     )
     ai_item: bool = pydantic.Field(
+        False,
         description="AI item.",
         examples=[False],
     )
     ai_change: bool = pydantic.Field(
+        True,
         description="AI change.",
         examples=[False],
     )
@@ -294,52 +415,74 @@ class ZATrainerData(_ByAliasInitializer, _ByAliasSerializer, pydantic.BaseModel)
         examples=[30.0],
     )
     view_vertical_angle: float = pydantic.Field(
+        50.0,
         description="View vertical angle.",
         examples=[50.0],
     )
     view_range: float = pydantic.Field(
+        17.0,
         description="View range.",
         examples=[17.0],
     )
     hearing_range: float = pydantic.Field(
+        17.0,
         description="Hearing range.",
         examples=[17.0],
     )
     poke_1: ZAPokemonData = pydantic.Field(
+        ZAPokemonData(),
         description="Pokemon.",
     )
     poke_2: ZAPokemonData = pydantic.Field(
+        ZAPokemonData(),
         description="Pokemon.",
     )
     poke_3: ZAPokemonData = pydantic.Field(
+        ZAPokemonData(),
         description="Pokemon.",
     )
     poke_4: ZAPokemonData = pydantic.Field(
+        ZAPokemonData(),
         description="Pokemon.",
     )
     poke_5: ZAPokemonData = pydantic.Field(
+        ZAPokemonData(),
         description="Pokemon.",
     )
     poke_6: ZAPokemonData = pydantic.Field(
+        ZAPokemonData(),
         description="Pokemon.",
     )
+
+    @pydantic.field_validator("za_rank", mode="before")
+    @classmethod
+    def validate_za_rank(cls, v: str | int) -> int:
+        """Validate the ZA rank. If `str`, convert to `int` using the mappings."""
+        if isinstance(v, str):
+            return settings.za_rank_mappings[v]
+        return v
+
+    @pydantic.field_serializer("za_rank", when_used="json")
+    def serialize_za_rank(self, v: int) -> str:
+        """Serialize the ZA rank to the string representation."""
+        return get_key_by_value(settings.za_rank_mappings, v)
 
 
 class ZATrainerDataArray(pydantic.BaseModel):
     """Trainer data array."""
 
-    model_config = pydantic.ConfigDict(
-        extra="forbid",
-        validate_assignment=True,
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        validate_default=True,
-        alias_generator=to_pascal,
+    model_config = COMMON_MODEL_CFG
+
+    values: list[ZATrainerData] = pydantic.Field(
+        description="Table of trainer data.",
+        alias="Table",
+        serialization_alias="Table",
     )
 
-    table: list[ZATrainerData] = pydantic.Field(
-        description="Values.",
-    )
+    @property
+    def table(self) -> list[ZATrainerData]:
+        """Get the table of trainers."""
+        return self.values
 
     def get_trainer(self, trid: str) -> ZATrainerData:
         """Get a trainer by ID."""
@@ -356,11 +499,9 @@ class ZATrainerDataArray(pydantic.BaseModel):
                 return
         raise ValueError(f"Trainer with ID {trid} not found.")
 
-    def dump(self, path: str, rename_root_key: str | None = None) -> None:
+    def dump(self, path: str) -> None:
         """Dump the data to a JSON file."""
         with open(path, "w", encoding="utf-8") as f:
-            data = self.model_dump(by_alias=True)
-            if rename_root_key:
-                data = {rename_root_key: data["Table"]}
+            data = self.model_dump(mode="json", by_alias=True, exclude_unset=True)
             json.dump(data, f, indent=2, ensure_ascii=False)
             logger.trace(f"Dumped data to {path}: {data}")

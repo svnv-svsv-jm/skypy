@@ -19,6 +19,12 @@ def test_create_widgets(zatrdata: ZATrainerDataArray) -> None:
         mock.patch.object(
             ZATrainerEditor, "display_trainer_data"
         ) as display_trainer_data,
+        mock.patch.object(
+            ZATrainerEditor, "create_output_directory_input"
+        ) as create_output_directory_input,
+        mock.patch.object(
+            ZATrainerEditor, "create_bfbs_file_input"
+        ) as create_bfbs_file_input,
         mock.patch.object(ZATrainerEditor, "create_top_frame") as create_top_frame,
         mock.patch.object(
             ZATrainerEditor, "create_trainer_combobox"
@@ -34,6 +40,8 @@ def test_create_widgets(zatrdata: ZATrainerDataArray) -> None:
     ):
         ui = ZATrainerEditor(visible=False)
         logger.info(f"UI: {ui}")
+        create_bfbs_file_input.assert_called_once()
+        create_output_directory_input.assert_called_once()
         load_trainer_data.assert_called_once()
         display_trainer_data.assert_called_once()
         create_top_frame.assert_called_once()

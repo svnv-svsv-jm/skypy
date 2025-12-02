@@ -6,7 +6,15 @@ from skypy.schemas import ZATrainerDataArray
 
 
 def create_trdata_mod(zatrdata: ZATrainerDataArray, path: str) -> None:
-    """Create the `trdata` mod."""
+    """Create the `trdata` mod.
+
+    Args:
+        zatrdata (ZATrainerDataArray):
+            The `trdata` data to create the mod for.
+
+        path (str):
+            The path to save the mod to.
+    """
     apply_trdata_mod(zatrdata)
     # Finally
     logger.trace(f"Dumping data to {path}...")

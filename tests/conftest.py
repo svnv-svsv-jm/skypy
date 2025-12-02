@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import sys
 import typing as ty
 from pathlib import Path
@@ -9,6 +10,7 @@ import pyrootutils
 import pytest
 from loguru import logger
 
+from skypy import settings
 from skypy.schemas import ZATrainerData, ZATrainerDataArray
 from skypy.types import LogLevel
 from skypy.za import ZATrainerEditor
@@ -148,23 +150,9 @@ def assets_dir() -> str:
 
 
 @pytest.fixture
-def za_assets_dir(assets_dir: str) -> str:
-    """Zelda Assets directory."""
-    return os.path.join(assets_dir, "za")
-
-
-@pytest.fixture
-def za_trainer_data_path(za_assets_dir: str) -> str:
-    """ZA Trainer data path."""
-    return os.path.join(za_assets_dir, "Raw/trdata_array.json")
-
-
-@pytest.fixture
-def za_trainer_data_raw(za_trainer_data_path: str) -> dict[str, list[dict]]:
+def za_trainer_data_raw() -> dict[str, list[dict]]:
     """Load raw data from the trainer data file."""
-    # Load the trpfs file which contains the actual trainer data
-    trpfs_file = Path(za_trainer_data_path)
-
+    trpfs_file = Path(settings.files.file_trainer_data)
     with trpfs_file.open("r", encoding="utf-8") as f:
         raw_data = json.load(f)
     return raw_data
@@ -173,27 +161,39 @@ def za_trainer_data_raw(za_trainer_data_path: str) -> dict[str, list[dict]]:
 @pytest.fixture
 def za_trainers(za_trainer_data_raw: dict) -> list[dict]:
     """ZA list of trainers (data0)."""
-    return za_trainer_data_raw["Table"]
+    return za_trainer_data_raw["values"]
 
 
 @pytest.fixture
-def za_pokemon_data_raw(za_trainer_data_raw: dict) -> list[dict]:
+def za_debug_trainer_data(za_trainers: list[dict]) -> dict:
+    """Debug trainer data."""
+    return za_trainers[0]
+
+
+@pytest.fixture
+def za_debug_pkmn_data(za_trainers: list[dict]) -> dict:
+    """Debug pokemon data."""
+    return za_trainers[0]["poke1"]
+
+
+@pytest.fixture
+def za_pokemon_data_raw(za_trainers: list[dict]) -> list[dict]:
     """Load raw data from the trainer data file and extract the pokemon data."""
     all_pokemon = []
-    for trdata in za_trainer_data_raw["Table"]:
-        all_pokemon.append(trdata["Poke1"])
-        all_pokemon.append(trdata["Poke2"])
-        all_pokemon.append(trdata["Poke3"])
-        all_pokemon.append(trdata["Poke4"])
-        all_pokemon.append(trdata["Poke5"])
-        all_pokemon.append(trdata["Poke6"])
+    for trdata in za_trainers:
+        all_pokemon.append(trdata["poke1"])
+        all_pokemon.append(trdata["poke2"])
+        all_pokemon.append(trdata["poke3"])
+        all_pokemon.append(trdata["poke4"])
+        all_pokemon.append(trdata["poke5"])
+        all_pokemon.append(trdata["poke6"])
     return all_pokemon
 
 
 @pytest.fixture
 def za_trainer_data_example(za_trainer_data_raw: dict) -> dict:
     """Trainer data for the first trainer."""
-    values = za_trainer_data_raw["Table"]
+    values = za_trainer_data_raw["values"]
     # Return first Trainer, which is the dummy one
     return values[0]
 
@@ -220,3 +220,16 @@ def za_trainer_editor_app() -> ty.Iterator[ZATrainerEditor]:
 def zatrdata(za_trainer_data_raw: dict) -> ZATrainerDataArray:
     """ZA Trainer data array."""
     return ZATrainerDataArray(**za_trainer_data_raw)
+
+
+@pytest.fixture(autouse=True)
+def cleanup() -> ty.Iterator[None]:
+    """Cleanup after tests."""
+    yield
+    # Cleanup: Remove the output directory
+    output_dir = os.path.join(root, "assets", "za", "Output")
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    output_file = os.path.join(root, "Output")
+    if os.path.exists(output_file):
+        shutil.rmtree(output_file)

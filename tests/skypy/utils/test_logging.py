@@ -1,10 +1,7 @@
 import pytest
-import sys
-import os
-import typing as ty
 from loguru import logger
 
-from svsvllm.utils import set_up_logging
+from skypy.utils.logger import set_up_logging
 
 
 def _log(msg: str = "Hello") -> None:  # pragma: no cover
@@ -22,7 +19,9 @@ def _log(msg: str = "Hello") -> None:  # pragma: no cover
 )
 def test_logging(level: str, serialize: bool, show_file_info: bool) -> None:
     """Test logging module."""
-    logger_id = set_up_logging(level=level, serialize=serialize, show_file_info=show_file_info)
+    logger_id = set_up_logging(
+        level=level, serialize=serialize, show_file_info=show_file_info
+    )
     logger.info("Testing...")
     with logger.contextualize(key="value", metoo="ok"):
         logger.info("Hello with extras!")
@@ -32,6 +31,4 @@ def test_logging(level: str, serialize: bool, show_file_info: bool) -> None:
 
 
 if __name__ == "__main__":
-    logger.remove()
-    logger.add(sys.stderr, level="TRACE")
-    pytest.main([__file__, "-x", "-s", "--pylint"])
+    pytest.main([__file__, "-x", "-s"])
