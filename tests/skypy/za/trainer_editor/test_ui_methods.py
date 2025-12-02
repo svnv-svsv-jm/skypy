@@ -100,5 +100,27 @@ def test_on_trainer_selected() -> None:
         display_trainer_data.assert_called()
 
 
+def test__on_bfbs_file_change() -> None:
+    """Test `_on_bfbs_file_change` method."""
+    ui = ZATrainerEditor()
+    with patch.object(
+        ui._bfbs_file_var, "get", return_value="test.bfbs"
+    ) as bfbs_file_var:
+        ui._on_bfbs_file_change()
+        bfbs_file_var.assert_called_once()
+        assert ui.bfbs_file == "test.bfbs"
+
+
+def test__on_output_directory_change() -> None:
+    """Test `_on_output_directory_change` method."""
+    ui = ZATrainerEditor()
+    with patch.object(
+        ui._output_dir_var, "get", return_value="test/output"
+    ) as output_dir_var:
+        ui._on_output_directory_change()
+        output_dir_var.assert_called_once()
+        assert ui.output_dir == "test/output"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-x", "-s"])
