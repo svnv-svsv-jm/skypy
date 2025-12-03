@@ -1,12 +1,10 @@
-__all__ = ["ZATrainerEditor"]
+__all__ = ["FieldFrame", "ZATrainerEditor"]
 
-import json
 import os
 import sys
 import typing as ty
 
 import customtkinter as ctk
-import pyinstrument
 from loguru import logger
 
 from skypy import settings
@@ -19,9 +17,9 @@ from skypy.types.za import (
     ZAWazaID,
 )
 
-# inverted_waza_translation = {value: key for key, value in waza_translation.items()}
-# inverted_dev_translation = {value: key for key, value in dev_translation.items()}
-# inverted_item_translation = {value: key for key, value in item_translation.items()}
+from .fields import CheckboxFrame, DropdownFrame, FieldFrame, PkmnFrame, WazaFrame
+from .load import load_trainer_data
+
 wazas = [ZAWazaData(waza_id=waza).waza_id_english for waza in ty.get_args(ZAWazaID)]
 wazas.sort()
 
@@ -115,11 +113,13 @@ class ZATrainerEditor(ctk.CTk):
         self.file_name = file_name
         self.selected_trainer_index: int = 0
         self.ignore_output_dir = ignore_output_dir
+
+        # Private
         self._output_dir_var = ctk.StringVar(value=self.output_dir)
         self._bfbs_file_var = ctk.StringVar(value=self.bfbs_file)
 
         # Load trainer data
-        self.trdata = self.load_trainer_data(
+        self.trdata = load_trainer_data(
             file_name=self.file_name,
             input_dir=self.input_dir,
             output_dir=self.output_dir,
@@ -137,42 +137,6 @@ class ZATrainerEditor(ctk.CTk):
             self.withdraw()
         logger.trace(f"Initialized ({type(self)}): {self}")
 
-    def load_trainer_data(
-        self,
-        file_name: str | None = None,
-        input_dir: str | None = None,
-        output_dir: str | None = None,
-        ignore_output_dir: bool = False,
-    ) -> list[ZATrainerData]:
-        """Load trainer data from a JSON file."""
-        logger.trace("Loading trainer data...")
-        # Inputs
-        file_name = os.path.basename(file_name or self.file_name)
-        input_dir = input_dir or self.input_dir
-        output_dir = output_dir or self.output_dir
-
-        # If output folder exists, use it
-        dir_path = input_dir
-        logger.trace(f"Set target directory to {dir_path}")
-        if (
-            os.path.exists(os.path.join(output_dir, file_name))
-            and not ignore_output_dir
-        ):
-            logger.trace(f"Output folder exists ({output_dir}), using it....")
-            dir_path = output_dir
-            logger.trace(f"Set new target directory to {dir_path}")
-
-        # Load data
-        logger.trace(f"Joining {dir_path} and {file_name}")
-        path = os.path.join(dir_path, file_name)
-        logger.trace(f"Loading data from {path}...")
-        with open(path, encoding="utf-8") as f:
-            trdata: dict = json.load(f)
-        assert isinstance(trdata, dict), f"Expected dict, got {type(trdata)}"
-        trainers: ZATrainerDataArray = ZATrainerDataArray(**trdata)
-        logger.trace(f"Loaded trainer data from {path}.")
-        return trainers.values
-
     def create_top_frame(self) -> None:
         """Create the top frame."""
         self.top_frame = ctk.CTkFrame(self)
@@ -181,8 +145,10 @@ class ZATrainerEditor(ctk.CTk):
     def create_trainer_combobox(self) -> None:
         """Create the trainer combobox."""
         # Create a label for the combobox
-        label = ctk.CTkLabel(self.top_frame, text="Select Trainer:")
-        label.pack(side="left", padx=10)
+        self.trainer_combobox_label = ctk.CTkLabel(
+            self.top_frame, text="Select Trainer:"
+        )
+        self.trainer_combobox_label.pack(side="left", padx=10)
 
         # Get list of trainer IDs for the combobox
         trainer_ids = [trainer.tr_id for trainer in self.trdata]
@@ -255,20 +221,19 @@ class ZATrainerEditor(ctk.CTk):
         """Let the user change the output directory."""
         self._bfbs_file_var.trace_add("write", self._on_bfbs_file_change)
 
-        self.output_directory_label = ctk.CTkLabel(
+        self.bfbs_file_label = ctk.CTkLabel(
             self.top_frame,
             text="BFBS File:",
         )
-        self.output_directory_label.pack(side="left", padx=(10, 5))
+        self.bfbs_file_label.pack(side="left", padx=(10, 5))
 
-        self.output_directory_input = ctk.CTkEntry(
+        self.bfbs_file_input = ctk.CTkEntry(
             self.top_frame,
             textvariable=self._bfbs_file_var,
             width=200,
         )
-        self.output_directory_input.pack(side="left", padx=(0, 10))
+        self.bfbs_file_input.pack(side="left", padx=(0, 10))
 
-    @pyinstrument.profile()
     def create_widgets(self) -> None:
         """Create UI widgets."""
         logger.trace(f"Creating widgets ({type(self)}): {self}")
@@ -303,276 +268,333 @@ class ZATrainerEditor(ctk.CTk):
         """Display the current trainer's data."""
         logger.trace(f"Displaying trainer data ({type(self)}): {self}")
 
-        # Clear existing widgets
-        for widget in self.data_frame.winfo_children():
-            logger.trace(f"Destroying widget: {widget}")
-            widget.destroy()
-
         logger.trace(f"Selecting trainer index: {self.selected_trainer_index}")
         trainer: ZATrainerData = self.trdata[self.selected_trainer_index]
 
         # Basic Information Section
-        basic_label = ctk.CTkLabel(
+        self.basic_information_label = ctk.CTkLabel(
             self.data_frame, text="Basic Information", font=("Helvetica", 16, "bold")
         )
-        basic_label.pack(pady=(10, 5), anchor="w")
+        self.basic_information_label.pack(pady=(10, 5), anchor="w")
 
-        self._create_field(
+        self.trainer_id_field = self._create_field(
             "Trainer ID",
             trainer.tr_id,
             readonly=True,
         )
-        self._create_field(
+        self.money_rate_field = self._create_field(
             "Money Rate",
             str(trainer.money_rate),
             lambda v: _set_attr(trainer, "money_rate", v, int),
         )
 
         # Boolean Flags Section
-        flags_label = ctk.CTkLabel(
+        self.flags_label = ctk.CTkLabel(
             self.data_frame, text="Flags", font=("Helvetica", 16, "bold")
         )
-        flags_label.pack(pady=(20, 5), anchor="w")
+        self.flags_label.pack(pady=(20, 5), anchor="w")
 
-        self._create_checkbox(
+        self.meg_evolution_checkbox = self._create_checkbox(
             "Mega Evolution",
             trainer.meg_evolution,
             lambda v: setattr(trainer, "meg_evolution", v),
         )
-        self._create_checkbox(
+        self.last_hand_checkbox = self._create_checkbox(
             "Last Hand Mega",
             trainer.last_hand,
             lambda v: setattr(trainer, "last_hand", v),
         )
 
         # AI Flags Section
-        ai_label = ctk.CTkLabel(
+        self.ai_label = ctk.CTkLabel(
             self.data_frame, text="AI Settings", font=("Helvetica", 16, "bold")
         )
-        ai_label.pack(pady=(20, 5), anchor="w")
+        self.ai_label.pack(pady=(20, 5), anchor="w")
 
-        ai_flags = [
-            "ai_basic",
-            "ai_high",
-            "ai_expert",
-            "ai_double",
-            "ai_raid",
-            "ai_weak",
-            "ai_item",
-            "ai_change",
-        ]
-        for flag in ai_flags:
-            label = flag.replace("_", " ").title()
-            # Capture flag in closure default arg
-            self._create_checkbox(
-                label,
-                getattr(trainer, flag),
-                lambda v, f=flag: setattr(trainer, f, v),  # type: ignore
-            )
+        # AI Basic Checkbox
+        self.ai_basic_checkbox = self._create_checkbox(
+            "AI Basic",
+            trainer.ai_basic,
+            lambda v: setattr(trainer, "ai_basic", v),
+        )
+        self.ai_high_checkbox = self._create_checkbox(
+            "AI High",
+            trainer.ai_high,
+            lambda v: setattr(trainer, "ai_high", v),
+        )
+        self.ai_expert_checkbox = self._create_checkbox(
+            "AI Expert",
+            trainer.ai_expert,
+            lambda v: setattr(trainer, "ai_expert", v),
+        )
+        self.ai_double_checkbox = self._create_checkbox(
+            "AI Double",
+            trainer.ai_double,
+            lambda v: setattr(trainer, "ai_double", v),
+        )
+        self.ai_raid_checkbox = self._create_checkbox(
+            "AI Raid",
+            trainer.ai_raid,
+            lambda v: setattr(trainer, "ai_raid", v),
+        )
+        self.ai_weak_checkbox = self._create_checkbox(
+            "AI Weak",
+            trainer.ai_weak,
+            lambda v: setattr(trainer, "ai_weak", v),
+        )
+        self.ai_item_checkbox = self._create_checkbox(
+            "AI Item",
+            trainer.ai_item,
+            lambda v: setattr(trainer, "ai_item", v),
+        )
+        self.ai_change_checkbox = self._create_checkbox(
+            "AI Change",
+            trainer.ai_change,
+            lambda v: setattr(trainer, "ai_change", v),
+        )
 
         # View Settings Section
-        view_label = ctk.CTkLabel(
+        self.view_settings_label = ctk.CTkLabel(
             self.data_frame, text="View Settings", font=("Helvetica", 16, "bold")
         )
-        view_label.pack(pady=(20, 5), anchor="w")
+        self.view_settings_label.pack(pady=(20, 5), anchor="w")
 
-        self._create_field(
+        self.view_horizontal_angle_field = self._create_field(
             "View Horizontal Angle",
             str(trainer.view_horizontal_angle),
             lambda v: _set_attr(trainer, "view_horizontal_angle", v, float),
         )
-        self._create_field(
+        self.view_vertical_angle_field = self._create_field(
             "View Vertical Angle",
             str(trainer.view_vertical_angle),
             lambda v: _set_attr(trainer, "view_vertical_angle", v, float),
         )
-        self._create_field(
+        self.view_range_field = self._create_field(
             "View Range",
             str(trainer.view_range),
             lambda v: _set_attr(trainer, "view_range", v, float),
         )
-        self._create_field(
+        self.hearing_range_field = self._create_field(
             "Hearing Range",
             str(trainer.hearing_range),
             lambda v: _set_attr(trainer, "hearing_range", v, float),
         )
 
         # Pokemon Section
-        pokemon_label = ctk.CTkLabel(
-            self.data_frame, text="Pokemon", font=("Helvetica", 16, "bold")
+        self.pokemon_label = ctk.CTkLabel(
+            self.data_frame,
+            text="Pokemon",
+            font=("Helvetica", 16, "bold"),
         )
-        pokemon_label.pack(pady=(20, 5), anchor="w")
+        self.pokemon_label.pack(pady=(20, 5), anchor="w")
 
-        for i in range(1, 7):
-            poke_attr: ZAPokemonData = getattr(trainer, f"poke_{i}")
-            # Show all pokemon slots, even if empty
-            poke_frame = ctk.CTkFrame(self.data_frame)
-            poke_frame.pack(fill="x", pady=5, padx=10)
-
-            poke_title = ctk.CTkLabel(
-                poke_frame, text=f"Pokemon {i}", font=("Helvetica", 14, "bold")
-            )
-            poke_title.pack(anchor="w", padx=10, pady=5)
-
-            def on_dev_id_change(val: str) -> None:
-                """On Dev ID Change."""
-                logger.trace(f"On Dev ID Change: {val}")
-                poke_attr.dev_id = settings.za_species_table.index(
-                    val
-                )  # pragma: no cover
-                logger.trace(f"New Dev ID: {poke_attr.dev_id} | {val}")
-
-            self._create_dropdown(
-                "Dev ID",
-                poke_attr.dev_id_english,
-                values=[
-                    ZAPokemonData(dev_id=dev).dev_id_english
-                    for dev in ty.get_args(ZADevID)
-                ],
-                setter=on_dev_id_change,
-                parent=poke_frame,
-            )
-
-            def on_item_change(val: str) -> None:
-                """On Item Change."""
-                logger.trace(f"On Item Change: {val}")
-                poke_attr.item = settings.za_items_table.index(val)  # pragma: no cover
-                logger.trace(f"New Item: {poke_attr.item} | {val}")
-
-            self._create_dropdown(
-                "Item",
-                poke_attr.item_english,
-                values=[
-                    ZAPokemonData(item=item).item_english
-                    for item in ty.get_args(ZAItemID)
-                ],
-                setter=on_item_change,
-                parent=poke_frame,
-            )
-
-            def on_level_change(val: str) -> None:
-                """On Level Change."""
-                logger.trace(f"On Level Change: {val}")
-                poke_attr.level = int(val)  # pragma: no cover
-                logger.trace(f"New Level: {poke_attr.level} | {val}")
-
-            self._create_field(
-                "Level",
-                str(poke_attr.level),
-                setter=on_level_change,
-                parent=poke_frame,
-            )
-
-            def on_form_id_change(val: str) -> None:
-                """On Form ID Change."""
-                logger.trace(f"On Form ID Change: {val}")
-                poke_attr.form_id = int(val)  # type: ignore # pragma: no cover
-                logger.trace(f"New Form ID: {poke_attr.form_id} | {val}")
-
-            self._create_field(
-                "Form ID",
-                str(poke_attr.form_id),
-                setter=on_form_id_change,
-                parent=poke_frame,
-            )
-
-            def on_sex_change(val: str) -> None:  # pragma: no cover
-                """On Sex Change."""
-                logger.trace(f"On Sex Change: {val}")
-                poke_attr.sex = int(val)  # type: ignore
-                logger.trace(f"New Sex: {poke_attr.sex} | {val}")
-
-            self._create_dropdown(
-                "Sex",
-                str(poke_attr.sex),
-                list(str(ty.get_args(Sex))),
-                setter=on_sex_change,
-                parent=poke_frame,
-            )
-
-            def on_ball_id_change(val: str) -> None:  # pragma: no cover
-                """On Ball ID Change."""
-                logger.trace(f"On Ball ID Change: {val}")
-                poke_attr.ball_id = settings.za_items_table.index(val)  # type: ignore
-                logger.trace(f"New Ball ID: {poke_attr.ball_id} | {val}")
-
-            self._create_dropdown(
-                "Ball ID",
-                poke_attr.ball_id_english,
-                list(str(ty.get_args(ZABallID))),
-                setter=on_ball_id_change,
-                parent=poke_frame,
-            )
-
-            def on_scale_value_change(val: str) -> None:  # pragma: no cover
-                """On Scale Value Change."""
-                logger.trace(f"On Scale Value Change: {val}")
-                poke_attr.scale_value = int(val)
-                logger.trace(f"New Scale Value: {poke_attr.scale_value} | {val}")
-
-            self._create_field(
-                "Scale Value",
-                str(poke_attr.scale_value),
-                setter=on_scale_value_change,
-                parent=poke_frame,
-            )
-
-            # WAZA (Moves) Section
-            waza_label = ctk.CTkLabel(
-                poke_frame, text="Moves", font=("Helvetica", 12, "bold")
-            )
-            waza_label.pack(anchor="w", padx=20, pady=(10, 5))
-
-            for waza_num in range(1, 5):
-                waza_key = f"waza_{waza_num}"
-                waza_data: ZAWazaData = getattr(poke_attr, waza_key)
-
-                # Create a frame for each move
-                waza_frame = ctk.CTkFrame(poke_frame)
-                waza_frame.pack(fill="x", pady=2, padx=30)
-
-                waza_name_label = ctk.CTkLabel(
-                    waza_frame, text=f"Move {waza_num}:", width=100
-                )
-                waza_name_label.pack(side="left", padx=5)
-
-                # Move ID Entry
-                def on_waza_change(val: str) -> None:  # pragma: no cover
-                    """On Waza Change.
-
-                    Args:
-                        val (str):
-                            The value to set the Waza ID to.
-                            This is the English name of the Waza ID if we translated it already, otherwise it's the original ID.
-                    """
-                    logger.trace(f"On Waza Change: {val}")
-                    waza_data.waza_id = settings.za_waza_table.index(val)
-                    logger.trace(f"New Waza ID: {waza_data.waza_id} | {val}")
-
-                waza_option_menu = ctk.CTkOptionMenu(
-                    waza_frame,
-                    values=wazas,
-                    command=on_waza_change,
-                )
-                waza_option_menu.set(str(waza_data.waza_id_english))
-                waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
-
-                # Plus Checkbox
-                def on_plus_change() -> None:  # pragma: no cover
-                    """On Plus Change."""
-                    logger.trace(f"On Plus Change: {waza_data.is_plus_waza}")
-                    waza_data.is_plus_waza = not waza_data.is_plus_waza
-                    logger.trace(f"New Plus Waza: {waza_data.is_plus_waza}")
-
-                plus_checkbox = ctk.CTkCheckBox(
-                    waza_frame,
-                    text="Plus Waza",
-                    variable=ctk.BooleanVar(value=waza_data.is_plus_waza),
-                    command=on_plus_change,
-                )
-                plus_checkbox.pack(side="left", padx=5)
+        self.pokemon_fields: list[PkmnFrame] = [
+            self._create_pokemon_field(1, trainer.poke_1),
+            self._create_pokemon_field(2, trainer.poke_2),
+            self._create_pokemon_field(3, trainer.poke_3),
+            self._create_pokemon_field(4, trainer.poke_4),
+            self._create_pokemon_field(5, trainer.poke_5),
+            self._create_pokemon_field(6, trainer.poke_6),
+        ]
 
         logger.trace(f"Displayed trainer data ({type(self)}): {self}")
+
+    def _create_pokemon_field(
+        self,
+        index: int,
+        pkmn: ZAPokemonData,
+    ) -> PkmnFrame:
+        """Create a pokemon field."""
+        # Show all pokemon slots, even if empty
+        poke_frame = ctk.CTkFrame(self.data_frame)
+        poke_title = ctk.CTkLabel(
+            poke_frame, text=f"Pokemon {index}", font=("Helvetica", 14, "bold")
+        )
+
+        def on_dev_id_change(val: str) -> None:
+            """On Dev ID Change."""
+            logger.trace(f"On Dev ID Change: {val}")
+            pkmn.dev_id = settings.za_species_table.index(val)  # pragma: no cover
+            logger.trace(f"New Dev ID: {pkmn.dev_id} | {val}")
+
+        dev_id_field = self._create_dropdown(
+            "Dev ID",
+            pkmn.dev_id_english,
+            values=[
+                ZAPokemonData(dev_id=dev).dev_id_english for dev in ty.get_args(ZADevID)
+            ],
+            setter=on_dev_id_change,
+            parent=poke_frame,
+        )
+
+        def on_item_change(val: str) -> None:
+            """On Item Change."""
+            logger.trace(f"On Item Change: {val}")
+            pkmn.item = settings.za_items_table.index(val)  # pragma: no cover
+            logger.trace(f"New Item: {pkmn.item} | {val}")
+
+        item_field = self._create_dropdown(
+            "Item",
+            pkmn.item_english,
+            values=[
+                ZAPokemonData(item=item).item_english for item in ty.get_args(ZAItemID)
+            ],
+            setter=on_item_change,
+            parent=poke_frame,
+        )
+
+        def on_level_change(val: str) -> None:
+            """On Level Change."""
+            logger.trace(f"On Level Change: {val}")
+            pkmn.level = int(val)  # pragma: no cover
+            logger.trace(f"New Level: {pkmn.level} | {val}")
+
+        level_field = self._create_field(
+            "Level",
+            str(pkmn.level),
+            setter=on_level_change,
+            parent=poke_frame,
+        )
+
+        def on_form_id_change(val: str) -> None:
+            """On Form ID Change."""
+            logger.trace(f"On Form ID Change: {val}")
+            pkmn.form_id = int(val)  # type: ignore # pragma: no cover
+            logger.trace(f"New Form ID: {pkmn.form_id} | {val}")
+
+        form_id_field = self._create_field(
+            "Form ID",
+            str(pkmn.form_id),
+            setter=on_form_id_change,
+            parent=poke_frame,
+        )
+
+        def on_sex_change(val: str) -> None:  # pragma: no cover
+            """On Sex Change."""
+            logger.trace(f"On Sex Change: {val}")
+            pkmn.sex = int(val)  # type: ignore
+            logger.trace(f"New Sex: {pkmn.sex} | {val}")
+
+        sex_field = self._create_dropdown(
+            "Sex",
+            str(pkmn.sex),
+            list(str(ty.get_args(Sex))),
+            setter=on_sex_change,
+            parent=poke_frame,
+        )
+
+        def on_ball_id_change(val: str) -> None:  # pragma: no cover
+            """On Ball ID Change."""
+            logger.trace(f"On Ball ID Change: {val}")
+            pkmn.ball_id = settings.za_items_table.index(val)  # type: ignore
+            logger.trace(f"New Ball ID: {pkmn.ball_id} | {val}")
+
+        ball_id_field = self._create_dropdown(
+            "Ball ID",
+            pkmn.ball_id_english,
+            list(str(ty.get_args(ZABallID))),
+            setter=on_ball_id_change,
+            parent=poke_frame,
+        )
+
+        def on_scale_value_change(val: str) -> None:  # pragma: no cover
+            """On Scale Value Change."""
+            logger.trace(f"On Scale Value Change: {val}")
+            pkmn.scale_value = int(val)
+            logger.trace(f"New Scale Value: {pkmn.scale_value} | {val}")
+
+        scale_value_field = self._create_field(
+            "Scale Value",
+            str(pkmn.scale_value),
+            setter=on_scale_value_change,
+            parent=poke_frame,
+        )
+
+        # WAZA (Moves) Section
+        waza_label = ctk.CTkLabel(
+            poke_frame,
+            text="Moves",
+            font=("Helvetica", 12, "bold"),
+        )
+        waza_label.pack(anchor="w", padx=20, pady=(10, 5))
+
+        waza_frames: list[WazaFrame] = [
+            self._create_waza_field(1, pkmn.waza_1, poke_frame),
+            self._create_waza_field(2, pkmn.waza_2, poke_frame),
+            self._create_waza_field(3, pkmn.waza_3, poke_frame),
+            self._create_waza_field(4, pkmn.waza_4, poke_frame),
+        ]
+
+        return PkmnFrame(
+            frame=poke_frame,
+            title=poke_title,
+            dev_id_field=dev_id_field,
+            item_field=item_field,
+            level_field=level_field,
+            form_id_field=form_id_field,
+            sex_field=sex_field,
+            waza_frames=waza_frames,
+            waza_label=waza_label,
+            ball_id_field=ball_id_field,
+            scale_value_field=scale_value_field,
+        )
+
+    def _create_waza_field(
+        self,
+        index: int,
+        waza: ZAWazaData,
+        parent: ctk.CTkFrame,
+    ) -> WazaFrame:
+        """Create a waza field."""
+        # Create a frame for each move
+        waza_frame = ctk.CTkFrame(parent)
+        waza_frame.pack(fill="x", pady=2, padx=30)
+
+        waza_name_label = ctk.CTkLabel(waza_frame, text=f"Move {index}:", width=100)
+        waza_name_label.pack(side="left", padx=5)
+
+        # Move ID Entry
+        def on_waza_change(val: str) -> None:  # pragma: no cover
+            """On Waza Change.
+
+            Args:
+                val (str):
+                    The value to set the Waza ID to.
+                    This is the English name of the Waza ID if we translated it already, otherwise it's the original ID.
+            """
+            logger.trace(f"On Waza Change: {val}")
+            waza.waza_id = settings.za_waza_table.index(val)
+            logger.trace(f"New Waza ID: {waza.waza_id} | {val}")
+
+        waza_option_menu = ctk.CTkOptionMenu(
+            waza_frame,
+            values=wazas,
+            command=on_waza_change,
+        )
+        waza_option_menu.set(str(waza.waza_id_english))
+        waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
+
+        # Plus Checkbox
+        def on_plus_change() -> None:  # pragma: no cover
+            """On Plus Change."""
+            logger.trace(f"On Plus Change: {waza.is_plus_waza}")
+            waza.is_plus_waza = not waza.is_plus_waza
+            logger.trace(f"New Plus Waza: {waza.is_plus_waza}")
+
+        plus_checkbox = ctk.CTkCheckBox(
+            waza_frame,
+            text="Plus Waza",
+            variable=ctk.BooleanVar(value=waza.is_plus_waza),
+            command=on_plus_change,
+        )
+        plus_checkbox.pack(side="left", padx=5)
+
+        return WazaFrame(
+            frame=waza_frame,
+            name_label=waza_name_label,
+            option_menu=waza_option_menu,
+            plus_checkbox=plus_checkbox,
+        )
 
     def _create_field(
         self,
@@ -581,28 +603,53 @@ class ZATrainerEditor(ctk.CTk):
         setter: ty.Callable[[str], None] | None = None,
         readonly: bool = False,
         parent: ctk.CTkFrame | None = None,
-    ) -> None:
-        """Create a label and entry field pair."""
+    ) -> FieldFrame:
+        """Create a label and entry field pair.
+
+        The field is created and retained, but through the widget hierarchy rather than explicit instance attributes.
+
+        Here's how it works:
+
+        Widget Parenting: When you create `ctk.CTkFrame(parent or self.data_frame)`, the new frame becomes a child of the parent. The parent frame internally maintains references to all its children.
+
+        `.pack()` adds to hierarchy: Calling `field_frame.pack(...)` adds the widget to its parent's layout manager, which keeps it alive and visible.
+
+        Reference chain: `self.data_frame` → holds → `field_frame` → holds → `label` and `entry`
+
+        So the widgets persist because they're part of the GUI tree rooted at `self.data_frame`.
+        """
         logger.trace(f"Creating field: {label_text} = {value} (readonly: {readonly})")
 
-        field_frame = ctk.CTkFrame(parent or self.data_frame)
+        parent_frame = parent or self.data_frame
+
+        field_frame = ctk.CTkFrame(parent_frame)
         field_frame.pack(fill="x", pady=2, padx=10)
 
         label = ctk.CTkLabel(field_frame, text=f"{label_text}:", width=200)
         label.pack(side="left", padx=5)
 
+        var = ctk.StringVar(value=value)
         if readonly:
             entry = ctk.CTkLabel(field_frame, text=value, anchor="w")
-            entry.pack(side="left", fill="x", expand=True, padx=5)
         else:
-            var = ctk.StringVar(value=value)
             if setter:
                 var.trace_add("write", lambda *args: setter(var.get()))
             entry = ctk.CTkEntry(field_frame, textvariable=var)
-            entry.pack(side="left", fill="x", expand=True, padx=5)
+
+        entry.pack(side="left", fill="x", expand=True, padx=5)
+
+        return FieldFrame(
+            field_frame=field_frame,
+            label=label,
+            entry=entry,
+            var=var,
+        )
 
     def _create_checkbox(
-        self, label_text: str, value: bool, setter: ty.Callable[[bool], None]
+        self,
+        label_text: str,
+        value: bool,
+        setter: ty.Callable[[bool], None],
     ) -> None:
         """Create a checkbox field."""
         logger.trace(f"Creating checkbox: {label_text} = {value}")
@@ -613,6 +660,11 @@ class ZATrainerEditor(ctk.CTk):
         checkbox = ctk.CTkCheckBox(self.data_frame, text=label_text, variable=var)
         checkbox.pack(anchor="w", padx=20, pady=2)
 
+        return CheckboxFrame(
+            var=var,
+            checkbox=checkbox,
+        )
+
     def _create_dropdown(
         self,
         label_text: str,
@@ -620,7 +672,7 @@ class ZATrainerEditor(ctk.CTk):
         values: list[str],
         setter: ty.Callable[[str], None],
         parent: ctk.CTkFrame | None = None,
-    ) -> None:
+    ) -> DropdownFrame:
         """Create a dropdown field."""
         logger.trace(f"Creating dropdown: {label_text} = {value} (values: {values})")
         field_frame = ctk.CTkFrame(parent or self.data_frame)
@@ -636,6 +688,12 @@ class ZATrainerEditor(ctk.CTk):
         option_menu = ctk.CTkOptionMenu(field_frame, values=values, command=setter)
         option_menu.set(value)
         option_menu.pack(side="left", fill="x", expand=True, padx=5)
+
+        return DropdownFrame(
+            field_frame=field_frame,
+            label=label,
+            option_menu=option_menu,
+        )
 
     def on_trainer_selected(self, choice: str) -> None:
         """Handle trainer selection from combobox."""
