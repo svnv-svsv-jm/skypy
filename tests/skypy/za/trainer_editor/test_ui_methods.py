@@ -81,7 +81,7 @@ def test_on_trainer_selected() -> None:
     """Test `on_trainer_selected` method."""
     with patch.object(ZATrainerEditor, "display_trainer_data") as display_trainer_data:
         ui = ZATrainerEditor(visible=False)
-        ui.on_trainer_selected(ui.trdata[0].tr_id)
+        ui.on_trainer_selected(ui.trdata.values[0].tr_id)
         assert ui.selected_trainer_index == 0
         display_trainer_data.assert_called()
 

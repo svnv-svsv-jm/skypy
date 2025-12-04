@@ -54,15 +54,15 @@ def _validate_pkmns(
 def _create_random_pokemon_data() -> ZAPokemonData:
     return ZAPokemonData(
         dev_id=random.randint(0, 20),
-        form_id=random.randint(0, 3),
-        sex=random.choice([0, 1, 2]),
-        item=random.randint(0, 20),
-        level=random.randint(0, 100),
-        ball_id=random.choice(list(settings.za_ball_mappings.values())),
-        waza_1=ZAWazaData(waza_id=random.randint(0, 20)),
-        waza_2=ZAWazaData(waza_id=random.randint(0, 20)),
-        waza_3=ZAWazaData(waza_id=random.randint(0, 20)),
-        waza_4=ZAWazaData(waza_id=random.randint(0, 20)),
+        form_id=random.randint(0, 3),  # type: ignore
+        sex=random.choice([0, 1, 2]),  # type: ignore
+        item=random.randint(0, 20),  # type: ignore
+        level=random.randint(0, 100),  # type: ignore
+        ball_id=random.choice(list(settings.za_ball_mappings.values())),  # type: ignore
+        waza_1=ZAWazaData(waza_id=random.randint(0, 20)),  # type: ignore
+        waza_2=ZAWazaData(waza_id=random.randint(0, 20)),  # type: ignore
+        waza_3=ZAWazaData(waza_id=random.randint(0, 20)),  # type: ignore
+        waza_4=ZAWazaData(waza_id=random.randint(0, 20)),  # type: ignore
     )
 
 

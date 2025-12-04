@@ -89,7 +89,7 @@ class PkmnFrame(pydantic.BaseModel):
     pokemon_ref: ZAPokemonData
 
     @pydantic.model_validator(mode="after")
-    def validate(self) -> ty.Self:
+    def _validate(self) -> ty.Self:
         """Post init."""
         assert len(self.waza_frames) == 4
         return self
@@ -150,7 +150,7 @@ class TrainerFrame(pydantic.BaseModel):
     trainer_ref: ZATrainerData
 
     @pydantic.model_validator(mode="after")
-    def validate(self) -> ty.Self:
+    def _validate(self) -> ty.Self:
         """Post init."""
         # Validations
         assert len(self.pokemon_fields) == 6

@@ -73,7 +73,7 @@ jobs:
       - name: Build app
         if: steps.version_check.outputs.should_release == 'true'
         run: |
-          just build-app ${{ env.APPNAME }}
+          just build-trainer-editor ${{ env.APPNAME }}
 
       - name: Zip dist folder
         if: steps.version_check.outputs.should_release == 'true'

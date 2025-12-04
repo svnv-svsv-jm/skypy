@@ -1061,7 +1061,7 @@ class ZATrainerEditor(ctk.CTk):
         value: bool,
         setter: ty.Callable[[bool], None],
         parent: ctk.CTkFrame | None = None,
-    ) -> None:
+    ) -> CheckboxFrame:
         """Create a checkbox field."""
         logger.trace(f"Creating checkbox: {label_text} = {value}")
         parent_frame = parent or self.data_frame
