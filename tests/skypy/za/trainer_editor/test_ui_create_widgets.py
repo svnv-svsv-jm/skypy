@@ -12,13 +12,8 @@ def test_create_widgets(zatrdata: ZATrainerDataArray) -> None:
     """Test `create_widgets` method."""
     with (
         mock.patch.object(
-            ZATrainerEditor,
-            "load_trainer_data",
-            return_value=zatrdata.table,
-        ) as load_trainer_data,
-        mock.patch.object(
-            ZATrainerEditor, "display_trainer_data"
-        ) as display_trainer_data,
+            ZATrainerEditor, "create_trainer_data"
+        ) as create_trainer_data,
         mock.patch.object(
             ZATrainerEditor, "create_output_directory_input"
         ) as create_output_directory_input,
@@ -42,8 +37,7 @@ def test_create_widgets(zatrdata: ZATrainerDataArray) -> None:
         logger.info(f"UI: {ui}")
         create_bfbs_file_input.assert_called_once()
         create_output_directory_input.assert_called_once()
-        load_trainer_data.assert_called_once()
-        display_trainer_data.assert_called_once()
+        create_trainer_data.assert_called_once()
         create_top_frame.assert_called_once()
         create_trainer_combobox.assert_called_once()
         create_data_frame.assert_called_once()
@@ -56,7 +50,7 @@ def test_create_top_frame(za_trainer_editor_app: ZATrainerEditor) -> None:
     """Test `create_top_frame` method."""
     ui = za_trainer_editor_app
     with (
-        mock.patch.object(ZATrainerEditor, "display_trainer_data"),
+        mock.patch.object(ZATrainerEditor, "create_trainer_data"),
         mock.patch.object(ctk.CTkFrame, "__init__", return_value=None) as __init__,
         mock.patch.object(ctk.CTkFrame, "pack", return_value=None) as pack,
     ):
@@ -69,7 +63,6 @@ def test_create_trainer_combobox(za_trainer_editor_app: ZATrainerEditor) -> None
     """Test `create_trainer_combobox` method."""
     ui = za_trainer_editor_app
     with (
-        mock.patch.object(ZATrainerEditor, "display_trainer_data"),
         mock.patch.object(
             ctk.CTkLabel, "__init__", side_effect=ctk.CTkLabel.__init__, autospec=True
         ) as label_init,

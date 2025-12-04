@@ -20,7 +20,7 @@ def test_ui_load_initial_data(
     zatrdata_new.table[0].ai_basic = not zatrdata_new.table[0].ai_basic
     with (
         mock.patch.object(ZATrainerEditor, "create_widgets"),
-        mock.patch.object(ZATrainerEditor, "display_trainer_data"),
+        mock.patch.object(ZATrainerEditor, "create_trainer_data"),
     ):
         with (
             tempfile.TemporaryDirectory(
@@ -50,10 +50,10 @@ def test_ui_load_initial_data(
             )
             assert ui.file_name == os.path.basename(temp_file_output.name)
             assert (
-                ui.trdata[0].ai_basic != zatrdata.table[0].ai_basic
+                ui.trdata.values[0].ai_basic != zatrdata.table[0].ai_basic
             ), "UI did not load initial data from Output folder."
             assert (
-                ui.trdata[0].ai_basic == zatrdata_new.table[0].ai_basic
+                ui.trdata.values[0].ai_basic == zatrdata_new.table[0].ai_basic
             ), "UI did not load initial data from Output folder."
 
 

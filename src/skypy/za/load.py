@@ -5,7 +5,7 @@ import os
 
 from loguru import logger
 
-from skypy.schemas import ZATrainerData, ZATrainerDataArray
+from skypy.schemas import ZATrainerDataArray
 
 
 def load_trainer_data(
@@ -13,7 +13,7 @@ def load_trainer_data(
     input_dir: str,
     output_dir: str,
     ignore_output_dir: bool = False,
-) -> list[ZATrainerData]:
+) -> ZATrainerDataArray:
     """Load trainer data from a JSON file."""
     logger.trace("Loading trainer data...")
 
@@ -34,4 +34,4 @@ def load_trainer_data(
     assert isinstance(trdata, dict), f"Expected dict, got {type(trdata)}"
     trainers: ZATrainerDataArray = ZATrainerDataArray(**trdata)
     logger.trace(f"Loaded trainer data from {path}.")
-    return trainers.values
+    return trainers

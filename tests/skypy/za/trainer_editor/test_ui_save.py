@@ -23,6 +23,8 @@ def test_ui_save(
         patch.object(ZATrainerDataArray, "dump") as dump,
         patch.object(app, "status_label", status_label, create=True),
     ):
+        app.trdata.values[0].tr_id = "test_trainer"
+        assert app.trdata.values[0].tr_id == "test_trainer"
         app.save_trainer_data(output_dir=output_dir)
         dump.assert_called_once()
         if output_dir is None:

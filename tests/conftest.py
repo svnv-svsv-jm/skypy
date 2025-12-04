@@ -4,7 +4,6 @@ import shutil
 import sys
 import typing as ty
 from pathlib import Path
-from unittest.mock import patch
 
 import pendulum
 import pyrootutils
@@ -210,11 +209,7 @@ def za_trainer_data_example_parsed(za_trainer_data_example: dict) -> ZATrainerDa
 def za_trainer_editor_app() -> ty.Iterator[ZATrainerEditor]:
     """ZA Trainer Editor app."""
     # Setup: Create the root window
-    with (
-        patch.object(ZATrainerEditor, "create_widgets"),
-        patch.object(ZATrainerEditor, "display_trainer_data"),
-    ):
-        app = ZATrainerEditor(visible=False, ignore_output_dir=True)
+    app = ZATrainerEditor(visible=False, ignore_output_dir=True)
 
     yield app
 

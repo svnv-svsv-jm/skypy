@@ -1,5 +1,6 @@
 __all__ = ["FieldFrame", "ZATrainerEditor"]
 
+import functools
 import os
 import sys
 import typing as ty
@@ -17,7 +18,14 @@ from skypy.types.za import (
     ZAWazaID,
 )
 
-from .fields import CheckboxFrame, DropdownFrame, FieldFrame, PkmnFrame, WazaFrame
+from .frames import (
+    CheckboxFrame,
+    DropdownFrame,
+    FieldFrame,
+    PkmnFrame,
+    TrainerFrame,
+    WazaFrame,
+)
 from .load import load_trainer_data
 
 wazas = [ZAWazaData(waza_id=waza).waza_id_english for waza in ty.get_args(ZAWazaID)]
@@ -111,128 +119,186 @@ class ZATrainerEditor(ctk.CTk):
         self.output_dir = output_dir or os.path.join(_get_app_directory(), "Output")
         self.bfbs_file = bfbs_file or settings.files.za_trainers_bfbs_file
         self.file_name = file_name
-        self.selected_trainer_index: int = 0
         self.ignore_output_dir = ignore_output_dir
 
         # Private
         self._output_dir_var = ctk.StringVar(value=self.output_dir)
         self._bfbs_file_var = ctk.StringVar(value=self.bfbs_file)
 
-        # Load trainer data
-        self.trdata = load_trainer_data(
-            file_name=self.file_name,
-            input_dir=self.input_dir,
-            output_dir=self.output_dir,
-            ignore_output_dir=ignore_output_dir,
-        )
-
         # Set up UI
         self.title(self.app_title)
         self.geometry(f"{width}x{height}")
         self.create_widgets()
-        self.display_trainer_data()
+        self.trainer_frame = self.create_trainer_data()
 
         # Hide window if not visible
         if not visible:
             self.withdraw()
         logger.trace(f"Initialized ({type(self)}): {self}")
 
-    def create_top_frame(self) -> None:
-        """Create the top frame."""
-        self.top_frame = ctk.CTkFrame(self)
-        self.top_frame.pack(fill="x", padx=10, pady=10)
-
-    def create_trainer_combobox(self) -> None:
-        """Create the trainer combobox."""
-        # Create a label for the combobox
-        self.trainer_combobox_label = ctk.CTkLabel(
-            self.top_frame, text="Select Trainer:"
+    @functools.cached_property
+    def trdata(self) -> ZATrainerDataArray:
+        """Trainer data."""
+        return load_trainer_data(
+            file_name=self.file_name,
+            input_dir=self.input_dir,
+            output_dir=self.output_dir,
+            ignore_output_dir=self.ignore_output_dir,
         )
-        self.trainer_combobox_label.pack(side="left", padx=10)
 
-        # Get list of trainer IDs for the combobox
-        trainer_ids = [trainer.tr_id for trainer in self.trdata]
+    @functools.cached_property
+    def top_frame(self) -> ctk.CTkFrame:
+        """Top frame."""
+        top_frame = ctk.CTkFrame(self)
+        top_frame.pack(fill="x", padx=10, pady=10)
+        return top_frame
 
-        # Create combobox
-        self.trainer_combobox = ctk.CTkComboBox(
+    @functools.cached_property
+    def data_frame(self) -> ctk.CTkScrollableFrame:
+        """Data frame."""
+        data_frame = ctk.CTkScrollableFrame(self)
+        data_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        return data_frame
+
+    @functools.cached_property
+    def bottom_frame(self) -> ctk.CTkFrame:
+        """Bottom frame."""
+        bottom_frame = ctk.CTkFrame(self)
+        bottom_frame.pack(fill="x", padx=10, pady=10)
+        return bottom_frame
+
+    @functools.cached_property
+    def trainer_combobox_label(self) -> ctk.CTkLabel:
+        """Trainer combobox label."""
+        trainer_combobox_label = ctk.CTkLabel(
             self.top_frame,
-            values=trainer_ids,
+            text="Select Trainer:",
+        )
+        trainer_combobox_label.pack(side="left", padx=10)
+        return trainer_combobox_label
+
+    @functools.cached_property
+    def trainer_combobox(self) -> ctk.CTkComboBox:
+        """Trainer combobox."""
+        trainer_combobox = ctk.CTkComboBox(
+            self.top_frame,
+            values=[trainer.tr_id for trainer in self.trdata.values],
             command=self.on_trainer_selected,
         )
-        self.trainer_combobox.pack(side="left", padx=10, fill="x", expand=True)
+        trainer_combobox.pack(side="left", padx=10, fill="x", expand=True)
+        return trainer_combobox
 
-        # Set default selection
-        self.trainer_combobox.set(trainer_ids[0])
-
-    def create_data_frame(self) -> None:
-        """Create the data frame."""
-        self.data_frame = ctk.CTkScrollableFrame(self)
-        self.data_frame.pack(fill="both", expand=True, padx=10, pady=10)
-
-    def create_bottom_frame(self) -> None:
-        """Create the bottom frame."""
-        self.bottom_frame = ctk.CTkFrame(self)
-        self.bottom_frame.pack(fill="x", padx=10, pady=10)
-
-    def create_save_button(self) -> None:
-        """Create the save button."""
-        self.save_button = ctk.CTkButton(
-            self.bottom_frame, text="Save Changes", command=self.save_trainer_data
+    @functools.cached_property
+    def save_button(self) -> ctk.CTkButton:
+        """Save button."""
+        save_button = ctk.CTkButton(
+            self.bottom_frame,
+            text="Save Changes",
+            command=self.save_trainer_data,
         )
-        self.save_button.pack(side="left", padx=10)
+        save_button.pack(side="left", padx=10)
+        return save_button
 
-    def create_status_label(self) -> None:
-        """Create the status label."""
-        self.status_label = ctk.CTkLabel(
+    @functools.cached_property
+    def status_label(self) -> ctk.CTkLabel:
+        """Status label."""
+        status_label = ctk.CTkLabel(
             self.bottom_frame,
             text="Have fun!",
             text_color="white",
         )
-        self.status_label.pack(side="left", padx=10)
+        status_label.pack(side="left", padx=10)
+        return status_label
+
+    @functools.cached_property
+    def output_directory_label(self) -> ctk.CTkLabel:
+        """Output directory label."""
+        output_directory_label = ctk.CTkLabel(
+            self.top_frame,
+            text="Output Directory:",
+        )
+        output_directory_label.pack(side="left", padx=(10, 5))
+        return output_directory_label
+
+    @functools.cached_property
+    def output_directory_input(self) -> ctk.CTkEntry:
+        """Output directory input."""
+        self._output_dir_var.trace_add("write", self._on_output_directory_change)
+        output_directory_input = ctk.CTkEntry(
+            self.top_frame,
+            textvariable=self._output_dir_var,
+            width=200,
+        )
+        output_directory_input.pack(side="left", padx=(0, 10))
+        return output_directory_input
+
+    @functools.cached_property
+    def bfbs_file_label(self) -> ctk.CTkLabel:
+        """BFBS file label."""
+        bfbs_file_label = ctk.CTkLabel(
+            self.top_frame,
+            text="BFBS File:",
+        )
+        bfbs_file_label.pack(side="left", padx=(10, 5))
+        return bfbs_file_label
+
+    @functools.cached_property
+    def bfbs_file_input(self) -> ctk.CTkEntry:
+        """BFBS file input."""
+        self._bfbs_file_var.trace_add("write", self._on_bfbs_file_change)
+        bfbs_file_input = ctk.CTkEntry(
+            self.top_frame,
+            textvariable=self._bfbs_file_var,
+            width=200,
+        )
+        bfbs_file_input.pack(side="left", padx=(0, 10))
+        return bfbs_file_input
+
+    def create_top_frame(self) -> ctk.CTkFrame:
+        """Create the top frame."""
+        return self.top_frame
+
+    def create_data_frame(self) -> ctk.CTkScrollableFrame:
+        """Create the data frame."""
+        return self.data_frame
+
+    def create_bottom_frame(self) -> ctk.CTkFrame:
+        """Create the bottom frame."""
+        return self.bottom_frame
+
+    def create_trainer_combobox_label(self) -> ctk.CTkLabel:
+        """Create the trainer combobox label."""
+        return self.trainer_combobox_label
+
+    def create_trainer_combobox(self) -> ctk.CTkComboBox:
+        """Create the trainer combobox."""
+        return self.trainer_combobox
+
+    def create_save_button(self) -> ctk.CTkButton:
+        """Create the save button."""
+        return self.save_button
+
+    def create_status_label(self) -> ctk.CTkLabel:
+        """Create the status label."""
+        return self.status_label
+
+    def create_output_directory_input(self) -> tuple[ctk.CTkLabel, ctk.CTkEntry]:
+        """Let the user change the output directory."""
+        return self.output_directory_label, self.output_directory_input
+
+    def create_bfbs_file_input(self) -> tuple[ctk.CTkLabel, ctk.CTkEntry]:
+        """Let the user change the BFBS file."""
+        return self.bfbs_file_label, self.bfbs_file_input
 
     def _on_output_directory_change(self, *_: object) -> None:
         """On output directory change."""
         self.output_dir = self._output_dir_var.get()
         logger.trace(f"Output directory changed to: {self.output_dir}")
 
-    def create_output_directory_input(self) -> None:
-        """Let the user change the output directory."""
-        self._output_dir_var.trace_add("write", self._on_output_directory_change)
-
-        self.output_directory_label = ctk.CTkLabel(
-            self.top_frame,
-            text="Output Directory:",
-        )
-        self.output_directory_label.pack(side="left", padx=(10, 5))
-
-        self.output_directory_input = ctk.CTkEntry(
-            self.top_frame,
-            textvariable=self._output_dir_var,
-            width=200,
-        )
-        self.output_directory_input.pack(side="left", padx=(0, 10))
-
     def _on_bfbs_file_change(self, *_: object) -> None:
         """On BFBS file change."""
         self.bfbs_file = self._bfbs_file_var.get()
         logger.trace(f"BFBS file changed to: {self.bfbs_file}")
-
-    def create_bfbs_file_input(self) -> None:
-        """Let the user change the output directory."""
-        self._bfbs_file_var.trace_add("write", self._on_bfbs_file_change)
-
-        self.bfbs_file_label = ctk.CTkLabel(
-            self.top_frame,
-            text="BFBS File:",
-        )
-        self.bfbs_file_label.pack(side="left", padx=(10, 5))
-
-        self.bfbs_file_input = ctk.CTkEntry(
-            self.top_frame,
-            textvariable=self._bfbs_file_var,
-            width=200,
-        )
-        self.bfbs_file_input.pack(side="left", padx=(0, 10))
 
     def create_widgets(self) -> None:
         """Create UI widgets."""
@@ -264,131 +330,129 @@ class ZATrainerEditor(ctk.CTk):
 
         logger.trace(f"Created widgets ({type(self)}): {self}")
 
-    def display_trainer_data(self) -> None:
+    def create_trainer_data(self) -> TrainerFrame:
         """Display the current trainer's data."""
         logger.trace(f"Displaying trainer data ({type(self)}): {self}")
 
-        logger.trace(f"Selecting trainer index: {self.selected_trainer_index}")
-        trainer: ZATrainerData = self.trdata[self.selected_trainer_index]
+        trainer: ZATrainerData = self.trdata.values[0]
 
         # Basic Information Section
-        self.basic_information_label = ctk.CTkLabel(
-            self.data_frame, text="Basic Information", font=("Helvetica", 16, "bold")
+        basic_information_label = ctk.CTkLabel(
+            self.data_frame,
+            text="Basic Information",
+            font=("Helvetica", 16, "bold"),
         )
-        self.basic_information_label.pack(pady=(10, 5), anchor="w")
-
-        self.trainer_id_field = self._create_field(
+        trainer_id_field = self._create_field(
             "Trainer ID",
             trainer.tr_id,
             readonly=True,
         )
-        self.money_rate_field = self._create_field(
+        money_rate_field = self._create_field(
             "Money Rate",
             str(trainer.money_rate),
             lambda v: _set_attr(trainer, "money_rate", v, int),
         )
 
         # Boolean Flags Section
-        self.flags_label = ctk.CTkLabel(
-            self.data_frame, text="Flags", font=("Helvetica", 16, "bold")
+        flags_label = ctk.CTkLabel(
+            self.data_frame,
+            text="Flags",
+            font=("Helvetica", 16, "bold"),
         )
-        self.flags_label.pack(pady=(20, 5), anchor="w")
 
-        self.meg_evolution_checkbox = self._create_checkbox(
+        meg_evolution_checkbox = self._create_checkbox(
             "Mega Evolution",
             trainer.meg_evolution,
             lambda v: setattr(trainer, "meg_evolution", v),
         )
-        self.last_hand_checkbox = self._create_checkbox(
+        last_hand_checkbox = self._create_checkbox(
             "Last Hand Mega",
             trainer.last_hand,
             lambda v: setattr(trainer, "last_hand", v),
         )
 
         # AI Flags Section
-        self.ai_label = ctk.CTkLabel(
+        ai_label = ctk.CTkLabel(
             self.data_frame, text="AI Settings", font=("Helvetica", 16, "bold")
         )
-        self.ai_label.pack(pady=(20, 5), anchor="w")
 
         # AI Basic Checkbox
-        self.ai_basic_checkbox = self._create_checkbox(
+        ai_basic_checkbox = self._create_checkbox(
             "AI Basic",
             trainer.ai_basic,
             lambda v: setattr(trainer, "ai_basic", v),
         )
-        self.ai_high_checkbox = self._create_checkbox(
+        ai_high_checkbox = self._create_checkbox(
             "AI High",
             trainer.ai_high,
             lambda v: setattr(trainer, "ai_high", v),
         )
-        self.ai_expert_checkbox = self._create_checkbox(
+        ai_expert_checkbox = self._create_checkbox(
             "AI Expert",
             trainer.ai_expert,
             lambda v: setattr(trainer, "ai_expert", v),
         )
-        self.ai_double_checkbox = self._create_checkbox(
+        ai_double_checkbox = self._create_checkbox(
             "AI Double",
             trainer.ai_double,
             lambda v: setattr(trainer, "ai_double", v),
         )
-        self.ai_raid_checkbox = self._create_checkbox(
+        ai_raid_checkbox = self._create_checkbox(
             "AI Raid",
             trainer.ai_raid,
             lambda v: setattr(trainer, "ai_raid", v),
         )
-        self.ai_weak_checkbox = self._create_checkbox(
+        ai_weak_checkbox = self._create_checkbox(
             "AI Weak",
             trainer.ai_weak,
             lambda v: setattr(trainer, "ai_weak", v),
         )
-        self.ai_item_checkbox = self._create_checkbox(
+        ai_item_checkbox = self._create_checkbox(
             "AI Item",
             trainer.ai_item,
             lambda v: setattr(trainer, "ai_item", v),
         )
-        self.ai_change_checkbox = self._create_checkbox(
+        ai_change_checkbox = self._create_checkbox(
             "AI Change",
             trainer.ai_change,
             lambda v: setattr(trainer, "ai_change", v),
         )
 
         # View Settings Section
-        self.view_settings_label = ctk.CTkLabel(
-            self.data_frame, text="View Settings", font=("Helvetica", 16, "bold")
+        view_settings_label = ctk.CTkLabel(
+            self.data_frame,
+            text="View Settings",
+            font=("Helvetica", 16, "bold"),
         )
-        self.view_settings_label.pack(pady=(20, 5), anchor="w")
-
-        self.view_horizontal_angle_field = self._create_field(
+        view_horizontal_angle_field = self._create_field(
             "View Horizontal Angle",
             str(trainer.view_horizontal_angle),
             lambda v: _set_attr(trainer, "view_horizontal_angle", v, float),
         )
-        self.view_vertical_angle_field = self._create_field(
+        view_vertical_angle_field = self._create_field(
             "View Vertical Angle",
             str(trainer.view_vertical_angle),
             lambda v: _set_attr(trainer, "view_vertical_angle", v, float),
         )
-        self.view_range_field = self._create_field(
+        view_range_field = self._create_field(
             "View Range",
             str(trainer.view_range),
             lambda v: _set_attr(trainer, "view_range", v, float),
         )
-        self.hearing_range_field = self._create_field(
+        hearing_range_field = self._create_field(
             "Hearing Range",
             str(trainer.hearing_range),
             lambda v: _set_attr(trainer, "hearing_range", v, float),
         )
 
         # Pokemon Section
-        self.pokemon_label = ctk.CTkLabel(
+        pokemon_label = ctk.CTkLabel(
             self.data_frame,
             text="Pokemon",
             font=("Helvetica", 16, "bold"),
         )
-        self.pokemon_label.pack(pady=(20, 5), anchor="w")
 
-        self.pokemon_fields: list[PkmnFrame] = [
+        pokemon_fields: list[PkmnFrame] = [
             self._create_pokemon_field(1, trainer.poke_1),
             self._create_pokemon_field(2, trainer.poke_2),
             self._create_pokemon_field(3, trainer.poke_3),
@@ -398,6 +462,30 @@ class ZATrainerEditor(ctk.CTk):
         ]
 
         logger.trace(f"Displayed trainer data ({type(self)}): {self}")
+        return TrainerFrame(
+            basic_information_label=basic_information_label,
+            trainer_id_field=trainer_id_field,
+            money_rate_field=money_rate_field,
+            flags_label=flags_label,
+            meg_evolution_checkbox=meg_evolution_checkbox,
+            last_hand_checkbox=last_hand_checkbox,
+            ai_label=ai_label,
+            ai_basic_checkbox=ai_basic_checkbox,
+            ai_high_checkbox=ai_high_checkbox,
+            ai_expert_checkbox=ai_expert_checkbox,
+            ai_double_checkbox=ai_double_checkbox,
+            ai_raid_checkbox=ai_raid_checkbox,
+            ai_weak_checkbox=ai_weak_checkbox,
+            ai_item_checkbox=ai_item_checkbox,
+            ai_change_checkbox=ai_change_checkbox,
+            view_settings_label=view_settings_label,
+            view_horizontal_angle_field=view_horizontal_angle_field,
+            view_vertical_angle_field=view_vertical_angle_field,
+            view_range_field=view_range_field,
+            hearing_range_field=hearing_range_field,
+            pokemon_label=pokemon_label,
+            pokemon_fields=pokemon_fields,
+        )
 
     def _create_pokemon_field(
         self,
@@ -548,10 +636,7 @@ class ZATrainerEditor(ctk.CTk):
         """Create a waza field."""
         # Create a frame for each move
         waza_frame = ctk.CTkFrame(parent)
-        waza_frame.pack(fill="x", pady=2, padx=30)
-
         waza_name_label = ctk.CTkLabel(waza_frame, text=f"Move {index}:", width=100)
-        waza_name_label.pack(side="left", padx=5)
 
         # Move ID Entry
         def on_waza_change(val: str) -> None:  # pragma: no cover
@@ -566,13 +651,13 @@ class ZATrainerEditor(ctk.CTk):
             waza.waza_id = settings.za_waza_table.index(val)
             logger.trace(f"New Waza ID: {waza.waza_id} | {val}")
 
+        waza_variable = ctk.StringVar(value=waza.waza_id_english)
         waza_option_menu = ctk.CTkOptionMenu(
             waza_frame,
             values=wazas,
             command=on_waza_change,
+            variable=waza_variable,
         )
-        waza_option_menu.set(str(waza.waza_id_english))
-        waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
 
         # Plus Checkbox
         def on_plus_change() -> None:  # pragma: no cover
@@ -581,19 +666,17 @@ class ZATrainerEditor(ctk.CTk):
             waza.is_plus_waza = not waza.is_plus_waza
             logger.trace(f"New Plus Waza: {waza.is_plus_waza}")
 
-        plus_checkbox = ctk.CTkCheckBox(
-            waza_frame,
-            text="Plus Waza",
-            variable=ctk.BooleanVar(value=waza.is_plus_waza),
-            command=on_plus_change,
-        )
-        plus_checkbox.pack(side="left", padx=5)
-
         return WazaFrame(
             frame=waza_frame,
             name_label=waza_name_label,
+            waza_variable=waza_variable,
             option_menu=waza_option_menu,
-            plus_checkbox=plus_checkbox,
+            plus_checkbox=ctk.CTkCheckBox(
+                waza_frame,
+                text="Plus Waza",
+                variable=ctk.BooleanVar(value=waza.is_plus_waza),
+                command=on_plus_change,
+            ),
         )
 
     def _create_field(
@@ -695,15 +778,19 @@ class ZATrainerEditor(ctk.CTk):
             option_menu=option_menu,
         )
 
-    def on_trainer_selected(self, choice: str) -> None:
-        """Handle trainer selection from combobox."""
+    def on_trainer_selected(self, trainer_id: str) -> None:
+        """Handle trainer selection from combobox.
+
+        Args:
+            trainer_id (str):
+                The choice from the combobox.
+                This is the trainer ID.
+        """
         # Find the index of the selected trainer
-        for idx, trainer in enumerate(self.trdata):
-            if trainer.tr_id == choice:
-                self.selected_trainer_index = idx
-                break
+        trainer: ZATrainerData = self.trdata.get_trainer(trainer_id)
+
         # Update displayed data
-        self.display_trainer_data()
+        self.trainer_frame.update_trainer_data(trainer)
 
     def save_trainer_data(
         self,
@@ -727,10 +814,9 @@ class ZATrainerEditor(ctk.CTk):
             os.makedirs(output_dir, exist_ok=True)
 
             # Convert pydantic models back to dict format
-            zatrdata = ZATrainerDataArray(Table=self.trdata)
             file_out = os.path.join(output_dir, file_name)
             logger.trace(f"Dumping data to {file_out}...")
-            zatrdata.dump(file_out, bfbs_file=bfbs_file, create_binaries=True)
+            self.trdata.dump(file_out, bfbs_file=bfbs_file, create_binaries=True)
             logger.trace(f"Data dumped to {file_out}.")
 
             # Show confirmation

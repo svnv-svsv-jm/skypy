@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, patch
 
 import customtkinter as ctk
 import pytest
-from loguru import logger
 
 from skypy.za import ZATrainerEditor
 from skypy.za.trainer_editor import _set_attr
@@ -49,9 +48,6 @@ def test_create_save_button(za_trainer_editor_app: ZATrainerEditor) -> None:
         patch.object(ctk.CTkButton, "__init__", return_value=None) as __init__,
         patch.object(ctk.CTkButton, "pack", return_value=None) as pack,
     ):
-        with pytest.raises(AttributeError):
-            ui.create_save_button()
-        ui.create_bottom_frame()
         ui.create_save_button()
         __init__.assert_called_once()
         pack.assert_called_once()
@@ -64,19 +60,9 @@ def test_create_status_label(za_trainer_editor_app: ZATrainerEditor) -> None:
         patch.object(ctk.CTkLabel, "__init__", return_value=None) as __init__,
         patch.object(ctk.CTkLabel, "pack", return_value=None) as pack,
     ):
-        with pytest.raises(AttributeError):
-            ui.create_status_label()
-        ui.create_bottom_frame()
         ui.create_status_label()
         __init__.assert_called_once()
         pack.assert_called_once()
-
-
-def test_display_trainer_data() -> None:
-    """Test `display_trainer_data`."""
-    ui = ZATrainerEditor()
-    ui.display_trainer_data()
-    logger.info(f"UI: {ui}")
 
 
 @pytest.mark.parametrize("readonly", [True, False])
