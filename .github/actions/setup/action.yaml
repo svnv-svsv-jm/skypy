@@ -17,8 +17,10 @@ runs:
 
     - name: Install Tkinter on macOS
       if: runner.os == 'macOS'
-      run: brew install python-tk@${{ matrix.python-version }}
+      shell: bash
+      run: brew install python-tk@${{ inputs.python-version }}
 
     - name: Install dependencies and test
+      shell: bash
       run: |
-        just prepare ".venv" "${{ matrix.python-version }}" "/opt/homebrew/bin"
+        just prepare ".venv" "${{ inputs.python-version }}" "/opt/homebrew/bin"
