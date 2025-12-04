@@ -6,7 +6,7 @@ import typing as ty
 import customtkinter as ctk
 import pydantic
 
-from skypy.schemas import ZATrainerData
+from skypy.schemas import ZAPokemonData, ZATrainerData, ZAWazaData
 
 CFG = pydantic.ConfigDict(
     extra="forbid",
@@ -56,7 +56,9 @@ class WazaFrame(pydantic.BaseModel):
     name_label: ctk.CTkLabel
     waza_variable: ctk.StringVar
     option_menu: ctk.CTkOptionMenu
+    plus_var: ctk.BooleanVar
     plus_checkbox: ctk.CTkCheckBox
+    waza_ref: ZAWazaData
 
     @pydantic.model_validator(mode="after")
     def pack(self) -> ty.Self:
@@ -84,30 +86,38 @@ class PkmnFrame(pydantic.BaseModel):
     scale_value_field: FieldFrame
     waza_label: ctk.CTkLabel
     waza_frames: list[WazaFrame]
+    pokemon_ref: ZAPokemonData
 
     @pydantic.model_validator(mode="after")
-    def pack(self) -> ty.Self:
+    def validate(self) -> ty.Self:
         """Post init."""
-        # Validations
         assert len(self.waza_frames) == 4
-
-        # Final edits
-        self.frame.pack(fill="x", pady=5, padx=10)
-        self.title.pack(anchor="w", padx=10, pady=5)
-        self.dev_id_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.item_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.level_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.form_id_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.sex_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.ball_id_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.scale_value_field.field_frame.pack(fill="x", pady=2, padx=10)
-        self.waza_label.pack(anchor="w", padx=10, pady=5)
-        for waza_frame in self.waza_frames:
-            waza_frame.frame.pack(fill="x", pady=2, padx=10)
-            waza_frame.name_label.pack(anchor="w", padx=10, pady=5)
-            waza_frame.option_menu.pack(fill="x", pady=2, padx=10)
-            waza_frame.plus_checkbox.pack(fill="x", pady=2, padx=10)
         return self
+
+    def update_pokemon_data(self, pokemon: ZAPokemonData) -> None:
+        """Update the pokemon data."""
+        # Update the mutable reference so closures see the new Pokemon
+        self.pokemon_ref = pokemon
+
+        self.dev_id_field.option_menu.set(pokemon.dev_id_english)
+        self.item_field.option_menu.set(pokemon.item_english)
+        self.level_field.var.set(str(pokemon.level))
+        self.form_id_field.var.set(str(pokemon.form_id))
+        self.sex_field.option_menu.set(str(pokemon.sex))
+        self.ball_id_field.option_menu.set(pokemon.ball_id_english)
+        self.scale_value_field.var.set(str(pokemon.scale_value))
+        for waza_frame, waza in zip(
+            self.waza_frames,
+            (
+                pokemon.waza_1,
+                pokemon.waza_2,
+                pokemon.waza_3,
+                pokemon.waza_4,
+            ),
+        ):
+            waza_frame.waza_ref = waza
+            waza_frame.option_menu.set(waza.waza_id_english)
+            waza_frame.plus_var.set(waza.is_plus_waza)
 
 
 class TrainerFrame(pydantic.BaseModel):
@@ -139,27 +149,39 @@ class TrainerFrame(pydantic.BaseModel):
     pokemon_fields: list[PkmnFrame]
 
     @pydantic.model_validator(mode="after")
-    def pack(self) -> ty.Self:
+    def validate(self) -> ty.Self:
         """Post init."""
         # Validations
         assert len(self.pokemon_fields) == 6
-
-        # Final edits
-        self.basic_information_label.pack(pady=(10, 5), anchor="w")
-        self.flags_label.pack(pady=(20, 5), anchor="w")
-        self.ai_label.pack(pady=(20, 5), anchor="w")
-        self.view_settings_label.pack(pady=(20, 5), anchor="w")
-        self.pokemon_label.pack(pady=(20, 5), anchor="w")
         return self
 
     def update_trainer_data(self, trainer: ZATrainerData) -> None:
         """Update the trainer data."""
-        self.trainer_id_field.entry.set(trainer.tr_id)
-        self.money_rate_field.entry.set(str(trainer.money_rate))
-        self.meg_evolution_checkbox.checkbox.set(trainer.meg_evolution)
-        self.last_hand_checkbox.checkbox.set(trainer.last_hand)
-        self.ai_basic_checkbox.checkbox.set(trainer.ai_basic)
-        self.ai_high_checkbox.checkbox.set(trainer.ai_high)
-        self.ai_expert_checkbox.checkbox.set(trainer.ai_expert)
-        self.ai_double_checkbox.checkbox.set(trainer.ai_double)
-        self.ai_raid_checkbox.checkbox.set(trainer.ai_raid)
+        self.trainer_id_field.var.set(trainer.tr_id)
+        self.money_rate_field.var.set(str(trainer.money_rate))
+        self.meg_evolution_checkbox.var.set(trainer.meg_evolution)
+        self.last_hand_checkbox.var.set(trainer.last_hand)
+        self.ai_basic_checkbox.var.set(trainer.ai_basic)
+        self.ai_high_checkbox.var.set(trainer.ai_high)
+        self.ai_expert_checkbox.var.set(trainer.ai_expert)
+        self.ai_double_checkbox.var.set(trainer.ai_double)
+        self.ai_raid_checkbox.var.set(trainer.ai_raid)
+        self.ai_weak_checkbox.var.set(trainer.ai_weak)
+        self.ai_item_checkbox.var.set(trainer.ai_item)
+        self.ai_change_checkbox.var.set(trainer.ai_change)
+        self.view_horizontal_angle_field.var.set(str(trainer.view_horizontal_angle))
+        self.view_vertical_angle_field.var.set(str(trainer.view_vertical_angle))
+        self.view_range_field.var.set(str(trainer.view_range))
+        self.hearing_range_field.var.set(str(trainer.hearing_range))
+        for pokemon_field, poke in zip(
+            self.pokemon_fields,
+            (
+                trainer.poke_1,
+                trainer.poke_2,
+                trainer.poke_3,
+                trainer.poke_4,
+                trainer.poke_5,
+                trainer.poke_6,
+            ),
+        ):
+            pokemon_field.update_pokemon_data(poke)

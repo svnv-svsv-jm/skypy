@@ -10,13 +10,7 @@ from loguru import logger
 
 from skypy import settings
 from skypy.schemas import ZAPokemonData, ZATrainerData, ZATrainerDataArray, ZAWazaData
-from skypy.types.za import (
-    Sex,
-    ZABallID,
-    ZADevID,
-    ZAItemID,
-    ZAWazaID,
-)
+from skypy.types.za import Sex, ZABallID
 
 from .frames import (
     CheckboxFrame,
@@ -27,9 +21,6 @@ from .frames import (
     WazaFrame,
 )
 from .load import load_trainer_data
-
-wazas = [ZAWazaData(waza_id=waza).waza_id_english for waza in ty.get_args(ZAWazaID)]
-wazas.sort()
 
 
 def _get_app_directory() -> str:
@@ -153,11 +144,50 @@ class ZATrainerEditor(ctk.CTk):
         top_frame.pack(fill="x", padx=10, pady=10)
         return top_frame
 
+    def _setup_scroll_bindings(self, data_frame: ctk.CTkScrollableFrame) -> None:
+        """Set up mouse wheel scrolling for macOS."""
+
+        def _on_mousewheel(event: ty.Any) -> None:
+            """Handle mouse wheel scrolling."""
+            # macOS trackpad uses smaller delta values
+            if sys.platform == "darwin":
+                data_frame._parent_canvas.yview_scroll(int(-1 * event.delta), "units")
+            else:
+                data_frame._parent_canvas.yview_scroll(
+                    int(-1 * (event.delta / 120)), "units"
+                )
+
+        def _bind_mousewheel(_: ty.Any) -> None:
+            """Bind mouse wheel when mouse enters the frame."""
+            self.bind_all("<MouseWheel>", _on_mousewheel)
+            # Linux scroll events
+            self.bind_all(
+                "<Button-4>",
+                lambda e: data_frame._parent_canvas.yview_scroll(-1, "units"),
+            )
+            self.bind_all(
+                "<Button-5>",
+                lambda e: data_frame._parent_canvas.yview_scroll(1, "units"),
+            )
+
+        def _unbind_mousewheel(_: ty.Any) -> None:
+            """Unbind mouse wheel when mouse leaves the frame."""
+            self.unbind_all("<MouseWheel>")
+            self.unbind_all("<Button-4>")
+            self.unbind_all("<Button-5>")
+
+        # Bind to the frame and its internal canvas
+        data_frame.bind("<Enter>", _bind_mousewheel)
+        data_frame.bind("<Leave>", _unbind_mousewheel)
+        data_frame._parent_canvas.bind("<Enter>", _bind_mousewheel)
+        data_frame._parent_canvas.bind("<Leave>", _unbind_mousewheel)
+
     @functools.cached_property
     def data_frame(self) -> ctk.CTkScrollableFrame:
         """Data frame."""
         data_frame = ctk.CTkScrollableFrame(self)
         data_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        self._setup_scroll_bindings(data_frame)
         return data_frame
 
     @functools.cached_property
@@ -342,6 +372,7 @@ class ZATrainerEditor(ctk.CTk):
             text="Basic Information",
             font=("Helvetica", 16, "bold"),
         )
+        basic_information_label.pack(anchor="w", padx=10, pady=5)
         trainer_id_field = self._create_field(
             "Trainer ID",
             trainer.tr_id,
@@ -359,6 +390,7 @@ class ZATrainerEditor(ctk.CTk):
             text="Flags",
             font=("Helvetica", 16, "bold"),
         )
+        flags_label.pack(pady=(20, 5), anchor="w")
 
         meg_evolution_checkbox = self._create_checkbox(
             "Mega Evolution",
@@ -373,8 +405,11 @@ class ZATrainerEditor(ctk.CTk):
 
         # AI Flags Section
         ai_label = ctk.CTkLabel(
-            self.data_frame, text="AI Settings", font=("Helvetica", 16, "bold")
+            self.data_frame,
+            text="AI Settings",
+            font=("Helvetica", 16, "bold"),
         )
+        ai_label.pack(pady=(20, 5), anchor="w")
 
         # AI Basic Checkbox
         ai_basic_checkbox = self._create_checkbox(
@@ -424,6 +459,7 @@ class ZATrainerEditor(ctk.CTk):
             text="View Settings",
             font=("Helvetica", 16, "bold"),
         )
+        view_settings_label.pack(pady=(20, 5), anchor="w")
         view_horizontal_angle_field = self._create_field(
             "View Horizontal Angle",
             str(trainer.view_horizontal_angle),
@@ -451,6 +487,7 @@ class ZATrainerEditor(ctk.CTk):
             text="Pokemon",
             font=("Helvetica", 16, "bold"),
         )
+        pokemon_label.pack(pady=(20, 5), anchor="w")
 
         pokemon_fields: list[PkmnFrame] = [
             self._create_pokemon_field(1, trainer.poke_1),
@@ -495,9 +532,13 @@ class ZATrainerEditor(ctk.CTk):
         """Create a pokemon field."""
         # Show all pokemon slots, even if empty
         poke_frame = ctk.CTkFrame(self.data_frame)
+        poke_frame.pack(fill="x", pady=5, padx=10)
         poke_title = ctk.CTkLabel(
-            poke_frame, text=f"Pokemon {index}", font=("Helvetica", 14, "bold")
+            poke_frame,
+            text=f"Pokemon {index}",
+            font=("Helvetica", 14, "bold"),
         )
+        poke_title.pack(anchor="w", padx=10, pady=5)
 
         def on_dev_id_change(val: str) -> None:
             """On Dev ID Change."""
@@ -508,9 +549,7 @@ class ZATrainerEditor(ctk.CTk):
         dev_id_field = self._create_dropdown(
             "Dev ID",
             pkmn.dev_id_english,
-            values=[
-                ZAPokemonData(dev_id=dev).dev_id_english for dev in ty.get_args(ZADevID)
-            ],
+            values=list(settings.za_species_table),
             setter=on_dev_id_change,
             parent=poke_frame,
         )
@@ -524,9 +563,7 @@ class ZATrainerEditor(ctk.CTk):
         item_field = self._create_dropdown(
             "Item",
             pkmn.item_english,
-            values=[
-                ZAPokemonData(item=item).item_english for item in ty.get_args(ZAItemID)
-            ],
+            values=list(settings.za_items_table),
             setter=on_item_change,
             parent=poke_frame,
         )
@@ -566,7 +603,7 @@ class ZATrainerEditor(ctk.CTk):
         sex_field = self._create_dropdown(
             "Sex",
             str(pkmn.sex),
-            list(str(ty.get_args(Sex))),
+            [str(x) for x in ty.get_args(Sex)],
             setter=on_sex_change,
             parent=poke_frame,
         )
@@ -580,7 +617,7 @@ class ZATrainerEditor(ctk.CTk):
         ball_id_field = self._create_dropdown(
             "Ball ID",
             pkmn.ball_id_english,
-            list(str(ty.get_args(ZABallID))),
+            [settings.za_items_table[ball_id] for ball_id in ty.get_args(ZABallID)],
             setter=on_ball_id_change,
             parent=poke_frame,
         )
@@ -625,6 +662,7 @@ class ZATrainerEditor(ctk.CTk):
             waza_label=waza_label,
             ball_id_field=ball_id_field,
             scale_value_field=scale_value_field,
+            pokemon_ref=pkmn,
         )
 
     def _create_waza_field(
@@ -636,7 +674,9 @@ class ZATrainerEditor(ctk.CTk):
         """Create a waza field."""
         # Create a frame for each move
         waza_frame = ctk.CTkFrame(parent)
+        waza_frame.pack(fill="x", pady=2, padx=10)
         waza_name_label = ctk.CTkLabel(waza_frame, text=f"Move {index}:", width=100)
+        waza_name_label.pack(anchor="w", padx=10, pady=5)
 
         # Move ID Entry
         def on_waza_change(val: str) -> None:  # pragma: no cover
@@ -654,10 +694,11 @@ class ZATrainerEditor(ctk.CTk):
         waza_variable = ctk.StringVar(value=waza.waza_id_english)
         waza_option_menu = ctk.CTkOptionMenu(
             waza_frame,
-            values=wazas,
+            values=list(settings.za_waza_table),
             command=on_waza_change,
             variable=waza_variable,
         )
+        waza_option_menu.pack(side="left", fill="x", expand=True, padx=5)
 
         # Plus Checkbox
         def on_plus_change() -> None:  # pragma: no cover
@@ -666,17 +707,20 @@ class ZATrainerEditor(ctk.CTk):
             waza.is_plus_waza = not waza.is_plus_waza
             logger.trace(f"New Plus Waza: {waza.is_plus_waza}")
 
+        plus_var = ctk.BooleanVar(value=waza.is_plus_waza)
         return WazaFrame(
             frame=waza_frame,
             name_label=waza_name_label,
             waza_variable=waza_variable,
             option_menu=waza_option_menu,
+            plus_var=plus_var,
             plus_checkbox=ctk.CTkCheckBox(
                 waza_frame,
                 text="Plus Waza",
-                variable=ctk.BooleanVar(value=waza.is_plus_waza),
+                variable=plus_var,
                 command=on_plus_change,
             ),
+            waza_ref=waza,
         )
 
     def _create_field(
