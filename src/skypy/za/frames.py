@@ -147,6 +147,7 @@ class TrainerFrame(pydantic.BaseModel):
     hearing_range_field: FieldFrame
     pokemon_label: ctk.CTkLabel
     pokemon_fields: list[PkmnFrame]
+    trainer_ref: ZATrainerData
 
     @pydantic.model_validator(mode="after")
     def validate(self) -> ty.Self:
@@ -157,6 +158,9 @@ class TrainerFrame(pydantic.BaseModel):
 
     def update_trainer_data(self, trainer: ZATrainerData) -> None:
         """Update the trainer data."""
+        # Update the trainer reference so setters use the new trainer
+        self.trainer_ref = trainer
+
         self.trainer_id_field.var.set(trainer.tr_id)
         self.money_rate_field.var.set(str(trainer.money_rate))
         self.meg_evolution_checkbox.var.set(trainer.meg_evolution)
