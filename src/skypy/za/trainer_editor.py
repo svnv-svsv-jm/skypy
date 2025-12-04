@@ -22,6 +22,11 @@ from .frames import (
 )
 from .load import load_trainer_data
 
+WAZAS = sorted(settings.za_waza_table)
+ITEMS = sorted(settings.za_items_table)
+SPECIES = sorted(settings.za_species_table)
+RANKS = sorted(settings.za_rank_mappings.keys())
+
 
 def _get_app_directory() -> str:
     """Get the directory where the app is running from.
@@ -144,50 +149,15 @@ class ZATrainerEditor(ctk.CTk):
         top_frame.pack(fill="x", padx=10, pady=10)
         return top_frame
 
-    def _setup_scroll_bindings(self, data_frame: ctk.CTkScrollableFrame) -> None:
-        """Set up mouse wheel scrolling for macOS."""
-
-        def _on_mousewheel(event: ty.Any) -> None:
-            """Handle mouse wheel scrolling."""
-            # macOS trackpad uses smaller delta values
-            if sys.platform == "darwin":
-                data_frame._parent_canvas.yview_scroll(int(-1 * event.delta), "units")
-            else:
-                data_frame._parent_canvas.yview_scroll(
-                    int(-1 * (event.delta / 120)), "units"
-                )
-
-        def _bind_mousewheel(_: ty.Any) -> None:
-            """Bind mouse wheel when mouse enters the frame."""
-            self.bind_all("<MouseWheel>", _on_mousewheel)
-            # Linux scroll events
-            self.bind_all(
-                "<Button-4>",
-                lambda e: data_frame._parent_canvas.yview_scroll(-1, "units"),
-            )
-            self.bind_all(
-                "<Button-5>",
-                lambda e: data_frame._parent_canvas.yview_scroll(1, "units"),
-            )
-
-        def _unbind_mousewheel(_: ty.Any) -> None:
-            """Unbind mouse wheel when mouse leaves the frame."""
-            self.unbind_all("<MouseWheel>")
-            self.unbind_all("<Button-4>")
-            self.unbind_all("<Button-5>")
-
-        # Bind to the frame and its internal canvas
-        data_frame.bind("<Enter>", _bind_mousewheel)
-        data_frame.bind("<Leave>", _unbind_mousewheel)
-        data_frame._parent_canvas.bind("<Enter>", _bind_mousewheel)
-        data_frame._parent_canvas.bind("<Leave>", _unbind_mousewheel)
-
     @functools.cached_property
     def data_frame(self) -> ctk.CTkScrollableFrame:
-        """Data frame."""
+        """Data frame.
+
+        Note: On macOS with Tk 9, trackpad scrolling doesn't work with Canvas-based
+        widgets (a Tk limitation). Use the scrollbar or keyboard (arrow keys, Page Up/Down).
+        """
         data_frame = ctk.CTkScrollableFrame(self)
         data_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        self._setup_scroll_bindings(data_frame)
         return data_frame
 
     @functools.cached_property
@@ -549,7 +519,7 @@ class ZATrainerEditor(ctk.CTk):
         dev_id_field = self._create_dropdown(
             "Dev ID",
             pkmn.dev_id_english,
-            values=list(settings.za_species_table),
+            values=SPECIES,
             setter=on_dev_id_change,
             parent=poke_frame,
         )
@@ -563,7 +533,7 @@ class ZATrainerEditor(ctk.CTk):
         item_field = self._create_dropdown(
             "Item",
             pkmn.item_english,
-            values=list(settings.za_items_table),
+            values=ITEMS,
             setter=on_item_change,
             parent=poke_frame,
         )
@@ -694,7 +664,7 @@ class ZATrainerEditor(ctk.CTk):
         waza_variable = ctk.StringVar(value=waza.waza_id_english)
         waza_option_menu = ctk.CTkOptionMenu(
             waza_frame,
-            values=list(settings.za_waza_table),
+            values=WAZAS,
             command=on_waza_change,
             variable=waza_variable,
         )
