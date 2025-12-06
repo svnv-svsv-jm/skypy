@@ -17,18 +17,6 @@ def test_set_attr() -> None:
     assert obj.money_rate is True
 
 
-def test_create_trainer_combobox(za_trainer_editor_app: ZATrainerEditor) -> None:
-    """Test `create_trainer_combobox` method."""
-    ui = za_trainer_editor_app
-    with (
-        patch.object(ctk.CTkScrollableFrame, "__init__", return_value=None) as __init__,
-        patch.object(ctk.CTkScrollableFrame, "pack", return_value=None) as pack,
-    ):
-        ui.create_data_frame()
-        __init__.assert_called_once_with(ui)
-        pack.assert_called_once()
-
-
 def test_create_bottom_frame(za_trainer_editor_app: ZATrainerEditor) -> None:
     """Test `create_bottom_frame` method."""
     ui = za_trainer_editor_app

@@ -7,6 +7,7 @@ __all__ = [
 ]
 
 
+import datetime
 import json
 import os
 import subprocess
@@ -522,6 +523,11 @@ class ZATrainerDataArray(pydantic.BaseModel):
             data = self.model_dump(mode="json", by_alias=True, exclude_unset=True)
             json.dump(data, f, indent=2, ensure_ascii=False)
             logger.trace(f"Dumped data to {path}: {data}")
+        now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        nf = path.replace(".json", f"-{now}.json")
+        with open(nf, "w", encoding="utf-8") as f:
+            data = self.model_dump(mode="json", by_alias=True, exclude_unset=True)
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
         if create_binaries:
             bfbs_file = bfbs_file or settings.files.za_trainers_bfbs_file

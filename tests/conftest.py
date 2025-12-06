@@ -231,9 +231,6 @@ def cleanup() -> ty.Iterator[None]:
     output_dir = os.path.join(root, "assets", "za", "Output")
     if os.path.exists(output_dir):
         shutil.rmtree(output_dir)
-    output_file = os.path.join(root, "Output")
-    if os.path.exists(output_file):
-        shutil.rmtree(output_file)
 
 
 @pytest.fixture
