@@ -167,6 +167,8 @@ class ZAPokemonData(pydantic.BaseModel):
     item: ZAItemID = pydantic.Field(
         0,
         description="Item.",
+        ge=0,
+        lt=len(settings.za_items_table),
     )
     level: int = pydantic.Field(
         10,
@@ -224,16 +226,37 @@ class ZAPokemonData(pydantic.BaseModel):
     )
 
     @property
+    @logger.catch(
+        IndexError,
+        reraise=False,
+        default=settings.za_species_table[0],
+        message="Species not found, returning default.",
+        level="WARNING",
+    )
     def dev_id_english(self) -> str:
         """Get the English name of the Pokemon."""
         return settings.za_species_table[self.dev_id]
 
     @property
+    @logger.catch(
+        IndexError,
+        reraise=False,
+        default=get_key_by_value(settings.za_ball_mappings, 0),
+        message="Ball not found, returning default.",
+        level="WARNING",
+    )
     def ball_id_english(self) -> str:
         """Get the English name of the Ball."""
         return settings.za_items_table[self.ball_id]
 
     @property
+    @logger.catch(
+        IndexError,
+        reraise=False,
+        default=settings.za_items_table[0],
+        message="Item not found, returning default.",
+        level="WARNING",
+    )
     def item_english(self) -> str:
         """Get the English name of the Item."""
         return settings.za_items_table[self.item]
@@ -296,6 +319,8 @@ class ZAPokemonData(pydantic.BaseModel):
         """Validate the Item. If `str`, convert to `int` using the mappings."""
         if isinstance(v, str):
             return settings.za_item_mappings[v]
+        if v >= len(settings.za_items_table) or v < 0:
+            return 0
         return v
 
     @pydantic.field_serializer("item", when_used="json")

@@ -103,6 +103,10 @@ def test_pokemon_data_item_to_eng(
     data.item = item
     assert data.item_english == settings.za_items_table[item]
 
+    # Now set to a non-existing item and check it returns a default
+    data.item = len(settings.za_items_table) + 1
+    assert data.item_english == settings.za_items_table[0]
+
 
 @pytest.mark.parametrize("waza_id", range(1, 5))
 @pytest.mark.parametrize("waza_nr", [1, 2, 3, 4])
