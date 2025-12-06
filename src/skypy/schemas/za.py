@@ -167,8 +167,6 @@ class ZAPokemonData(pydantic.BaseModel):
     item: ZAItemID = pydantic.Field(
         0,
         description="Item.",
-        ge=0,
-        lt=len(settings.za_items_table),
     )
     level: int = pydantic.Field(
         10,
